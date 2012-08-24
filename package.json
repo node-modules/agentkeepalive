@@ -1,0 +1,28 @@
+{
+  "name": "agentkeepalive",
+  "version": "0.0.1",
+  "description": "Missing keepalive http.Agent",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "make test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/TBEDP/agentkeepalive.git"
+  },
+  "keywords": [
+    "http",
+    "agent",
+    "keepalive"
+  ],
+  "devDependencies": {
+    "should": "*",
+    "mocha": "*",
+    "visionmedia-jscoverage": "*"
+  },
+  "author": "fengmk2 <fengmk2@gmail.com> (http://fengmk2.github.com)",
+  "license": "MIT"
+}
