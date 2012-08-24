@@ -1,0 +1,1 @@
+module.exports = process.env.AGENT_KEEPALIVE_COV ? require('./lib-cov/agent') : require('./lib/agent');
