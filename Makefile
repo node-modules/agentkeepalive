@@ -8,8 +8,8 @@ test:
 		--reporter $(REPORTER) --timeout $(TIMEOUT) $(MOCHAOPTS) $(TESTS)
 
 test-cov: lib-cov
-	@NDIR_COV=1 $(MAKE) test
-	@NDIR_COV=1 $(MAKE) test REPORTER=html-cov > coverage.html
+	@AGENT_KEEPALIVE_COV=1 $(MAKE) test
+	@AGENT_KEEPALIVE_COV=1 $(MAKE) test REPORTER=html-cov > coverage.html
 
 lib-cov:
 	@rm -rf lib-cov
