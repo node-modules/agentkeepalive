@@ -14,7 +14,8 @@ var http = require('http');
 var Agent = require('../');
 
 var agentKeepalive = new Agent({
-  maxSockets: 10
+  maxSockets: 10,
+  maxKeepAliveTime: 30000,
 });
 var agentHttp = new http.Agent({
   maxSockets: 10
