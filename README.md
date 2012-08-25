@@ -5,7 +5,7 @@ agentkeepalive
 
 The nodejs's missing `keep alive` `http.Agent`.
 
-jscoverage: [**100%**](http://fengmk2.github.com/coverage/agentkeepalive.html)
+jscoverage: [**91%**](http://fengmk2.github.com/coverage/agentkeepalive.html)
 
 ## Install
 
