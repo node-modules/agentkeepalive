@@ -20,8 +20,8 @@ http.createServer(function (req, res) {
       timeout: timeout,
       headers: req.headers
     };
-    count++;
-    console.log(count + ' ' + req.url);
+    // count++;
+    // console.log(count + ' ' + req.url);
     res.end(JSON.stringify(result));
   }, timeout);
 }).listen(1984);

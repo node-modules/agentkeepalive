@@ -53,6 +53,36 @@ setTimeout(function () {
 
 ```
 
+## [Benchmark](https://github.com/TBEDP/agentkeepalive/blob/master/benchmark/result.md)
+
+run the benchmark:
+
+```bash
+cd benchmark
+sh start.sh
+```
+
+50 maxSockets, 60 concurrent, 1000 requests per concurrent, 5ms delay
+
+Keep alive agent:
+
+```
+Transaction rate:      2214.02 trans/sec
+```
+
+Normal agent:
+
+```
+Transaction rate:      1138.30 trans/sec
+```
+
+Socket created:
+
+```
+[proxy.js] keepalive, 50 created, 0 requests, 50 sockets, 50 unusedSockets
+[proxy.js] normal   , 52555 created, 0 requests, 0 sockets
+```
+
 ## License 
 
 (The MIT License)

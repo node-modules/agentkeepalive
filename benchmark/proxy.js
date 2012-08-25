@@ -13,23 +13,35 @@
 var http = require('http');
 var Agent = require('../');
 
+var maxSockets = parseInt(process.argv[2], 10) || 10;
+
 var agentKeepalive = new Agent({
-  maxSockets: 10,
+  maxSockets: maxSockets,
   maxKeepAliveTime: 30000,
 });
 var agentHttp = new http.Agent({
-  maxSockets: 10
+  maxSockets: maxSockets
 });
+agentHttp.createSocketCount = 0;
+
+agentHttp.__createSocket = agentHttp.createSocket;
+agentHttp.createSocket = function (name, host, port, localAddress, req) {
+  agentHttp.createSocketCount++;
+  return agentHttp.__createSocket(name, host, port, localAddress, req);
+};
 
 setInterval(function () {
-  console.log('keepalive, %s requests, %s sockets, %s unusedSockets',
-    agentKeepalive.requests['localhost:1984'] && agentKeepalive.requests['localhost:1984'].length,
-    agentKeepalive.sockets['localhost:1984'] && agentKeepalive.sockets['localhost:1984'].length, 
-    agentKeepalive.unusedSockets['localhost:1984'] && agentKeepalive.unusedSockets['localhost:1984'].length
+  var name = 'localhost:1984';
+  console.log('[proxy.js] keepalive, %d created, %s requests, %s sockets, %s unusedSockets',
+    agentKeepalive.createSocketCount,
+    agentKeepalive.requests[name] && agentKeepalive.requests[name].length || 0,
+    agentKeepalive.sockets[name] && agentKeepalive.sockets[name].length || 0,
+    agentKeepalive.unusedSockets[name] && agentKeepalive.unusedSockets[name].length || 0
   );
-  console.log('no keepalive, %s requests, %s sockets',
-    agentHttp.requests['localhost:1984'] && agentHttp.requests['localhost:1984'].length,
-    agentHttp.sockets['localhost:1984'] && agentHttp.sockets['localhost:1984'].length
+  console.log('[proxy.js] normal   , %d created, %s requests, %s sockets',
+    agentHttp.createSocketCount,
+    agentHttp.requests[name] && agentHttp.requests[name].length || 0,
+    agentHttp.sockets[name] && agentHttp.sockets[name].length || 0
   );
 }, 2000);
 
@@ -58,6 +70,7 @@ http.createServer(function (req, res) {
     });
   });
   client.on('error', function (err) {
+    console.log('error ' + req.url + ':' + err.message);
     res.statusCode = 500;
     res.end(err.message);
   });
@@ -65,7 +78,7 @@ http.createServer(function (req, res) {
     console.log('timeout ' + req.url);
     timer = null;
     client.abort();
-  }, 1000);
+  }, 2000);
 
 }).listen(1985);
 
