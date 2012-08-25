@@ -53,7 +53,7 @@ setTimeout(function () {
 
 ```
 
-## [Benchmark](https://github.com/TBEDP/agentkeepalive/blob/master/benchmark/result.md)
+## [Benchmark](https://github.com/TBEDP/agentkeepalive/tree/master/benchmark)
 
 run the benchmark:
 
