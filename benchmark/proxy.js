@@ -29,16 +29,20 @@ agentHttp.createSocket = function (name, host, port, localAddress, req) {
   agentHttp.createSocketCount++;
   return agentHttp.__createSocket(name, host, port, localAddress, req);
 };
+var count = 0;
 
 setInterval(function () {
   var name = 'localhost:1984';
-  console.log('[proxy.js] keepalive, %d created, %s requests, %s sockets, %s unusedSockets',
+  console.log('[proxy.js:%d] keepalive, %d created, %s requests, %s sockets, %s unusedSockets, %d timeout',
+    count,
     agentKeepalive.createSocketCount,
     agentKeepalive.requests[name] && agentKeepalive.requests[name].length || 0,
     agentKeepalive.sockets[name] && agentKeepalive.sockets[name].length || 0,
-    agentKeepalive.unusedSockets[name] && agentKeepalive.unusedSockets[name].length || 0
+    agentKeepalive.unusedSockets[name] && agentKeepalive.unusedSockets[name].length || 0,
+    agentKeepalive.timeoutSocketCount
   );
-  console.log('[proxy.js] normal   , %d created, %s requests, %s sockets',
+  console.log('[proxy.js:%d] normal   , %d created, %s requests, %s sockets',
+    count,
     agentHttp.createSocketCount,
     agentHttp.requests[name] && agentHttp.requests[name].length || 0,
     agentHttp.sockets[name] && agentHttp.sockets[name].length || 0
@@ -67,6 +71,7 @@ http.createServer(function (req, res) {
         clearTimeout(timer);
         timer = null;
       }
+      count++;
     });
   });
   client.on('error', function (err) {

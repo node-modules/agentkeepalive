@@ -3,11 +3,11 @@
 sudo sysctl -w net.inet.ip.portrange.first=12000
 sudo sysctl -w net.inet.tcp.msl=1000
 sudo sysctl -w kern.maxfiles=1000000 kern.maxfilesperproc=1000000
-ulimit -n 100000
+sudo ulimit -n 100000
 
 NUM=1000
-CONCURRENT=60
-maxSockets=50
+CONCURRENT=120
+maxSockets=100
 
 node sleep_server.js &
 
@@ -21,6 +21,8 @@ echo "$maxSockets maxSockets, $CONCURRENT concurrent, $NUM requests per concurre
 
 echo "keep alive"
 siege -c $CONCURRENT -r $NUM -b http://localhost:1985/k/5
+
+sleep 5
 
 echo "normal"
 siege -c $CONCURRENT -r $NUM -b http://localhost:1985/5

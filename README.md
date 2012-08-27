@@ -5,7 +5,7 @@ agentkeepalive
 
 The nodejs's missing `keep alive` `http.Agent`.
 
-jscoverage: [**91%**](http://fengmk2.github.com/coverage/agentkeepalive.html)
+jscoverage: [**93%**](http://fengmk2.github.com/coverage/agentkeepalive.html)
 
 ## Install
 
@@ -62,25 +62,60 @@ cd benchmark
 sh start.sh
 ```
 
-50 maxSockets, 60 concurrent, 1000 requests per concurrent, 5ms delay
+100 maxSockets, 120 concurrent, 1000 requests per concurrent, 5ms delay
 
-Keep alive agent:
+Keep alive agent (30 seconds):
 
-```
-Transaction rate:      2214.02 trans/sec
+```js
+Transactions:         120000 hits
+Availability:         100.00 %
+Elapsed time:          53.86 secs
+Data transferred:         8.58 MB
+Response time:            0.05 secs
+Transaction rate:      2228.00 trans/sec
+Throughput:           0.16 MB/sec
+Concurrency:          119.75
+Successful transactions:      120000
+Failed transactions:             0
+Longest transaction:          0.23
+Shortest transaction:         0.02
 ```
 
 Normal agent:
 
-```
-Transaction rate:      1138.30 trans/sec
+```js
+Transactions:         120000 hits
+Availability:         100.00 %
+Elapsed time:          99.68 secs
+Data transferred:         8.58 MB
+Response time:            0.10 secs
+Transaction rate:      1203.85 trans/sec
+Throughput:           0.09 MB/sec
+Concurrency:          119.29
+Successful transactions:      120000
+Failed transactions:             0
+Longest transaction:          0.30
+Shortest transaction:         0.00
 ```
 
 Socket created:
 
 ```
-[proxy.js] keepalive, 50 created, 0 requests, 50 sockets, 50 unusedSockets
-[proxy.js] normal   , 52555 created, 0 requests, 0 sockets
+[proxy.js] keepalive, 100 created, 0 requests, 0 sockets, 0 unusedSockets
+[proxy.js] normal   , 114412 created, 0 requests, 0 sockets
+```
+
+# Authors
+
+Below is the output from `git-summary`.
+
+```
+ project: agentkeepalive
+ commits: 10
+ active : 3 days
+ files  : 13
+ authors: 
+    10  fengmk2                 100.0%
 ```
 
 ## License 
