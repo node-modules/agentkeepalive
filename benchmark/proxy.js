@@ -24,47 +24,62 @@ var agentHttp = new http.Agent({
   maxSockets: maxSockets
 });
 agentHttp.createSocketCount = 0;
-
+agentHttp.requestFinishedCount = 0;
 agentHttp.__createSocket = agentHttp.createSocket;
 agentHttp.createSocket = function (name, host, port, localAddress, req) {
   agentHttp.createSocketCount++;
   return agentHttp.__createSocket(name, host, port, localAddress, req);
 };
+agentHttp.on('free', function () {
+  agentHttp.requestFinishedCount++;
+});
 var count = 0;
 var rtKeepalives = {
-  '10ms': 0,
-  '15ms': 0,
-  '20ms': 0,
-  '30ms': 0,
-  '40ms': 0,
-  '50ms': 0,
-  '50ms+': 0
+  ' <10ms': 0,
+  ' <15ms': 0,
+  ' <20ms': 0,
+  ' <30ms': 0,
+  ' <40ms': 0,
+  ' <50ms': 0,
+  ' <100ms': 0,
+  ' <150ms': 0,
+  ' <200ms': 0,
+  ' >=200ms+': 0
 };
 
 var rtNormals = {
-  '10ms': 0,
-  '15ms': 0,
-  '20ms': 0,
-  '30ms': 0,
-  '40ms': 0,
-  '50ms': 0,
-  '50ms+': 0
+  ' <10ms': 0,
+  ' <15ms': 0,
+  ' <20ms': 0,
+  ' <30ms': 0,
+  ' <40ms': 0,
+  ' <50ms': 0,
+  ' <100ms': 0,
+  ' <150ms': 0,
+  ' <200ms': 0,
+  ' >=200ms+': 0
 };
 
 setInterval(function () {
-  var name = 'localhost:1984';
-  console.log('[proxy.js:%d] keepalive, %d created, %s requests, %s sockets, %s unusedSockets, %d timeout\n%j',
+  var name = SERVER + ':1984';
+  console.log('----------------------------------------------------------------');
+  console.log('[proxy.js:%d] keepalive, %d created, %d requestFinished, %d req/socket, %s requests, %s sockets, %s unusedSockets, %d timeout\n%j',
     count,
     agentKeepalive.createSocketCount,
+    agentKeepalive.requestFinishedCount,
+    (agentKeepalive.requestFinishedCount / agentKeepalive.createSocketCount || 0).toFixed(2),
     agentKeepalive.requests[name] && agentKeepalive.requests[name].length || 0,
     agentKeepalive.sockets[name] && agentKeepalive.sockets[name].length || 0,
     agentKeepalive.unusedSockets[name] && agentKeepalive.unusedSockets[name].length || 0,
     agentKeepalive.timeoutSocketCount,
     rtKeepalives
   );
-  console.log('[proxy.js:%d] normal   , %d created, %s requests, %s sockets\n%j',
+  console.log('----------------------------------------------------------------');
+  console.log('[proxy.js:%d] normal   , %d created, %d requestFinished, %d req/socket, %s requests, %s sockets\n%j',
     count,
     agentHttp.createSocketCount,
+    agentHttp.requestFinishedCount,
+    (agentHttp.requestFinishedCount / agentHttp.createSocketCount || 0).toFixed(2),
     agentHttp.requests[name] && agentHttp.requests[name].length || 0,
     agentHttp.sockets[name] && agentHttp.sockets[name].length || 0,
     rtNormals
@@ -94,45 +109,54 @@ http.createServer(function (req, res) {
     method: method,
     agent: agent
   };
-  var timer = null;
-  var start = Date.now();
-  var client = http.request(options, function (response) {
-    response.pipe(res);
-    response.once('end', function () {
-      var use = Date.now() - start;
-      if (use < 10) {
-        rts['10ms']++;
-      } else if (use < 15) {
-        rts['15ms']++;
-      } else if (use < 20) {
-        rts['20ms']++;
-      } else if (use < 30) {
-        rts['30ms']++;
-      } else if (use < 40) {
-        rts['40ms']++;
-      } else if (use < 50) {
-        rts['50ms']++;
-      } else {
-        rts['50ms+']++;
-      }
-      if (timer) {
-        clearTimeout(timer);
-        timer = null;
-      }
-      count++;
+  req.on('end', function () {
+    var timer = null;
+    var start = Date.now();
+    var client = http.request(options, function (response) {
+      response.pipe(res);
+      response.once('end', function () {
+        var use = Date.now() - start;
+        if (use < 10) {
+          rts[' <10ms']++;
+        } else if (use < 15) {
+          rts[' <15ms']++;
+        } else if (use < 20) {
+          rts[' <20ms']++;
+        } else if (use < 30) {
+          rts[' <30ms']++;
+        } else if (use < 40) {
+          rts[' <40ms']++;
+        } else if (use < 50) {
+          rts[' <50ms']++;
+        } else if (use < 100) {
+          rts[' <100ms']++;
+        } else if (use < 150) {
+          rts[' <150ms']++;
+        } else if (use < 200) {
+          rts[' <200ms']++;
+        } else {
+          rts[' >=200ms+']++;
+        }
+        if (timer) {
+          clearTimeout(timer);
+          timer = null;
+        }
+        count++;
+      });
     });
+    client.on('error', function (err) {
+      console.log('error ' + req.url + ':' + err.message);
+      res.statusCode = 500;
+      res.end(err.message);
+    });
+    timer = setTimeout(function () {
+      console.log('2000ms timeout ' + req.url);
+      timer = null;
+      client.abort();
+    }, 2000);
+    client.end(postData);
   });
-  client.on('error', function (err) {
-    console.log('error ' + req.url + ':' + err.message);
-    res.statusCode = 500;
-    res.end(err.message);
-  });
-  timer = setTimeout(function () {
-    console.log('timeout ' + req.url);
-    timer = null;
-    client.abort();
-  }, 2000);
-  client.end(postData);
+  
 
 }).listen(1985);
 

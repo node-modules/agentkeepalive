@@ -62,47 +62,58 @@ cd benchmark
 sh start.sh
 ```
 
-100 maxSockets, 120 concurrent, 1000 requests per concurrent, 5ms delay
+Intel(R) Core(TM)2 Duo CPU     P8600  @ 2.40GHz
+
+node@v0.8.8
+
+50 maxSockets, 60 concurrent, 1000 requests per concurrent, 5ms delay
 
 Keep alive agent (30 seconds):
 
 ```js
-Transactions:         120000 hits
+Transactions:          60000 hits
 Availability:         100.00 %
-Elapsed time:          53.86 secs
-Data transferred:         8.58 MB
-Response time:            0.05 secs
-Transaction rate:      2228.00 trans/sec
-Throughput:           0.16 MB/sec
-Concurrency:          119.75
-Successful transactions:      120000
+Elapsed time:          31.11 secs
+Data transferred:        14.88 MB
+Response time:            0.03 secs
+Transaction rate:      1928.64 trans/sec
+Throughput:           0.48 MB/sec
+Concurrency:           59.81
+Successful transactions:       60000
 Failed transactions:             0
 Longest transaction:          0.23
-Shortest transaction:         0.02
+Shortest transaction:         0.01
 ```
 
 Normal agent:
 
 ```js
-Transactions:         120000 hits
+Transactions:          60000 hits
 Availability:         100.00 %
-Elapsed time:          99.68 secs
-Data transferred:         8.58 MB
-Response time:            0.10 secs
-Transaction rate:      1203.85 trans/sec
-Throughput:           0.09 MB/sec
-Concurrency:          119.29
-Successful transactions:      120000
+Elapsed time:          45.70 secs
+Data transferred:        14.88 MB
+Response time:            0.05 secs
+Transaction rate:      1312.91 trans/sec
+Throughput:           0.33 MB/sec
+Concurrency:           59.79
+Successful transactions:       60000
 Failed transactions:             0
-Longest transaction:          0.30
-Shortest transaction:         0.00
+Longest transaction:          0.15
+Shortest transaction:         0.01
 ```
 
 Socket created:
 
 ```
-[proxy.js] keepalive, 100 created, 0 requests, 0 sockets, 0 unusedSockets
-[proxy.js] normal   , 114412 created, 0 requests, 0 sockets
+[proxy.js:120000] keepalive, 50 created, 60000 requestFinished, 1200 req/socket, 
+0 requests, 0 sockets, 0 unusedSockets, 50 timeout
+{" <10ms":424," <15ms":14124," <20ms":20911," <30ms":20330," <40ms":2880," <50ms":798,
+" <100ms":479," <150ms":40," <200ms":11," >=200ms+":3}
+----------------------------------------------------------------
+[proxy.js:120000] normal   , 53705 created, 84228 requestFinished, 1.57 req/socket, 
+0 requests, 0 sockets
+{" <10ms":54," <15ms":862," <20ms":8830," <30ms":36242," <40ms":7970," <50ms":2359,
+" <100ms":3645," <150ms":38," <200ms":0," >=200ms+":0}
 ```
 
 # Authors

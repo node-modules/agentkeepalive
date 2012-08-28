@@ -5,6 +5,8 @@ sudo sysctl -w net.inet.tcp.msl=1000
 sudo sysctl -w kern.maxfiles=1000000 kern.maxfilesperproc=1000000
 sudo ulimit -n 100000
 
+sysctl -n machdep.cpu.brand_string
+
 SERVER=127.0.0.1
 NUM=1000
 CONCURRENT=60

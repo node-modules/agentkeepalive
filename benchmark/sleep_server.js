@@ -29,6 +29,7 @@ http.createServer(function (req, res) {
         size: size,
         data: data
       };
+      res.socket.setNoDelay(true);
       res.end(JSON.stringify(result));
     }, timeout);
   });
