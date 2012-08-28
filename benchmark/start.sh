@@ -6,8 +6,10 @@ sudo sysctl -w kern.maxfiles=1000000 kern.maxfilesperproc=1000000
 sudo ulimit -n 100000
 
 NUM=1000
-CONCURRENT=120
-maxSockets=100
+CONCURRENT=60
+maxSockets=50
+DELAY=5
+POST=/post
 
 node sleep_server.js &
 
@@ -17,15 +19,18 @@ node proxy.js $maxSockets &
 
 sleep 1
 
-echo "$maxSockets maxSockets, $CONCURRENT concurrent, $NUM requests per concurrent, 5ms delay"
+node -v
+echo "$maxSockets maxSockets, $CONCURRENT concurrent, $NUM requests per concurrent, ${DELAY}ms delay"
 
 echo "keep alive"
-siege -c $CONCURRENT -r $NUM -b http://localhost:1985/k/5
+echo "siege -c $CONCURRENT -r $NUM -b http://localhost:1985${POST}/k/$DELAY"
+siege -c $CONCURRENT -r $NUM -b http://localhost:1985${POST}/k/$DELAY
 
 sleep 5
 
 echo "normal"
-siege -c $CONCURRENT -r $NUM -b http://localhost:1985/5
+echo "siege -c $CONCURRENT -r $NUM -b http://localhost:1985${POST}/$DELAY"
+siege -c $CONCURRENT -r $NUM -b http://localhost:1985${POST}/$DELAY
 
 sleep 3
 

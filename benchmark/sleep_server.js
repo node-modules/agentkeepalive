@@ -14,16 +14,24 @@ var http = require('http');
 
 var count = 0;
 http.createServer(function (req, res) {
-  var timeout = parseInt(req.url.substring(1), 10) || 1; // default 1ms
-  setTimeout(function () {
-    var result = {
-      timeout: timeout,
-      headers: req.headers
-    };
-    // count++;
-    // console.log(count + ' ' + req.url);
-    res.end(JSON.stringify(result));
-  }, timeout);
+  var size = 0;
+  var data = '';
+  req.on('data', function (chunk) {
+    size += chunk.length;
+    data += chunk;
+  });
+  req.on('end', function () {
+    var timeout = parseInt(req.url.substring(1), 10) || 1; // default 1ms
+    setTimeout(function () {
+      var result = {
+        timeout: timeout,
+        headers: req.headers,
+        size: size,
+        data: data
+      };
+      res.end(JSON.stringify(result));
+    }, timeout);
+  });
 }).listen(1984);
 
 console.log('sleep server start, listen on 1984');
