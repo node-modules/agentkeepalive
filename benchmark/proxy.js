@@ -14,6 +14,7 @@ var http = require('http');
 var Agent = require('../');
 
 var maxSockets = parseInt(process.argv[2], 10) || 10;
+var SERVER = process.argv[3] || '127.0.0.1';
 
 var agentKeepalive = new Agent({
   maxSockets: maxSockets,
@@ -87,7 +88,7 @@ http.createServer(function (req, res) {
     rts = rtKeepalives;
   }
   var options = {
-    host: 'localhost',
+    host: SERVER,
     port: 1984,
     path: path,
     method: method,
