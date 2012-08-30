@@ -14,6 +14,7 @@ var Agent = require('../');
 var http = require('http');
 var urlparse = require('url').parse;
 var should = require('should');
+var pedding = require('./utils/pedding');
 
 describe('agent.js', function () {
 
@@ -304,6 +305,75 @@ describe('agent.js', function () {
     });
     agent.requests[name].should.length(1);
 
+  });
+
+  it('should set maxKeepAliveRequests = 0 when options.maxKeepAliveRequests can not parseInt', function () {
+    new Agent({
+      maxSockets: 1,
+      maxKeepAliveRequests: 'foo'
+    }).should.have.property('maxKeepAliveRequests', 0);
+    new Agent({
+      maxSockets: 1,
+      maxKeepAliveRequests: ''
+    }).should.have.property('maxKeepAliveRequests', 0);
+    new Agent({
+      maxSockets: 1,
+    }).should.have.property('maxKeepAliveRequests', 0);
+    new Agent({
+      maxSockets: 1,
+      maxKeepAliveRequests: '0'
+    }).should.have.property('maxKeepAliveRequests', 0);
+    new Agent({
+      maxSockets: 1,
+      maxKeepAliveRequests: 0
+    }).should.have.property('maxKeepAliveRequests', 0);
+  });
+
+  it('should maxKeepAliveRequests work with 1 and 10', function (done) {
+    var name = 'localhost:' + port;
+    function request(agent, checkCount, callback) {
+      http.get({
+        port: port,
+        path: '/foo',
+        agent: agent,
+      }, function (res) {
+        agent.sockets[name].should.length(1);
+        res.should.status(200);
+        res.on('end', function () {
+          process.nextTick(function () {
+            agent.createSocketCount.should.equal(checkCount);
+            callback();
+          });
+        });
+      });
+    }
+
+    done = pedding(2, done);
+    var agent1 = new Agent({
+      maxSockets: 1,
+      maxKeepAliveRequests: 1
+    });
+    request(agent1, 1, function () {
+      request(agent1, 2, done);
+    });
+
+    var agent10 = new Agent({
+      maxSockets: 1,
+      maxKeepAliveRequests: 10
+    });
+    var requestDone = pedding(agent10.maxKeepAliveRequests, function () {
+      request(agent10, 2, done);
+    });
+    request(agent10, 1, requestDone);
+    request(agent10, 1, requestDone);
+    request(agent10, 1, requestDone);
+    request(agent10, 1, requestDone);
+    request(agent10, 1, requestDone);
+    request(agent10, 1, requestDone);
+    request(agent10, 1, requestDone);
+    request(agent10, 1, requestDone);
+    request(agent10, 1, requestDone);
+    request(agent10, 1, requestDone);
   });
 
 });
