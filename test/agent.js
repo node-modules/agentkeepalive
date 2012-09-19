@@ -26,6 +26,9 @@ describe('agent.js', function () {
     if (req.url === '/error') {
       res.destroy();
       return;
+    } else if (req.url === '/hang') {
+      // Wait forever.
+      return;
     }
     var info = urlparse(req.url, true);
     if (info.query.timeout) {
@@ -374,6 +377,28 @@ describe('agent.js', function () {
     request(agent10, 1, requestDone);
     request(agent10, 1, requestDone);
     request(agent10, 1, requestDone);
+  });
+
+  it('should not fire timeout callback more than once', function (done) {
+    var counter = 0;
+    var req = http.get({
+      port: port,
+      path: '/',
+      agent: agentkeepalive
+    }, function (res) {
+      var req = http.get({
+        port: port,
+        path: '/hang',
+      }, function (res) {
+        throw new Error('should not call this');
+      });
+      req.setTimeout(500, function() {
+        done();
+      });
+    });
+    req.setTimeout(500, function() {
+      throw new Error('Timeout callback for previous request called.');
+    });
   });
 
 });
