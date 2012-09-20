@@ -128,10 +128,9 @@ Below is the output from `git-summary`.
 ```
 
 Ordered by date of first contribution.
-[Auto-generated](http://github.com/dtrejo/node-authors) on Thu Sep 20 2012 10:53:10 GMT+0800 (CST).
 
 - [fengmk2](https://github.com/fengmk2)
-- [Will White](https://github.com/will)
+- [Will White](https://github.com/willwhite)
 
 ## License 
 
