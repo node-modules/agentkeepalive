@@ -65,7 +65,7 @@ sh start.sh
 
 Intel(R) Core(TM)2 Duo CPU     P8600  @ 2.40GHz
 
-node@v0.8.8
+node@v0.8.9
 
 50 maxSockets, 60 concurrent, 1000 requests per concurrent, 5ms delay
 
@@ -74,15 +74,15 @@ Keep alive agent (30 seconds):
 ```js
 Transactions:          60000 hits
 Availability:         100.00 %
-Elapsed time:          31.11 secs
+Elapsed time:          29.70 secs
 Data transferred:        14.88 MB
 Response time:            0.03 secs
-Transaction rate:      1928.64 trans/sec
-Throughput:           0.48 MB/sec
-Concurrency:           59.81
+Transaction rate:      2020.20 trans/sec
+Throughput:           0.50 MB/sec
+Concurrency:           59.84
 Successful transactions:       60000
 Failed transactions:             0
-Longest transaction:          0.23
+Longest transaction:          0.15
 Shortest transaction:         0.01
 ```
 
@@ -91,44 +91,47 @@ Normal agent:
 ```js
 Transactions:          60000 hits
 Availability:         100.00 %
-Elapsed time:          45.70 secs
+Elapsed time:          46.53 secs
 Data transferred:        14.88 MB
 Response time:            0.05 secs
-Transaction rate:      1312.91 trans/sec
-Throughput:           0.33 MB/sec
-Concurrency:           59.79
+Transaction rate:      1289.49 trans/sec
+Throughput:           0.32 MB/sec
+Concurrency:           59.81
 Successful transactions:       60000
 Failed transactions:             0
-Longest transaction:          0.15
-Shortest transaction:         0.01
+Longest transaction:          0.45
+Shortest transaction:         0.00
 ```
 
 Socket created:
 
 ```
-[proxy.js:120000] keepalive, 50 created, 60000 requestFinished, 1200 req/socket, 
-0 requests, 0 sockets, 0 unusedSockets, 50 timeout
-{" <10ms":424," <15ms":14124," <20ms":20911," <30ms":20330," <40ms":2880," <50ms":798,
-" <100ms":479," <150ms":40," <200ms":11," >=200ms+":3}
+[proxy.js:120000] keepalive, 50 created, 60000 requestFinished, 1200 req/socket, 0 requests, 0 sockets, 0 unusedSockets, 50 timeout
+{" <10ms":662," <15ms":17825," <20ms":20552," <30ms":17646," <40ms":2315," <50ms":567," <100ms":377," <150ms":56," <200ms":0," >=200ms+":0}
 ----------------------------------------------------------------
-[proxy.js:120000] normal   , 53705 created, 84228 requestFinished, 1.57 req/socket, 
-0 requests, 0 sockets
-{" <10ms":54," <15ms":862," <20ms":8830," <30ms":36242," <40ms":7970," <50ms":2359,
-" <100ms":3645," <150ms":38," <200ms":0," >=200ms+":0}
+[proxy.js:120000] normal   , 53866 created, 84260 requestFinished, 1.56 req/socket, 0 requests, 0 sockets
+{" <10ms":75," <15ms":1112," <20ms":10947," <30ms":32130," <40ms":8228," <50ms":3002," <100ms":4274," <150ms":181," <200ms":18," >=200ms+":33}
 ```
 
-# Authors
+## Authors
 
 Below is the output from `git-summary`.
 
 ```
  project: agentkeepalive
- commits: 10
- active : 3 days
- files  : 13
+ commits: 21
+ active : 9 days
+ files  : 14
  authors: 
-    10  fengmk2                 100.0%
+    19  fengmk2                 90.5%
+     2  Will White              9.5%
 ```
+
+Ordered by date of first contribution.
+[Auto-generated](http://github.com/dtrejo/node-authors) on Thu Sep 20 2012 10:53:10 GMT+0800 (CST).
+
+- [fengmk2](https://github.com/fengmk2)
+- [Will White](https://github.com/will)
 
 ## License 
 
