@@ -14,7 +14,7 @@ var Agent = require('../');
 var http = require('http');
 var urlparse = require('url').parse;
 var should = require('should');
-var pedding = require('./utils/pedding');
+var pedding = require('pedding');
 
 describe('agent.js', function () {
 

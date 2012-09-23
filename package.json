@@ -1,6 +1,6 @@
 {
   "name": "agentkeepalive",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Missing keepalive http.Agent",
   "main": "index.js",
   "directories": {
@@ -24,6 +24,7 @@
   "devDependencies": {
     "should": "*",
     "mocha": "*",
+    "pedding": "*",
     "visionmedia-jscoverage": "*"
   },
   "author": "fengmk2 <fengmk2@gmail.com> (http://fengmk2.github.com)",
