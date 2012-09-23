@@ -3,7 +3,7 @@ agentkeepalive
 
 [![Build Status](https://secure.travis-ci.org/TBEDP/agentkeepalive.png?branch=master)](http://travis-ci.org/TBEDP/agentkeepalive)
 
-The nodejs's missing `keep alive` `http.Agent`.
+The nodejs's missing `keep alive` `http.Agent`. Support `http` and `https`.
 
 jscoverage: [**93%**](http://fengmk2.github.com/coverage/agentkeepalive.html)
 
@@ -52,6 +52,43 @@ setTimeout(function () {
   console.log(keepaliveAgent.unusedSockets);
 }, 2000);
 
+```
+
+### Support `https`
+
+```js
+var https = require('https');
+var HttpsAgent = require('agentkeepalive').HttpsAgent;
+
+var keepaliveAgent = new HttpsAgent();
+// https://www.google.com/search?q=nodejs&sugexp=chrome,mod=12&sourceid=chrome&ie=UTF-8
+var options = {
+  host: 'www.google.com',
+  port: 443,
+  path: '/search?q=nodejs&sugexp=chrome,mod=12&sourceid=chrome&ie=UTF-8',
+  method: 'GET',
+  agent: keepaliveAgent
+};
+
+var req = https.request(options, function (res) {
+  console.log('STATUS: ' + res.statusCode);
+  console.log('HEADERS: ' + JSON.stringify(res.headers));
+  res.setEncoding('utf8');
+  res.on('data', function (chunk) {
+    console.log('BODY: ' + chunk);
+  });
+});
+
+req.on('error', function (e) {
+  console.log('problem with request: ' + e.message);
+});
+req.end();
+
+setTimeout(function () {
+  console.log('keep alive sockets:');
+  console.log(keepaliveAgent.unusedSockets);
+  process.exit();
+}, 2000);
 ```
 
 ## [Benchmark](https://github.com/TBEDP/agentkeepalive/tree/master/benchmark)
@@ -119,12 +156,12 @@ Below is the output from `git-summary`.
 
 ```
  project: agentkeepalive
- commits: 21
- active : 9 days
- files  : 14
+ commits: 24
+ active : 10 days
+ files  : 20
  authors: 
-    19  fengmk2                 90.5%
-     2  Will White              9.5%
+    22  fengmk2                 91.7%
+     2  Will White              8.3%
 ```
 
 Ordered by date of first contribution.
