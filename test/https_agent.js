@@ -27,8 +27,8 @@ describe('https_agent.js', function () {
 
   before(function (done) {
     app = https.createServer({
-      key: fs.readFileSync(__dirname + '/agenttest-key.pem'),
-      cert: fs.readFileSync(__dirname + '/agenttest-cert.pem'),
+      key: fs.readFileSync(__dirname + '/fixtures/agenttest-key.pem'),
+      cert: fs.readFileSync(__dirname + '/fixtures/agenttest-cert.pem'),
     }, function (req, res) {
       if (req.url === '/error') {
         res.destroy();
