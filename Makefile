@@ -1,22 +1,18 @@
-TESTS =
-TIMEOUT = 5000
+TESTS = test/*.js
 REPORTER = spec
-MOCHAOPTS=
+TIMEOUT = 20000
+JSCOVERAGE = ./node_modules/jscover/bin/jscover
 
 test:
 	@NODE_ENV=test ./node_modules/mocha/bin/mocha \
-		--reporter $(REPORTER) --timeout $(TIMEOUT) $(MOCHAOPTS) $(TESTS)
+		--reporter $(REPORTER) \
+		--timeout $(TIMEOUT) \
+		$(TESTS)
 
-test-cov: lib-cov
-	@AGENT_KEEPALIVE_COV=1 $(MAKE) test
+test-cov:
+	@rm -rf ./lib-cov coverage.html
+	@$(JSCOVERAGE) lib lib-cov
+	@AGENT_KEEPALIVE_COV=1 $(MAKE) test REPORTER=dot
 	@AGENT_KEEPALIVE_COV=1 $(MAKE) test REPORTER=html-cov > coverage.html
 
-lib-cov:
-	@rm -rf lib-cov
-	@jscoverage lib lib-cov
-
-clean:
-	@rm -rf lib-cov
-	@rm -f coverage.html
-
-.PHONY: test test-cov lib-cov clean
+.PHONY: test test-cov

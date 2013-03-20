@@ -1,11 +1,10 @@
-agentkeepalive
-==============
+# agentkeepalive [![Build Status](https://secure.travis-ci.org/TBEDP/agentkeepalive.png?branch=master)](http://travis-ci.org/TBEDP/agentkeepalive)
 
-[![Build Status](https://secure.travis-ci.org/TBEDP/agentkeepalive.png?branch=master)](http://travis-ci.org/TBEDP/agentkeepalive)
+![logo](https://raw.github.com/TBEDP/agentkeepalive/master/logo.png)
 
 The nodejs's missing `keep alive` `http.Agent`. Support `http` and `https`.
 
-jscoverage: [**93%**](http://fengmk2.github.com/coverage/agentkeepalive.html)
+jscoverage: [**94%**](http://fengmk2.github.com/coverage/agentkeepalive.html)
 
 ## Install
 
@@ -173,7 +172,7 @@ Ordered by date of first contribution.
 
 (The MIT License)
 
-Copyright (c) 2012 fengmk2 <fengmk2@gmail.com>;
+Copyright (c) 2012 - 2013 fengmk2 <fengmk2@gmail.com>;
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
