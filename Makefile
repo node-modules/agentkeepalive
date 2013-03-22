@@ -3,8 +3,9 @@ REPORTER = spec
 TIMEOUT = 20000
 JSCOVERAGE = ./node_modules/jscover/bin/jscover
 
+# https://github.com/joyent/node/issues/4984 : NODE_TLS_REJECT_UNAUTHORIZED
 test:
-	@NODE_ENV=test ./node_modules/mocha/bin/mocha \
+	@NODE_ENV=test NODE_TLS_REJECT_UNAUTHORIZED=0 ./node_modules/mocha/bin/mocha \
 		--reporter $(REPORTER) \
 		--timeout $(TIMEOUT) \
 		$(TESTS)

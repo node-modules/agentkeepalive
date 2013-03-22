@@ -155,6 +155,7 @@ describe('agent.js', function () {
       agent: agentkeepalive
     }, function (res) {
       res.should.status(200);
+      res.resume();
       res.on('end', function () {
         agentkeepalive.sockets.should.have.key(name);
         agentkeepalive.unusedSockets.should.have.key(name);
@@ -163,16 +164,15 @@ describe('agent.js', function () {
           agentkeepalive.sockets.should.have.key(name);
           agentkeepalive.unusedSockets.should.have.key(name);
           agentkeepalive.unusedSockets[name].should.length(1);
-
           agentkeepalive.unusedSockets[name][0].destroy();
-          process.nextTick(function () {
+          setTimeout(function () {
             agentkeepalive.sockets.should.not.have.key(name);
             agentkeepalive.unusedSockets.should.not.have.key(name);
             done();
-          });
+          }, 10);
         });
       });
-    });
+    }).on('error', done);
   });
 
   it('should use new socket when hit the max keepalive time: 1000ms', function (done) {
@@ -191,7 +191,6 @@ describe('agent.js', function () {
       });
       res.on('end', function () {
         setTimeout(function () {
-
           http.get({
             port: port,
             path: '/',
@@ -226,6 +225,7 @@ describe('agent.js', function () {
       agent: agent
     }, function (res) {
       res.should.status(200);
+      res.resume();
       res.on('end', function () {
         agent.sockets.should.have.key(name);
         agent.unusedSockets.should.not.have.key(name);
@@ -342,6 +342,7 @@ describe('agent.js', function () {
       }, function (res) {
         agent.sockets[name].should.length(1);
         res.should.status(200);
+        res.resume();
         res.on('end', function () {
           process.nextTick(function () {
             agent.createSocketCount.should.equal(checkCount);
@@ -379,7 +380,7 @@ describe('agent.js', function () {
     request(agent10, 1, requestDone);
   });
 
-  it('should not fire timeout callback more than once', function (done) {
+  it('should fire timeout callback', function (done) {
     var counter = 0;
     var req = http.get({
       port: port,
@@ -392,13 +393,14 @@ describe('agent.js', function () {
       }, function (res) {
         throw new Error('should not call this');
       });
-      req.setTimeout(500, function() {
-        done();
+      req.setTimeout(400, function() {
+        setTimeout(done, 300);
       });
     });
-    req.setTimeout(500, function() {
-      throw new Error('Timeout callback for previous request called.');
-    });
+    // timeout fire many times: change in node@0.10.0+
+    // req.setTimeout(500, function() {
+    //   throw new Error('Timeout callback for previous request called.');
+    // });
   });
 
 });
