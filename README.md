@@ -1,10 +1,8 @@
-# agentkeepalive [![Build Status](https://secure.travis-ci.org/TBEDP/agentkeepalive.png?branch=master)](http://travis-ci.org/TBEDP/agentkeepalive)
+# agentkeepalive [![Build Status](https://secure.travis-ci.org/TBEDP/agentkeepalive.png?branch=master)](http://travis-ci.org/TBEDP/agentkeepalive) [![Coverage Status](https://coveralls.io/repos/TBEDP/agentkeepalive/badge.png)](https://coveralls.io/r/TBEDP/agentkeepalive)
 
 ![logo](https://raw.github.com/TBEDP/agentkeepalive/master/logo.png)
 
 The nodejs's missing `keep alive` `http.Agent`. Support `http` and `https`.
-
-jscoverage: [**94%**](http://fengmk2.github.com/coverage/agentkeepalive.html)
 
 ## Install
 

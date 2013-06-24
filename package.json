@@ -7,7 +7,9 @@
     "test": "test"
   },
   "scripts": {
-    "test": "make test"
+    "test": "make test-all",
+    "blanket": { "pattern": "agentkeepalive/lib" },
+    "travis-cov": { "threshold": 92 }
   },
   "repository": {
     "type": "git",
@@ -25,7 +27,10 @@
     "should": "*",
     "mocha": "*",
     "pedding": "*",
-    "jscover": "*"
+    "blanket": "*",
+    "travis-cov": "*",
+    "coveralls": "*",
+    "mocha-lcov-reporter": "*"
   },
   "author": "fengmk2 <fengmk2@gmail.com> (http://fengmk2.github.com)",
   "license": "MIT"

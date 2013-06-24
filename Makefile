@@ -1,19 +1,29 @@
 TESTS = test/*.js
 REPORTER = spec
 TIMEOUT = 20000
-JSCOVERAGE = ./node_modules/jscover/bin/jscover
+MOCHA_OPTS =
 
-# https://github.com/joyent/node/issues/4984 : NODE_TLS_REJECT_UNAUTHORIZED
-test:
-	@NODE_ENV=test NODE_TLS_REJECT_UNAUTHORIZED=0 ./node_modules/mocha/bin/mocha \
+install:
+	@npm install
+
+test: install
+	@NODE_ENV=test ./node_modules/mocha/bin/mocha \
 		--reporter $(REPORTER) \
 		--timeout $(TIMEOUT) \
+		$(MOCHA_OPTS) \
 		$(TESTS)
 
 test-cov:
-	@rm -rf ./lib-cov coverage.html
-	@$(JSCOVERAGE) lib lib-cov
-	@AGENT_KEEPALIVE_COV=1 $(MAKE) test REPORTER=dot
-	@AGENT_KEEPALIVE_COV=1 $(MAKE) test REPORTER=html-cov > coverage.html
+	@rm -f coverage.html
+	@$(MAKE) test MOCHA_OPTS='--require blanket' REPORTER=html-cov > coverage.html
+	@$(MAKE) test MOCHA_OPTS='--require blanket' REPORTER=travis-cov
+	@ls -lh coverage.html
 
-.PHONY: test test-cov
+test-coveralls:
+	@$(MAKE) test
+	@echo TRAVIS_JOB_ID $(TRAVIS_JOB_ID)
+	@$(MAKE) test MOCHA_OPTS='--require blanket' REPORTER=mocha-lcov-reporter | ./node_modules/coveralls/bin/coveralls.js
+
+test-all: test test-cov
+
+.PHONY: test test-cov test-all test-coveralls
