@@ -1,20 +1,19 @@
-var https = require('https');
-var HttpsAgent = require('../').HttpsAgent;
+var http = require('http');
+var Agent = require('../');
 
-var keepaliveAgent = new HttpsAgent({
+var keepaliveAgent = new Agent({
   keepAlive: true
 });
 // https://www.google.com/search?q=nodejs&sugexp=chrome,mod=12&sourceid=chrome&ie=UTF-8
 var options = {
-  host: 'github.com',
-  port: 443,
+  host: 'gitcafe.com',
   path: '/',
   method: 'GET',
   agent: keepaliveAgent
 };
 
 var start = Date.now();
-var req = https.request(options, function (res) {
+var req = http.get(options, function (res) {
   console.log('STATUS1: %d, %d ms', res.statusCode, Date.now() - start);
   console.log('HEADERS1: %j', res.headers);
   res.setEncoding('utf8');
@@ -24,7 +23,7 @@ var req = https.request(options, function (res) {
   res.on('end', function () {
     process.nextTick(function () {
       start = Date.now();
-      https.get(options, function (res) {
+      http.get(options, function (res) {
         console.log('STATUS2: %d, %d ms', res.statusCode, Date.now() - start);
         console.log('HEADERS2: %j', res.headers);
         res.setEncoding('utf8');
@@ -35,13 +34,11 @@ var req = https.request(options, function (res) {
     });
   });
 });
-
 req.on('error', function (e) {
   console.log('problem with request: ' + e.message);
 });
-req.end();
 
 setTimeout(function () {
   console.log('keep alive sockets:', keepaliveAgent);
   process.exit();
-}, 5000);
+}, 3000);

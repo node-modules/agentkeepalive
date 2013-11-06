@@ -1,6 +1,6 @@
 {
   "name": "agentkeepalive",
-  "version": "0.1.5",
+  "version": "0.2.0",
   "description": "Missing keepalive http.Agent",
   "main": "index.js",
   "directories": {
@@ -32,6 +32,7 @@
     "coveralls": "*",
     "mocha-lcov-reporter": "*"
   },
+  "engines": { "node": ">= 0.10.0" },
   "author": "fengmk2 <fengmk2@gmail.com> (http://fengmk2.github.com)",
   "license": "MIT"
 }
