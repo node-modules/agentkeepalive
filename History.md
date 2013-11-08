@@ -1,4 +1,9 @@
 
+0.2.1 / 2013-11-08 
+==================
+
+  * fix socket does not timeout bug, it will hang on life, must use 0.2.x on node 0.11
+
 0.2.0 / 2013-11-06 
 ==================
 
