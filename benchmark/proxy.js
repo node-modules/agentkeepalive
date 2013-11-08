@@ -17,7 +17,9 @@ var maxSockets = parseInt(process.argv[2], 10) || 10;
 var SERVER = process.argv[3] || '127.0.0.1';
 
 var agentKeepalive = new Agent({
+  keepAlive: true,
   maxSockets: maxSockets,
+  maxFreeSockets: maxSockets,
   maxKeepAliveTime: 30000,
 });
 var agentHttp = new http.Agent({
@@ -63,14 +65,14 @@ var rtNormals = {
 setInterval(function () {
   var name = SERVER + ':1984';
   console.log('----------------------------------------------------------------');
-  console.log('[proxy.js:%d] keepalive, %d created, %d requestFinished, %d req/socket, %s requests, %s sockets, %s unusedSockets, %d timeout\n%j',
+  console.log('[proxy.js:%d] keepalive, %d created, %d requestFinished, %d req/socket, %s requests, %s sockets, %s freeSockets, %d timeout\n%j',
     count,
     agentKeepalive.createSocketCount,
     agentKeepalive.requestFinishedCount,
     (agentKeepalive.requestFinishedCount / agentKeepalive.createSocketCount || 0).toFixed(2),
     agentKeepalive.requests[name] && agentKeepalive.requests[name].length || 0,
     agentKeepalive.sockets[name] && agentKeepalive.sockets[name].length || 0,
-    agentKeepalive.unusedSockets[name] && agentKeepalive.unusedSockets[name].length || 0,
+    agentKeepalive.freeSockets[name] && agentKeepalive.freeSockets[name].length || 0,
     agentKeepalive.timeoutSocketCount,
     rtKeepalives
   );
@@ -109,6 +111,7 @@ http.createServer(function (req, res) {
     method: method,
     agent: agent
   };
+  req.on('data', function () {});
   req.on('end', function () {
     var timer = null;
     var start = Date.now();

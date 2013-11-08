@@ -18,8 +18,9 @@ var Agent = require('agentkeepalive');
 
 var keepaliveAgent = new Agent({
   maxSockets: 10,
-  maxKeepAliveRequests: 0, // max requests per keepalive socket, default is 0, no limit.
-  maxKeepAliveTime: 30000 // keepalive for 30 seconds
+  maxFreeSockets: 10,
+  keepAlive: true,
+  keepAliveMsecs: 30000 // keepalive for 30 seconds
 });
 
 var options = {

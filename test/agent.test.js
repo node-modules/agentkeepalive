@@ -33,6 +33,10 @@ describe('agent.test.js', function () {
     } else if (req.url === '/hang') {
       // Wait forever.
       return;
+    } else if (req.url === '/remote_close') {
+      setTimeout(function () {
+        req.connection.end();
+      }, 500);
     }
     var info = urlparse(req.url, true);
     if (info.query.timeout) {
@@ -183,7 +187,7 @@ describe('agent.test.js', function () {
     }).on('error', done);
   });
 
-  it.skip('should use new socket when hit the max keepalive time: 1000ms', function (done) {
+  it('should use new socket when hit the max keepalive time: 1000ms', function (done) {
     // socket._handle will not timeout ...
     var name = 'localhost:' + port + '::';
     agentkeepalive.sockets.should.have.not.key(name);
@@ -255,7 +259,6 @@ describe('agent.test.js', function () {
   it('should not keepalive when client.abort()', function (done) {
     var name = 'localhost:' + port + '::';
     agentkeepalive.sockets.should.have.not.key(name);
-    agentkeepalive.freeSockets.should.have.not.key(name);
     var client = agentkeepalive.get({
       port: port,
       path: '/',
@@ -327,6 +330,36 @@ describe('agent.test.js', function () {
       });
     });
     agent.requests[name].should.length(1);
+  });
+
+  it('should request /remote_close 200 status, after 500ms free socket close', function (done) {
+    var name = 'localhost:' + port + '::';
+    agentkeepalive.sockets.should.not.have.key(name);
+    agentkeepalive.get({
+      port: port,
+      path: '/remote_close'
+    }, function (res) {
+      res.should.status(200);
+      res.on('data', function (data) {
+      });
+      res.on('end', function () {
+        agentkeepalive.sockets.should.have.key(name);
+        agentkeepalive.freeSockets.should.not.have.key(name);
+        setTimeout(function () {
+          agentkeepalive.sockets.should.not.have.key(name);
+          agentkeepalive.freeSockets.should.have.key(name);
+          agentkeepalive.freeSockets[name].should.length(1);
+          setTimeout(function () {
+            agentkeepalive.sockets.should.not.have.key(name);
+            agentkeepalive.freeSockets.should.not.have.key(name);
+            done();
+          }, 510);
+        }, 10);
+      });
+    });
+    agentkeepalive.sockets.should.have.key(name);
+    agentkeepalive.sockets[name].should.length(1);
+    agentkeepalive.freeSockets.should.not.have.key(name);
   });
 
   // it('should maxKeepAliveRequests work with 1 and 10', function (done) {

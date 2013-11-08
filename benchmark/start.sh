@@ -8,7 +8,7 @@ sudo ulimit -n 100000
 sysctl -n machdep.cpu.brand_string
 
 SERVER=127.0.0.1
-NUM=1000
+NUM=500
 CONCURRENT=60
 maxSockets=50
 DELAY=5

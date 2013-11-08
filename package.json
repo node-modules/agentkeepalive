@@ -32,7 +32,7 @@
     "coveralls": "*",
     "mocha-lcov-reporter": "*"
   },
-  "engines": { "node": ">= 0.10.0" },
+  "engines": { "node": ">= 0.11.8" },
   "author": "fengmk2 <fengmk2@gmail.com> (http://fengmk2.github.com)",
   "license": "MIT"
 }
