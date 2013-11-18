@@ -1,4 +1,8 @@
-# agentkeepalive [![Build Status](https://secure.travis-ci.org/TBEDP/agentkeepalive.png?branch=master)](http://travis-ci.org/TBEDP/agentkeepalive) [![Coverage Status](https://coveralls.io/repos/TBEDP/agentkeepalive/badge.png)](https://coveralls.io/r/TBEDP/agentkeepalive)
+# agentkeepalive
+
+[![Build Status](https://secure.travis-ci.org/TBEDP/agentkeepalive.png?branch=master)](http://travis-ci.org/TBEDP/agentkeepalive) [![Coverage Status](https://coveralls.io/repos/TBEDP/agentkeepalive/badge.png)](https://coveralls.io/r/TBEDP/agentkeepalive)
+
+[![NPM](https://nodei.co/npm/agentkeepalive.png?downloads=true)](https://nodei.co/npm/agentkeepalive/)
 
 ![logo](https://raw.github.com/TBEDP/agentkeepalive/master/logo.png)
 
