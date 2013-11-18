@@ -1,6 +1,6 @@
 /*!
  * agentkeepalive - test/agent.test.js
- * 
+ *
  * Copyright(c) 2012 - 2013 fengmk2 <fengmk2@gmail.com>
  * MIT Licensed
  */
@@ -11,11 +11,11 @@
  * Module dependencies.
  */
 
-var Agent = require('../');
 var http = require('http');
 var urlparse = require('url').parse;
 var should = require('should');
 var pedding = require('pedding');
+var Agent = require('../');
 
 describe('agent.test.js', function () {
 
