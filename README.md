@@ -153,13 +153,16 @@ Socket created:
 Below is the output from `git-summary`.
 
 ```
- project: agentkeepalive
- commits: 24
- active : 10 days
- files  : 20
- authors: 
-    22  fengmk2                 91.7%
-     2  Will White              8.3%
+$ git summary
+
+ project  : agentkeepalive
+ repo age : 1 year, 3 months
+ active   : 17 days
+ commits  : 36
+ files    : 26
+ authors  :
+    34  fengmk2                 94.4%
+     2  Will White              5.6%
 ```
 
 Ordered by date of first contribution.
@@ -167,7 +170,7 @@ Ordered by date of first contribution.
 - [fengmk2](https://github.com/fengmk2)
 - [Will White](https://github.com/willwhite)
 
-## License 
+## License
 
 (The MIT License)
 
