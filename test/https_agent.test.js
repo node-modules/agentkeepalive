@@ -1,6 +1,6 @@
 /*!
  * agentkeepalive - test/https_agent.test.js
- * 
+ *
  * Copyright(c) 2012 - 2013 fengmk2 <fengmk2@gmail.com>
  * MIT Licensed
  */
@@ -18,13 +18,12 @@ var should = require('should');
 var pedding = require('pedding');
 var fs = require('fs');
 
-describe.skip('https_agent.test.js', function () {
+describe('https_agent.test.js', function () {
 
   var app = null;
   var port = null;
   var agentkeepalive = new HttpsAgent({
-    keepAlive: true,
-    keepAliveMsecs: 1000,
+    keepAliveTimeout: 1000,
     maxSockets: 5,
     maxFreeSockets: 5,
   });
@@ -61,14 +60,53 @@ describe.skip('https_agent.test.js', function () {
     });
   });
 
+  after(function (done) {
+    setTimeout(done, 1500);
+  });
+
   it('should GET / success with 200 status', function (done) {
-    agentkeepalive.get({
+    https.get({
+      agent: agentkeepalive,
       port: port,
       path: '/',
+      rejectUnauthorized: false,
     }, function (res) {
       res.should.status(200);
-      done();
+      res.resume();
+      res.on('end', function () {
+        process.nextTick(function () {
+          Object.keys(agentkeepalive.sockets).should.length(0);
+          Object.keys(agentkeepalive.freeSockets).should.length(1);
+          done();
+        });
+      });
     });
+    Object.keys(agentkeepalive.sockets).should.length(1);
+  });
+
+  it('should free socket timeout', function (done) {
+    https.get({
+      agent: agentkeepalive,
+      port: port,
+      path: '/',
+      rejectUnauthorized: false,
+    }, function (res) {
+      res.should.status(200);
+      res.resume();
+      res.on('end', function () {
+        process.nextTick(function () {
+          Object.keys(agentkeepalive.sockets).should.length(0);
+          Object.keys(agentkeepalive.freeSockets).should.length(1);
+          // wait for timeout
+          setTimeout(function () {
+            Object.keys(agentkeepalive.sockets).should.length(0);
+            Object.keys(agentkeepalive.freeSockets).should.length(0);
+            done();
+          }, 1500);
+        });
+      });
+    });
+    Object.keys(agentkeepalive.sockets).should.length(1);
   });
 
   it('should GET / and /foo use the same socket', function (done) {
@@ -76,9 +114,10 @@ describe.skip('https_agent.test.js', function () {
       port: port,
       path: '/',
       agent: agentkeepalive,
+      rejectUnauthorized: false,
     };
     var remotePort = null;
-    agentkeepalive.get(options, function (res) {
+    https.get(options, function (res) {
       res.should.status(200);
       var data = null;
       res.on('data', function (chunk) {
@@ -88,7 +127,7 @@ describe.skip('https_agent.test.js', function () {
         data.should.have.property('remotePort');
         data.should.have.property('url', '/');
         remotePort = data.remotePort;
-        
+
         // request again
         options.path = '/foo';
         process.nextTick(function () {
@@ -101,13 +140,15 @@ describe.skip('https_agent.test.js', function () {
             res.on('end', function () {
               data.should.have.property('remotePort', remotePort);
               data.should.have.property('url', '/foo');
-              done();
+              process.nextTick(function () {
+                Object.keys(agentkeepalive.sockets).should.length(0);
+                Object.keys(agentkeepalive.freeSockets).should.length(1);
+                done();
+              });
             });
           });
         });
-        
       });
     });
   });
-
 });

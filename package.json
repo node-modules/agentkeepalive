@@ -7,32 +7,35 @@
     "test": "test"
   },
   "scripts": {
-    "test": "make test-all",
+    "test": "make test-all"
+  },
+  "config": {
     "blanket": { "pattern": "agentkeepalive/lib" },
     "travis-cov": { "threshold": 92 }
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/TBEDP/agentkeepalive.git"
+    "url": "git://github.com/node-modules/agentkeepalive.git"
   },
   "bugs": {
-    "url": "https://github.com/TBEDP/agentkeepalive/issues"
+    "url": "https://github.com/node-modules/agentkeepalive/issues"
   },
   "keywords": [
     "http",
     "agent",
     "keepalive"
   ],
-  "devDependencies": {
-    "should": "*",
-    "mocha": "*",
-    "pedding": "*",
-    "blanket": "*",
-    "travis-cov": "*",
-    "coveralls": "*",
-    "mocha-lcov-reporter": "*"
+  "dependencies": {
   },
-  "engines": { "node": ">= 0.8.0" },
+  "devDependencies": {
+    "istanbul": "*",
+    "autod": "*",
+    "mocha": "*",
+    "pedding": "~1.0.0",
+    "should": "~4.0.4",
+    "should-http": "*"
+  },
+  "engines": { "node": ">= 0.11.12" },
   "author": "fengmk2 <fengmk2@gmail.com> (http://fengmk2.github.com)",
   "license": "MIT"
 }

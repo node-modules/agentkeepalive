@@ -14,17 +14,18 @@
 var http = require('http');
 var urlparse = require('url').parse;
 var should = require('should');
+require('should-http');
 var pedding = require('pedding');
 var Agent = require('../');
 
 describe('agent.test.js', function () {
 
   var agentkeepalive = new Agent({
-    keepAlive: true,
-    keepAliveMsecs: 1000,
+    keepAliveTimeout: 1000,
     maxSockets: 5,
     maxFreeSockets: 5,
   });
+
   var port = null;
   var app = http.createServer(function (req, res) {
     if (req.url === '/error') {
@@ -60,6 +61,10 @@ describe('agent.test.js', function () {
     });
   });
 
+  after(function (done) {
+    setTimeout(done, 1500);
+  });
+
   it('should default options set right', function () {
     var agent = agentkeepalive;
     agent.should.have.property('keepAlive', true);
@@ -73,7 +78,9 @@ describe('agent.test.js', function () {
   it('should request / 200 status', function (done) {
     var name = 'localhost:' + port + '::';
     agentkeepalive.sockets.should.not.have.key(name);
-    agentkeepalive.get({
+    agentkeepalive.freeSockets.should.not.have.key(name);
+    http.get({
+      agent: agentkeepalive,
       port: port,
       path: '/'
     }, function (res) {
@@ -91,7 +98,7 @@ describe('agent.test.js', function () {
           agentkeepalive.freeSockets.should.have.key(name);
           agentkeepalive.freeSockets[name].should.length(1);
           done();
-        }, 10);
+        }, 20);
       });
     });
     agentkeepalive.sockets.should.have.key(name);
@@ -104,7 +111,8 @@ describe('agent.test.js', function () {
     agentkeepalive.sockets.should.not.have.key(name);
     agentkeepalive.freeSockets.should.have.key(name);
     agentkeepalive.freeSockets[name].should.length(1);
-    agentkeepalive.get({
+    http.get({
+      agent: agentkeepalive,
       port: port,
       path: '/foo',
     }, function (res) {
@@ -134,7 +142,8 @@ describe('agent.test.js', function () {
     agentkeepalive.sockets.should.have.not.key(name);
     agentkeepalive.freeSockets.should.have.key(name);
     agentkeepalive.freeSockets[name].should.length(1);
-    var req = agentkeepalive.get({
+    var req = http.get({
+      agent: agentkeepalive,
       port: port,
       path: '/error',
     }, function (res) {
@@ -160,7 +169,8 @@ describe('agent.test.js', function () {
     var name = 'localhost:' + port + '::';
     agentkeepalive.sockets.should.have.not.key(name);
     agentkeepalive.freeSockets.should.have.not.key(name);
-    agentkeepalive.get({
+    http.get({
+      agent: agentkeepalive,
       port: port,
       path: '/',
     }, function (res) {
@@ -175,9 +185,9 @@ describe('agent.test.js', function () {
           agentkeepalive.freeSockets.should.have.key(name);
           agentkeepalive.freeSockets[name].should.length(1);
           agentkeepalive.freeSockets[name][0].destroy();
-          console.log('wait 10ms')
+          console.log('wait 10ms');
           setTimeout(function () {
-            console.log('10ms')
+            console.log('10ms');
             agentkeepalive.sockets.should.not.have.key(name);
             agentkeepalive.freeSockets.should.not.have.key(name);
             done();
@@ -188,11 +198,11 @@ describe('agent.test.js', function () {
   });
 
   it('should use new socket when hit the max keepalive time: 1000ms', function (done) {
-    // socket._handle will not timeout ...
     var name = 'localhost:' + port + '::';
     agentkeepalive.sockets.should.have.not.key(name);
     agentkeepalive.freeSockets.should.have.not.key(name);
-    agentkeepalive.get({
+    http.get({
+      agent: agentkeepalive,
       port: port,
       path: '/',
     }, function (res) {
@@ -209,8 +219,9 @@ describe('agent.test.js', function () {
         agentkeepalive.freeSockets.should.have.not.key(name);
         setTimeout(function () {
           agentkeepalive.sockets.should.have.not.key(name);
-          // agentkeepalive.freeSockets.should.have.not.key(name);
-          agentkeepalive.get({
+          agentkeepalive.freeSockets.should.have.not.key(name);
+          http.get({
+            agent: agentkeepalive,
             port: port,
             path: '/',
           }, function (res) {
@@ -235,7 +246,8 @@ describe('agent.test.js', function () {
       keepAlive: false
     });
     agent.keepAlive.should.equal(false);
-    agent.get({
+    http.get({
+      agent: agent,
       port: port,
       path: '/',
     }, function (res) {
@@ -259,13 +271,14 @@ describe('agent.test.js', function () {
   it('should not keepalive when client.abort()', function (done) {
     var name = 'localhost:' + port + '::';
     agentkeepalive.sockets.should.have.not.key(name);
-    var client = agentkeepalive.get({
+    var req = http.get({
+      agent: agentkeepalive,
       port: port,
       path: '/',
     }, function (res) {
       throw new Error('should not call this.');
     });
-    client.on('error', function (err) {
+    req.on('error', function (err) {
       should.exist(err);
       err.message.should.equal('socket hang up');
       agentkeepalive.sockets.should.not.have.key(name);
@@ -273,7 +286,7 @@ describe('agent.test.js', function () {
       done();
     });
     process.nextTick(function () {
-      client.abort();
+      req.abort();
     });
   });
 
@@ -282,10 +295,10 @@ describe('agent.test.js', function () {
     var agent = new Agent({
       maxSockets: 1,
       maxFreeSockets: 1,
-      keepAlive: true,
     });
     var lastPort = null;
-    agent.get({
+    http.get({
+      agent: agent,
       port: port,
       path: '/',
     }, function (res) {
@@ -298,6 +311,7 @@ describe('agent.test.js', function () {
         should.exist(lastPort);
       });
       res.on('end', function () {
+        // should be reuse
         process.nextTick(function () {
           agent.sockets.should.have.key(name);
           agent.sockets[name].should.length(1);
@@ -306,7 +320,8 @@ describe('agent.test.js', function () {
       });
     });
 
-    agent.get({
+    http.get({
+      agent: agent,
       port: port,
       path: '/',
     }, function (res) {
@@ -319,12 +334,10 @@ describe('agent.test.js', function () {
       });
       res.on('end', function () {
         setTimeout(function () {
-          // this is a bug, need to keepalive 1 socket
+          // should keepalive 1 socket
           agent.sockets.should.have.not.key(name);
-          agent.freeSockets.should.have.not.key(name);
-          // agent.sockets.should.have.key(name);
-          // agent.freeSockets.should.have.key(name);
-          // agent.freeSockets[name].should.length(1);
+          agent.freeSockets.should.have.key(name);
+          agent.freeSockets[name].should.length(1);
           done();
         }, 10);
       });
@@ -332,85 +345,138 @@ describe('agent.test.js', function () {
     agent.requests[name].should.length(1);
   });
 
+  it('should keep 1 free socket', function (done) {
+    var name = 'localhost:' + port + '::';
+    var agent = new Agent({
+      maxSockets: 2,
+      maxFreeSockets: 1,
+    });
+    var lastPort = null;
+    http.get({
+      agent: agent,
+      port: port,
+      path: '/',
+    }, function (res) {
+      agent.sockets.should.have.key(name);
+      res.should.status(200);
+      res.on('data', function (data) {
+        data = JSON.parse(data);
+        lastPort = data.socket.port;
+        should.exist(lastPort);
+      });
+      res.on('end', function () {
+        // should be reuse
+        setTimeout(function () {
+          agent.freeSockets.should.have.key(name);
+          agent.freeSockets[name].should.length(1);
+        }, 100);
+      });
+    });
+
+    http.get({
+      agent: agent,
+      port: port,
+      path: '/',
+    }, function (res) {
+      agent.sockets.should.have.key(name);
+      res.should.status(200);
+      res.on('data', function (data) {
+        data = JSON.parse(data);
+        data.socket.port.should.not.equal(lastPort);
+      });
+      res.on('end', function () {
+        setTimeout(function () {
+          // should keepalive 1 socket
+          agent.sockets.should.have.not.key(name);
+          agent.freeSockets.should.have.key(name);
+          agent.freeSockets[name].should.length(1);
+          done();
+        }, 100);
+      });
+    });
+    agent.requests.should.not.have.key(name);
+  });
+
+  it('should keep 2 free socket', function (done) {
+    done = pedding(2, done);
+    var name = 'localhost:' + port + '::';
+    var agent = new Agent({
+      maxSockets: 2,
+      maxFreeSockets: 2,
+    });
+    var lastPort = null;
+    http.get({
+      agent: agent,
+      port: port,
+      path: '/',
+    }, function (res) {
+      agent.sockets.should.have.key(name);
+      res.should.status(200);
+      res.on('data', function (data) {
+        data = JSON.parse(data);
+        lastPort = data.socket.port;
+        should.exist(lastPort);
+      });
+      res.on('end', function () {
+        // should be reuse
+        process.nextTick(function () {
+          agent.freeSockets.should.have.key(name);
+          done();
+        });
+      });
+    });
+
+    http.get({
+      agent: agent,
+      port: port,
+      path: '/',
+    }, function (res) {
+      agent.sockets.should.have.key(name);
+      res.should.status(200);
+      res.on('data', function (data) {
+        data = JSON.parse(data);
+        data.socket.port.should.not.equal(lastPort);
+      });
+      res.on('end', function () {
+        setTimeout(function () {
+          // should keepalive 1 socket
+          agent.sockets.should.have.not.key(name);
+          agent.freeSockets.should.have.key(name);
+          agent.freeSockets[name].should.length(2);
+          done();
+        }, 10);
+      });
+    });
+    agent.requests.should.not.have.key(name);
+  });
+
   it('should request /remote_close 200 status, after 500ms free socket close', function (done) {
     var name = 'localhost:' + port + '::';
     agentkeepalive.sockets.should.not.have.key(name);
-    agentkeepalive.get({
+    http.get({
+      agent: agentkeepalive,
       port: port,
       path: '/remote_close'
     }, function (res) {
       res.should.status(200);
-      res.on('data', function (data) {
-      });
+      res.resume();
       res.on('end', function () {
         agentkeepalive.sockets.should.have.key(name);
         agentkeepalive.freeSockets.should.not.have.key(name);
         setTimeout(function () {
           agentkeepalive.sockets.should.not.have.key(name);
-          agentkeepalive.freeSockets.should.have.key(name);
-          agentkeepalive.freeSockets[name].should.length(1);
-          setTimeout(function () {
-            agentkeepalive.sockets.should.not.have.key(name);
-            agentkeepalive.freeSockets.should.not.have.key(name);
-            done();
-          }, 510);
-        }, 10);
+          agentkeepalive.freeSockets.should.not.have.key(name);
+          done();
+        }, 510);
       });
     });
     agentkeepalive.sockets.should.have.key(name);
     agentkeepalive.sockets[name].should.length(1);
-    agentkeepalive.freeSockets.should.not.have.key(name);
   });
 
-  // it('should maxKeepAliveRequests work with 1 and 10', function (done) {
-  //   var name = 'localhost:' + port + '::';
-  //   function request(agent, checkCount, callback) {
-  //     agent.get({
-  //       port: port,
-  //       path: '/foo',
-  //     }, function (res) {
-  //       agent.sockets[name].should.length(1);
-  //       res.should.status(200);
-  //       res.resume();
-  //       res.on('end', function () {
-  //         process.nextTick(function () {
-  //           agent.createSocketCount.should.equal(checkCount);
-  //           callback();
-  //         });
-  //       });
-  //     });
-  //   }
-
-  //   done = pedding(2, done);
-  //   var agent1 = new Agent({
-  //     maxSockets: 1,
-  //     maxKeepAliveRequests: 1
-  //   });
-  //   request(agent1, 1, function () {
-  //     request(agent1, 2, done);
-  //   });
-
-  //   var agent10 = new Agent({
-  //     maxSockets: 1,
-  //     maxKeepAliveRequests: 10
-  //   });
-  //   var requestDone = pedding(agent10.maxKeepAliveRequests, function () {
-  //     request(agent10, 2, done);
-  //   });
-  //   request(agent10, 1, requestDone);
-  //   request(agent10, 1, requestDone);
-  //   request(agent10, 1, requestDone);
-  //   request(agent10, 1, requestDone);
-  //   request(agent10, 1, requestDone);
-  //   request(agent10, 1, requestDone);
-  //   request(agent10, 1, requestDone);
-  //   request(agent10, 1, requestDone);
-  //   request(agent10, 1, requestDone);
-  //   request(agent10, 1, requestDone);
-  // });
-
   it('should fire timeout callback', function (done) {
-    var req = agentkeepalive.get({
+    var req = http.get({
+      agent: agentkeepalive,
       port: port,
       path: '/',
     }, function (res) {
@@ -424,10 +490,182 @@ describe('agent.test.js', function () {
         setTimeout(done, 300);
       });
     });
-    // timeout fire many times: change in node@0.10.0+
-    // req.setTimeout(500, function() {
-    //   throw new Error('Timeout callback for previous request called.');
-    // });
   });
 
+  it('should free socket timeout', function (done) {
+    var name = 'localhost:' + port + '::';
+    var agent = Agent({
+      keepAliveTimeout: 1000,
+    });
+    var lastPort = null;
+    http.get({
+      agent: agent,
+      port: port,
+      path: '/',
+    }, function (res) {
+      agent.sockets[name].should.length(1);
+      res.should.status(200);
+      res.on('data', function (data) {
+        data = JSON.parse(data);
+        lastPort = data.socket.port;
+        should.exist(lastPort);
+      });
+      res.on('end', function () {
+        process.nextTick(function () {
+          agent.sockets.should.not.have.key(name);
+          agent.freeSockets.should.have.key(name);
+          agent.freeSockets[name].should.length(1);
+          setTimeout(function () {
+            agent.freeSockets.should.not.have.key(name);
+            done();
+          }, 1100);
+        });
+      });
+    });
+    should.exist(agent);
+    agent.sockets.should.have.key(name);
+    agent.sockets[name].should.length(1);
+  });
+
+  it('should destroy free socket before timeout', function (done) {
+    var name = 'localhost:' + port + '::';
+    var agent = new Agent({
+      keepAliveTimeout: 1000,
+    });
+    var lastPort = null;
+    http.get({
+      agent: agent,
+      port: port,
+      path: '/',
+    }, function (res) {
+      agent.sockets[name].should.length(1);
+      res.should.status(200);
+      res.on('data', function (data) {
+        data = JSON.parse(data);
+        lastPort = data.socket.port;
+        should.exist(lastPort);
+      });
+      res.on('end', function () {
+        process.nextTick(function () {
+          agent.sockets.should.not.have.key(name);
+          agent.freeSockets.should.have.key(name);
+          agent.freeSockets[name].should.length(1);
+          agent.freeSockets[name][0].destroy();
+          setTimeout(function () {
+            agent.freeSockets.should.not.have.key(name);
+            done();
+          }, 10);
+        });
+      });
+    });
+    agent.sockets[name].should.length(1);
+  });
+
+  it('should remove error socket and create new one handle pedding request', function (done) {
+    done = pedding(2, done);
+    var name = 'localhost:' + port + '::';
+    var agent = new Agent({
+      keepAliveTimeout: 1000,
+      maxSockets: 1,
+      maxFreeSockets: 1
+    });
+    var lastPort = null;
+    http.get({
+      agent: agent,
+      port: port,
+      path: '/error',
+    }, function (res) {
+      throw new Error('never run this');
+    }).on('error', function (err) {
+      err.message.should.equal('socket hang up');
+    }).on('close', function () {
+      done();
+    });
+
+    http.get({
+      agent: agent,
+      port: port,
+      path: '/',
+    }, function (res) {
+      agent.sockets[name].should.length(1);
+      res.should.status(200);
+      res.on('data', function (data) {
+        data = JSON.parse(data);
+        lastPort = data.socket.port;
+        should.exist(lastPort);
+      });
+      res.on('end', function () {
+        process.nextTick(function () {
+          agent.sockets.should.not.have.key(name);
+          agent.freeSockets.should.have.key(name);
+          agent.freeSockets[name].should.length(1);
+          done();
+        });
+      });
+    });
+    agent.requests.should.have.key(name);
+    agent.requests[name].should.length(1);
+  });
+
+  it('should destroy all sockets', function (done) {
+    done = pedding(2, done);
+    var name = 'localhost:' + port + '::';
+    var agent = new Agent({
+      keepAliveTimeout: 1000,
+    });
+    var lastPort = null;
+    http.get({
+      agent: agent,
+      port: port,
+      path: '/',
+    }, function (res) {
+      res.should.status(200);
+      res.on('data', function (data) {
+        data = JSON.parse(data);
+        lastPort = data.socket.port;
+        should.exist(lastPort);
+      });
+      res.on('end', function () {
+        agent.destroy();
+        done();
+      });
+    });
+
+    http.get({
+      agent: agent,
+      port: port,
+      path: '/',
+    }).on('error', function (err) {
+      err.message.should.equal('socket hang up');
+      setTimeout(function () {
+        agent.sockets.should.not.have.key(name);
+        agent.freeSockets.should.not.have.key(name);
+        done();
+      }, 10);
+    });
+  });
+
+  describe('keepAlive = false', function () {
+    it('should close socket after request', function (done) {
+      var name = 'localhost:' + port + '::';
+      var agent = new Agent({
+        keepAlive: false,
+      });
+      http.get({
+        agent: agent,
+        port: port,
+        path: '/',
+      }, function (res) {
+        res.should.status(200);
+        res.resume();
+        res.on('end', function () {
+          setTimeout(function () {
+            agent.sockets.should.not.have.key(name);
+            agent.freeSockets.should.not.have.key(name);
+            done();
+          }, 10);
+        });
+      });
+    });
+  });
 });

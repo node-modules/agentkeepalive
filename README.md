@@ -1,17 +1,35 @@
 # agentkeepalive
 
-[![Build Status](https://secure.travis-ci.org/TBEDP/agentkeepalive.png?branch=master)](http://travis-ci.org/TBEDP/agentkeepalive) [![Coverage Status](https://coveralls.io/repos/TBEDP/agentkeepalive/badge.png)](https://coveralls.io/r/TBEDP/agentkeepalive)
+[![NPM version][npm-image]][npm-url]
+[![build status][travis-image]][travis-url]
+[![Test coverage][coveralls-image]][coveralls-url]
+[![Gittip][gittip-image]][gittip-url]
+[![David deps][david-image]][david-url]
 
-[![NPM](https://nodei.co/npm/agentkeepalive.png?downloads=true)](https://nodei.co/npm/agentkeepalive/)
+[npm-image]: https://img.shields.io/npm/v/agentkeepalive.svg?style=flat
+[npm-url]: https://npmjs.org/package/agentkeepalive
+[travis-image]: https://img.shields.io/travis/node-modules/agentkeepalive.svg?style=flat
+[travis-url]: https://travis-ci.org/node-modules/agentkeepalive
+[coveralls-image]: https://img.shields.io/coveralls/node-modules/agentkeepalive.svg?style=flat
+[coveralls-url]: https://coveralls.io/r/node-modules/agentkeepalive?branch=master
+[gittip-image]: https://img.shields.io/gittip/fengmk2.svg?style=flat
+[gittip-url]: https://www.gittip.com/fengmk2/
+[david-image]: https://img.shields.io/david/node-modules/agentkeepalive.svg?style=flat
+[david-url]: https://david-dm.org/node-modules/agentkeepalive
 
-![logo](https://raw.github.com/TBEDP/agentkeepalive/master/logo.png)
+
+![logo](https://raw.github.com/node-modules/agentkeepalive/master/logo.png)
 
 The nodejs's missing `keep alive` `http.Agent`. Support `http` and `https`.
+
+
+* `node >= 0.11.0`: use agentkeepalive@1.0.0+
+* `node < 0.11.0`: use agentkeepalive@0.2.2
 
 ## Install
 
 ```bash
-$ npm install agentkeepalive
+$ npm install agentkeepalive --save
 ```
 
 ## Usage
@@ -152,33 +170,11 @@ Socket created:
 {" <10ms":75," <15ms":1112," <20ms":10947," <30ms":32130," <40ms":8228," <50ms":3002," <100ms":4274," <150ms":181," <200ms":18," >=200ms+":33}
 ```
 
-## Authors
-
-Below is the output from `git-summary`.
-
-```
-$ git summary
-
- project  : agentkeepalive
- repo age : 1 year, 3 months
- active   : 17 days
- commits  : 36
- files    : 26
- authors  :
-    34  fengmk2                 94.4%
-     2  Will White              5.6%
-```
-
-Ordered by date of first contribution.
-
-- [fengmk2](https://github.com/fengmk2)
-- [Will White](https://github.com/willwhite)
-
 ## License
 
 (The MIT License)
 
-Copyright (c) 2012 - 2013 fengmk2 <fengmk2@gmail.com>;
+Copyright (c) 2012 - 2014 fengmk2 <fengmk2@gmail.com>;
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the

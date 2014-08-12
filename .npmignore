@@ -6,3 +6,5 @@ Makefile
 lib-cov/
 coverage.html
 original_*
+coverage/
+benchmark/
