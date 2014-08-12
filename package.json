@@ -3,15 +3,8 @@
   "version": "0.2.2",
   "description": "Missing keepalive http.Agent",
   "main": "index.js",
-  "directories": {
-    "test": "test"
-  },
   "scripts": {
-    "test": "make test-all"
-  },
-  "config": {
-    "blanket": { "pattern": "agentkeepalive/lib" },
-    "travis-cov": { "threshold": 92 }
+    "test": "make test"
   },
   "repository": {
     "type": "git",

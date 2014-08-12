@@ -28,6 +28,25 @@ The nodejs's missing `keep alive` `http.Agent`. Support `http` and `https`.
 $ npm install agentkeepalive --save
 ```
 
+## new Agent([options])
+
+* `options` {Object} Set of configurable options to set on the agent.
+  Can have the following fields:
+  * `keepAlive` {Boolean} Keep sockets around in a pool to be used by
+    other requests in the future. Default = `true`
+  * `keepAliveMsecs` {Number} When using HTTP KeepAlive, how often
+    to send TCP KeepAlive packets over sockets being kept alive.
+    Default = `1000`.  Only relevant if `keepAlive` is set to `true`.
+  * `keepAliveTimeout`: {Number} Sets the socket to timeout
+    after `timeout` milliseconds of inactivity on the free socket.
+    Default is `30000`.
+    Only relevant if `keepAlive` is set to `true`.
+  * `maxSockets` {Number} Maximum number of sockets to allow per
+    host. Default = `Infinity`.
+  * `maxFreeSockets` {Number} Maximum number of sockets to leave open
+    in a free state. Only relevant if `keepAlive` is set to `true`.
+    Default = `256`.
+
 ## Usage
 
 ```js
@@ -37,8 +56,7 @@ var Agent = require('agentkeepalive');
 var keepaliveAgent = new Agent({
   maxSockets: 10,
   maxFreeSockets: 10,
-  keepAlive: true,
-  keepAliveMsecs: 30000 // keepalive for 30 seconds
+  keepAliveTimeout: 30000 // free socket keepalive for 30 seconds
 });
 
 var options = {
@@ -107,7 +125,7 @@ setTimeout(function () {
 }, 2000);
 ```
 
-## [Benchmark](https://github.com/TBEDP/agentkeepalive/tree/master/benchmark)
+## [Benchmark](https://github.com/node-modules/agentkeepalive/tree/master/benchmark)
 
 run the benchmark:
 

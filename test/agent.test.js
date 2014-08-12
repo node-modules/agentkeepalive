@@ -185,9 +185,7 @@ describe('agent.test.js', function () {
           agentkeepalive.freeSockets.should.have.key(name);
           agentkeepalive.freeSockets[name].should.length(1);
           agentkeepalive.freeSockets[name][0].destroy();
-          console.log('wait 10ms');
           setTimeout(function () {
-            console.log('10ms');
             agentkeepalive.sockets.should.not.have.key(name);
             agentkeepalive.freeSockets.should.not.have.key(name);
             done();
@@ -619,6 +617,19 @@ describe('agent.test.js', function () {
       port: port,
       path: '/',
     }, function (res) {
+      http.get({
+        agent: agent,
+        port: port,
+        path: '/',
+      }).on('error', function (err) {
+        err.message.should.equal('socket hang up');
+        setTimeout(function () {
+          agent.sockets.should.not.have.key(name);
+          agent.freeSockets.should.not.have.key(name);
+          done();
+        }, 10);
+      });
+
       res.should.status(200);
       res.on('data', function (data) {
         data = JSON.parse(data);
@@ -629,19 +640,6 @@ describe('agent.test.js', function () {
         agent.destroy();
         done();
       });
-    });
-
-    http.get({
-      agent: agent,
-      port: port,
-      path: '/',
-    }).on('error', function (err) {
-      err.message.should.equal('socket hang up');
-      setTimeout(function () {
-        agent.sockets.should.not.have.key(name);
-        agent.freeSockets.should.not.have.key(name);
-        done();
-      }, 10);
     });
   });
 
