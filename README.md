@@ -17,11 +17,7 @@
 [david-image]: https://img.shields.io/david/node-modules/agentkeepalive.svg?style=flat
 [david-url]: https://david-dm.org/node-modules/agentkeepalive
 
-
-![logo](https://raw.github.com/node-modules/agentkeepalive/master/logo.png)
-
 The nodejs's missing `keep alive` `http.Agent`. Support `http` and `https`.
-
 
 * `node >= 0.11.0`: use agentkeepalive@1.0.0+
 * `node < 0.11.0`: use agentkeepalive@0.2.2
