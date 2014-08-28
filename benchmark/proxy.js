@@ -11,30 +11,23 @@
  */
 
 var http = require('http');
-var Agent = require('../');
+var AgentKeepalive = require('../');
 
-var maxSockets = parseInt(process.argv[2], 10) || 10;
-var SERVER = process.argv[3] || '127.0.0.1';
+var maxSockets = parseInt(process.argv[2]) || 10;
+var maxFreeSockets = parseInt(process.argv[3]) || maxSockets;
+var SERVER = process.argv[4] || '127.0.0.1';
 
-var agentKeepalive = new Agent({
+var agentKeepalive = new AgentKeepalive({
   keepAlive: true,
   maxSockets: maxSockets,
-  maxFreeSockets: maxSockets,
-  maxKeepAliveTime: 30000,
+  maxFreeSockets: maxFreeSockets,
+  keepAliveTimeout: 30000,
 });
-var agentHttp = new http.Agent({
-  maxSockets: maxSockets
+var agentHttp = new AgentKeepalive({
+  maxSockets: maxSockets,
+  keepAlive: false,
 });
-agentHttp.createSocketCount = 0;
-agentHttp.requestFinishedCount = 0;
-agentHttp.__createSocket = agentHttp.createSocket;
-agentHttp.createSocket = function (name, host, port, localAddress, req) {
-  agentHttp.createSocketCount++;
-  return agentHttp.__createSocket(name, host, port, localAddress, req);
-};
-agentHttp.on('free', function () {
-  agentHttp.requestFinishedCount++;
-});
+
 var count = 0;
 var rtKeepalives = {
   ' <10ms': 0,
@@ -63,29 +56,48 @@ var rtNormals = {
 };
 
 setInterval(function () {
-  var name = SERVER + ':1984';
-  console.log('----------------------------------------------------------------');
-  console.log('[proxy.js:%d] keepalive, %d created, %d requestFinished, %d req/socket, %s requests, %s sockets, %s freeSockets, %d timeout\n%j',
+  console.log('\n\n----------------------------------------------------------------');
+  console.log('[proxy.js:%d] keepalive, %d created, %d requests, %d req/socket, %d close, %d timeout\n%j',
     count,
     agentKeepalive.createSocketCount,
-    agentKeepalive.requestFinishedCount,
-    (agentKeepalive.requestFinishedCount / agentKeepalive.createSocketCount || 0).toFixed(2),
-    agentKeepalive.requests[name] && agentKeepalive.requests[name].length || 0,
-    agentKeepalive.sockets[name] && agentKeepalive.sockets[name].length || 0,
-    agentKeepalive.freeSockets[name] && agentKeepalive.freeSockets[name].length || 0,
+    agentKeepalive.requestCount,
+    (agentKeepalive.requestCount / agentKeepalive.createSocketCount || 0).toFixed(2),
+    agentKeepalive.closeSocketCount,
     agentKeepalive.timeoutSocketCount,
     rtKeepalives
   );
+  for (var name in agentKeepalive.sockets) {
+    console.log('sockets %s: %d', name, agentKeepalive.sockets[name].length);
+  }
+  for (var name in agentKeepalive.freeSockets) {
+    console.log('freeSockets %s: %d', name,
+      agentKeepalive.freeSockets[name].length || 0);
+  }
+  for (var name in agentKeepalive.requests) {
+    console.log('requests %s: %d', name,
+      agentKeepalive.requests[name].length || 0);
+  }
+
   console.log('----------------------------------------------------------------');
-  console.log('[proxy.js:%d] normal   , %d created, %d requestFinished, %d req/socket, %s requests, %s sockets\n%j',
+  console.log('[proxy.js:%d] normal   , %d created, %d requests, %d req/socket, %d close\n%j',
     count,
     agentHttp.createSocketCount,
-    agentHttp.requestFinishedCount,
-    (agentHttp.requestFinishedCount / agentHttp.createSocketCount || 0).toFixed(2),
-    agentHttp.requests[name] && agentHttp.requests[name].length || 0,
-    agentHttp.sockets[name] && agentHttp.sockets[name].length || 0,
+    agentHttp.requestCount,
+    (agentHttp.requestCount / agentHttp.createSocketCount || 0).toFixed(2),
+    agentHttp.closeSocketCount,
     rtNormals
   );
+  for (var name in agentHttp.sockets) {
+    console.log('sockets %s: %d', name, agentHttp.sockets[name].length);
+  }
+  for (var name in agentHttp.freeSockets) {
+    console.log('freeSockets %s: %d', name,
+      agentHttp.freeSockets[name].length || 0);
+  }
+  for (var name in agentHttp.requests) {
+    console.log('requests %s: %d', name,
+      agentHttp.requests[name].length || 0);
+  }
 }, 2000);
 
 http.createServer(function (req, res) {
@@ -148,19 +160,17 @@ http.createServer(function (req, res) {
       });
     });
     client.on('error', function (err) {
-      console.log('error ' + req.url + ':' + err.message);
+      // console.log('error ' + req.url + ':' + err.message);
       res.statusCode = 500;
       res.end(err.message);
     });
     timer = setTimeout(function () {
-      console.log('2000ms timeout ' + req.url);
+      // console.log('2000ms timeout ' + req.url);
       timer = null;
       client.abort();
     }, 2000);
     client.end(postData);
   });
-  
-
 }).listen(1985);
 
 console.log('proxy start, listen on 1985');

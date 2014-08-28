@@ -1,11 +1,11 @@
-#!/bin/bash 
+#!/bin/bash
 
-sudo sysctl -w net.inet.ip.portrange.first=12000
-sudo sysctl -w net.inet.tcp.msl=1000
-sudo sysctl -w kern.maxfiles=1000000 kern.maxfilesperproc=1000000
-sudo ulimit -n 100000
+# sudo sysctl -w net.inet.ip.portrange.first=12000
+# sudo sysctl -w net.inet.tcp.msl=1000
+# sudo sysctl -w kern.maxfiles=1000000 kern.maxfilesperproc=1000000
+# sudo ulimit -n 100000
 
-sysctl -n machdep.cpu.brand_string
+# sysctl -n machdep.cpu.brand_string
 
 SERVER=127.0.0.1
 NUM=500
@@ -26,14 +26,14 @@ node -v
 echo "$maxSockets maxSockets, $CONCURRENT concurrent, $NUM requests per concurrent, ${DELAY}ms delay"
 
 echo "keep alive"
-echo "siege -c $CONCURRENT -r $NUM -b http://localhost:1985${POST}/k/$DELAY"
-siege -c $CONCURRENT -r $NUM -b http://localhost:1985${POST}/k/$DELAY
+echo "siege -R siegerc -c $CONCURRENT -r $NUM -b http://localhost:1985${POST}/k/$DELAY"
+siege -R siegerc -c $CONCURRENT -r $NUM -b http://localhost:1985${POST}/k/$DELAY
 
 sleep 5
 
 echo "normal"
-echo "siege -c $CONCURRENT -r $NUM -b http://localhost:1985${POST}/$DELAY"
-siege -c $CONCURRENT -r $NUM -b http://localhost:1985${POST}/$DELAY
+echo "siege -R siegerc -c $CONCURRENT -r $NUM -b http://localhost:1985${POST}/$DELAY"
+siege -R siegerc -c $CONCURRENT -r $NUM -b http://localhost:1985${POST}/$DELAY
 
 sleep 3
 
