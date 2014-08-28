@@ -1,6 +1,6 @@
 /*!
  * agentkeepalive - test/https_agent.test.js
- * 
+ *
  * Copyright(c) 2012 - 2013 fengmk2 <fengmk2@gmail.com>
  * MIT Licensed
  */
@@ -18,10 +18,8 @@ var should = require('should');
 var pedding = require('pedding');
 var fs = require('fs');
 
-describe.skip('https_agent.test.js', function () {
+describe.only('https_agent.test.js', function () {
 
-  var app = null;
-  var port = null;
   var agentkeepalive = new HttpsAgent({
     keepAlive: true,
     keepAliveMsecs: 1000,
@@ -29,83 +27,56 @@ describe.skip('https_agent.test.js', function () {
     maxFreeSockets: 5,
   });
 
-  before(function (done) {
-    app = https.createServer({
-      key: fs.readFileSync(__dirname + '/fixtures/agenttest-key.pem'),
-      cert: fs.readFileSync(__dirname + '/fixtures/agenttest-cert.pem'),
-    }, function (req, res) {
-      if (req.url === '/error') {
-        res.destroy();
-        return;
-      } else if (req.url === '/hang') {
-        // Wait forever.
-        return;
-      }
-      var info = urlparse(req.url, true);
-      if (info.query.timeout) {
-        setTimeout(function () {
-          res.end(info.query.timeout);
-        }, parseInt(info.query.timeout, 10));
-        return;
-      }
-      res.end(JSON.stringify({
-        info: info,
-        url: req.url,
-        headers: req.headers,
-        remotePort: req.socket.remotePort
-      }));
-    });
-    app.listen(0, function () {
-      port = app.address().port;
-      done();
-    });
-  });
-
   it('should GET / success with 200 status', function (done) {
     agentkeepalive.get({
-      port: port,
+      hostname: 'npm.taobao.org',
+      port: 443,
       path: '/',
     }, function (res) {
-      res.should.status(200);
+      res.statusCode.should.equal(200);
       done();
     });
   });
 
-  it('should GET / and /foo use the same socket', function (done) {
+  it('should GET / and /package/agentkeepalive use the same socket', function (done) {
     var options = {
-      port: port,
+      hostname: 'npm.taobao.org',
+      port: 443,
       path: '/',
       agent: agentkeepalive,
     };
     var remotePort = null;
     agentkeepalive.get(options, function (res) {
-      res.should.status(200);
-      var data = null;
-      res.on('data', function (chunk) {
-        data = JSON.parse(chunk);
-      });
+      Object.keys(agentkeepalive.sockets).should.length(1);
+      Object.keys(agentkeepalive.freeSockets).should.length(0);
+      res.statusCode.should.equal(200);
+      res.on('data', function (chunk) {});
       res.on('end', function () {
-        data.should.have.property('remotePort');
-        data.should.have.property('url', '/');
-        remotePort = data.remotePort;
-        
+        Object.keys(agentkeepalive.sockets).should.length(1);
+        Object.keys(agentkeepalive.freeSockets).should.length(0);
         // request again
-        options.path = '/foo';
+        options.path = '/package/agentkeepalive';
         process.nextTick(function () {
+          Object.keys(agentkeepalive.sockets).should.length(1);
+          Object.keys(agentkeepalive.freeSockets).should.length(1);
           https.get(options, function (res) {
-            res.should.status(200);
+            Object.keys(agentkeepalive.sockets).should.length(1);
+            Object.keys(agentkeepalive.freeSockets).should.length(0);
+            res.statusCode.should.equal(200);
             var data = null;
-            res.on('data', function (chunk) {
-              data = JSON.parse(chunk);
-            });
+            res.on('data', function (chunk) {});
             res.on('end', function () {
-              data.should.have.property('remotePort', remotePort);
-              data.should.have.property('url', '/foo');
-              done();
+              Object.keys(agentkeepalive.sockets).should.length(1);
+              Object.keys(agentkeepalive.freeSockets).should.length(0);
+              process.nextTick(function () {
+                Object.keys(agentkeepalive.sockets).should.length(1);
+                Object.keys(agentkeepalive.freeSockets).should.length(1);
+                console.log(agentkeepalive);
+                done();
+              });
             });
           });
         });
-        
       });
     });
   });
