@@ -1,4 +1,10 @@
 
+1.2.0 / 2014-09-02
+==================
+
+ * allow set keepAliveTimeout = 0
+ * support timeout on working socket. fixed #6
+
 1.1.0 / 2014-08-28
 ==================
 

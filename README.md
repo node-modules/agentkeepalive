@@ -5,6 +5,8 @@
 [![Test coverage][coveralls-image]][coveralls-url]
 [![Gittip][gittip-image]][gittip-url]
 [![David deps][david-image]][david-url]
+[![node version][node-image]][node-url]
+[![npm download][download-image]][download-url]
 
 [npm-image]: https://img.shields.io/npm/v/agentkeepalive.svg?style=flat
 [npm-url]: https://npmjs.org/package/agentkeepalive
@@ -16,10 +18,14 @@
 [gittip-url]: https://www.gittip.com/fengmk2/
 [david-image]: https://img.shields.io/david/node-modules/agentkeepalive.svg?style=flat
 [david-url]: https://david-dm.org/node-modules/agentkeepalive
+[node-image]: https://img.shields.io/badge/node.js-%3E=_0.11-green.svg?style=flat-square
+[node-url]: http://nodejs.org/download/
+[download-image]: https://img.shields.io/npm/dm/agentkeepalive.svg?style=flat-square
+[download-url]: https://npmjs.org/package/agentkeepalive
 
 The nodejs's missing `keep alive` `http.Agent`. Support `http` and `https`.
 
-* `node >= 0.11.0`: use agentkeepalive@1.0.0+
+* `node >= 0.11.0`: use agentkeepalive@1.2.0+
 * `node < 0.11.0`: use agentkeepalive@0.2.2
 
 ## Install
@@ -37,10 +43,13 @@ $ npm install agentkeepalive --save
   * `keepAliveMsecs` {Number} When using HTTP KeepAlive, how often
     to send TCP KeepAlive packets over sockets being kept alive.
     Default = `1000`.  Only relevant if `keepAlive` is set to `true`.
-  * `keepAliveTimeout`: {Number} Sets the socket to timeout
-    after `timeout` milliseconds of inactivity on the free socket.
-    Default is `30000`.
+  * `keepAliveTimeout`: {Number} Sets the free socket to timeout
+    after `keepAliveTimeout` milliseconds of inactivity on the free socket.
+    Default is `15000`.
     Only relevant if `keepAlive` is set to `true`.
+  * `timeout`: {Number} Sets the working socket to timeout
+    after `timeout` milliseconds of inactivity on the working socket.
+    Default is `keepAliveTimeout * 2`.
   * `maxSockets` {Number} Maximum number of sockets to allow per
     host. Default = `Infinity`.
   * `maxFreeSockets` {Number} Maximum number of sockets to leave open
@@ -54,8 +63,9 @@ var http = require('http');
 var Agent = require('agentkeepalive');
 
 var keepaliveAgent = new Agent({
-  maxSockets: 10,
+  maxSockets: 100,
   maxFreeSockets: 10,
+  timeout: 60000,
   keepAliveTimeout: 30000 // free socket keepalive for 30 seconds
 });
 
