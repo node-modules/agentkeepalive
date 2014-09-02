@@ -491,10 +491,12 @@ describe('agent.test.js', function () {
   });
 
   it('should free socket timeout', function (done) {
+    done = pedding(2, done);
     var name = 'localhost:' + port + '::';
     var agent = Agent({
       keepAliveTimeout: 1000,
     });
+    agent.on('timeout', done);
     var lastPort = null;
     http.get({
       agent: agent,
@@ -519,6 +521,33 @@ describe('agent.test.js', function () {
           }, 1100);
         });
       });
+    });
+    should.exist(agent);
+    agent.sockets.should.have.key(name);
+    agent.sockets[name].should.length(1);
+  });
+
+  it('should working socket timeout', function (done) {
+    done = pedding(2, done);
+    var name = 'localhost:' + port + '::';
+    var agent = Agent({
+      keepAliveTimeout: 1000,
+    });
+    agent.on('timeout', done);
+    var lastPort = null;
+    http.get({
+      agent: agent,
+      port: port,
+      path: '/hang',
+    }, function (res) {
+      throw new Error('should not run this');
+    }).on('error', function (err) {
+      should.exist(err);
+      // socket.destroy();
+      err.message.should.equal('socket hang up');
+      err.code.should.equal('ECONNRESET');
+      agent.sockets.should.not.have.key(name);
+      done();
     });
     should.exist(agent);
     agent.sockets.should.have.key(name);
