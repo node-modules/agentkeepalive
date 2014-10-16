@@ -1,4 +1,10 @@
 
+0.2.3 / 2014-10-16
+==================
+
+ * added isDestroyed function to check _destroyed as well (@retool)
+ * fix https test
+
 0.2.2 / 2013-11-19 
 ==================
 
