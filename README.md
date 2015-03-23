@@ -23,10 +23,10 @@
 [download-image]: https://img.shields.io/npm/dm/agentkeepalive.svg?style=flat-square
 [download-url]: https://npmjs.org/package/agentkeepalive
 
-The nodejs's missing `keep alive` `http.Agent`. Support `http` and `https`.
+The Node.js's missing `keep alive` `http.Agent`. Support `http` and `https`.
 
-* `node >= 0.11.0`: use agentkeepalive@1.2.0+
-* `node < 0.11.0`: use agentkeepalive@0.2.x
+* `node >= 0.11.0`, `iojs >= 1.0.0`: use agentkeepalive@>=1.2.0
+* `node = 0.10.x`: use agentkeepalive@0.2.x
 
 ## Install
 
@@ -198,7 +198,7 @@ Socket created:
 
 (The MIT License)
 
-Copyright (c) 2012 - 2014 fengmk2 <fengmk2@gmail.com>;
+Copyright (c) 2012 - 2015 fengmk2 <fengmk2@gmail.com>;
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the

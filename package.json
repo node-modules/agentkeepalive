@@ -3,6 +3,9 @@
   "version": "1.2.0",
   "description": "Missing keepalive http.Agent",
   "main": "index.js",
+  "files": [
+    "index.js", "lib/"
+  ],
   "scripts": {
     "test": "mocha -R spec -t 5000 -r should-http test/*.test.js",
     "test-cov": "node node_modules/.bin/istanbul cover node_modules/.bin/_mocha -- -t 5000 -r should-http test/*.test.js",
