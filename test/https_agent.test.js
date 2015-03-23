@@ -18,7 +18,7 @@ var should = require('should');
 var pedding = require('pedding');
 var fs = require('fs');
 
-describe.only('https_agent.test.js', function () {
+describe('https_agent.test.js', function () {
 
   var agentkeepalive = new HttpsAgent({
     keepAlive: true,
@@ -107,7 +107,7 @@ describe.only('https_agent.test.js', function () {
             Object.keys(agentkeepalive.sockets).should.length(0);
             Object.keys(agentkeepalive.freeSockets).should.length(0);
             done();
-          }, 2000);        
+          }, 2000);
         });
       });
     });
