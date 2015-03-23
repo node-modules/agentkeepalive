@@ -672,6 +672,55 @@ describe('agent.test.js', function () {
     });
   });
 
+  it('should keep max sockets: bugfix for orginal keepalive agent', function (_done) {
+    var agentkeepalive = new Agent({
+      keepAlive: true,
+      keepAliveMsecs: 1000,
+      maxSockets: 2,
+      maxFreeSockets: 2,
+    });
+    var done = pedding(2, function (err) {
+      should.not.exist(err);
+      var pool = agentkeepalive.sockets[Object.keys(agentkeepalive.sockets)[0]];
+      should.not.exist(pool);
+      // all sockets on free list now
+      var freepool = agentkeepalive.freeSockets[Object.keys(agentkeepalive.freeSockets)[0]];
+      should.exist(freepool);
+      freepool.length.should.equal(2);
+      _done();
+    });
+
+    http.get({
+      agent: agentkeepalive,
+      port: port,
+      path: '/',
+    }, function (res) {
+      res.statusCode.should.equal(200);
+      res.on('data', function (data) {
+      });
+      res.on('end', function () {
+        var pool = agentkeepalive.sockets[Object.keys(agentkeepalive.sockets)[0]];
+        should.exist(pool);
+        setTimeout(done, 10);
+      });
+    });
+
+    http.get({
+      agent: agentkeepalive,
+      port: port,
+      path: '/',
+    }, function (res) {
+      res.statusCode.should.equal(200);
+      res.on('data', function (data) {
+      });
+      res.on('end', function () {
+        var pool = agentkeepalive.sockets[Object.keys(agentkeepalive.sockets)[0]];
+        should.exist(pool);
+        setTimeout(done, 10);
+      });
+    });
+  });
+
   describe('keepAlive = false', function () {
     it('should close socket after request', function (done) {
       var name = 'localhost:' + port + '::';
