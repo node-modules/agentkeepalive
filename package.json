@@ -3,36 +3,31 @@
   "version": "0.2.3",
   "description": "Missing keepalive http.Agent",
   "main": "index.js",
-  "directories": {
-    "test": "test"
-  },
+  "files": [
+    "index.js", "lib/"
+  ],
   "scripts": {
-    "test": "make test-all",
-    "blanket": { "pattern": "agentkeepalive/lib" },
-    "travis-cov": { "threshold": 92 }
+    "test": "make test"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/TBEDP/agentkeepalive.git"
+    "url": "git://github.com/node-modules/agentkeepalive.git"
   },
   "bugs": {
-    "url": "https://github.com/TBEDP/agentkeepalive/issues"
+    "url": "https://github.com/node-modules/agentkeepalive/issues"
   },
   "keywords": [
     "http",
     "agent",
-    "keepalive"
+    "keepalive",
+    "agentkeepalive"
   ],
   "devDependencies": {
     "should": "*",
     "mocha": "*",
-    "pedding": "*",
-    "blanket": "*",
-    "travis-cov": "*",
-    "coveralls": "*",
-    "mocha-lcov-reporter": "*"
+    "pedding": "*"
   },
-  "engines": { "node": ">= 0.8.0" },
-  "author": "fengmk2 <fengmk2@gmail.com> (http://fengmk2.github.com)",
+  "engines": { "node": "0.10.x" },
+  "author": "fengmk2 <fengmk2@gmail.com> (http://fengmk2.com)",
   "license": "MIT"
 }
