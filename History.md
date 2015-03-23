@@ -1,4 +1,12 @@
 
+1.2.1 / 2015-03-23
+==================
+
+ * patch from iojs: don't overwrite servername option
+ * patch commits from joyent/node
+ * add max sockets test case
+ * add nagle algorithm delayed link
+
 1.2.0 / 2014-09-02
 ==================
 
