@@ -4,10 +4,13 @@
 
 The Node.js's missing `keep alive` `http.Agent`. Support `http` and `https`.
 
+- agentkeepalive@node-0.10: only for node@0.10.x
+- agentkeepalive@latest: for node>=0.11.12 and iojs>=1.0.0
+
 ## Install
 
 ```bash
-$ npm install agentkeepalive --save
+$ npm install agentkeepalive@node-0.10 --save
 ```
 
 ## Usage

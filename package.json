@@ -29,5 +29,8 @@
   },
   "engines": { "node": "0.10.x" },
   "author": "fengmk2 <fengmk2@gmail.com> (http://fengmk2.com)",
-  "license": "MIT"
+  "license": "MIT",
+  "publishConfig": {
+    "tag": "node-0.10"
+  }
 }
