@@ -26,7 +26,7 @@
 The nodejs's missing `keep alive` `http.Agent`. Support `http` and `https`.
 
 * `node >= 0.11.0`: use agentkeepalive@1.2.0+
-* `node < 0.11.0`: use agentkeepalive@0.2.2
+* `node < 0.11.0`: use agentkeepalive@0.2.x
 
 ## Install
 
