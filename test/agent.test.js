@@ -465,7 +465,7 @@ describe('agent.test.js', function () {
           agentkeepalive.sockets.should.not.have.key(name);
           agentkeepalive.freeSockets.should.not.have.key(name);
           done();
-        }, 510);
+        }, 550);
       });
     });
     agentkeepalive.sockets.should.have.key(name);

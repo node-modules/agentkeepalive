@@ -39,7 +39,7 @@
     "should": "~4.0.4",
     "should-http": "~0.0.2"
   },
-  "engines": { "node": ">= 0.11.12" },
+  "engines": { "node": ">= 0.10.0" },
   "author": "fengmk2 <fengmk2@gmail.com> (http://fengmk2.github.com)",
   "license": "MIT"
 }
