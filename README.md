@@ -25,9 +25,6 @@
 
 The Node.js's missing `keep alive` `http.Agent`. Support `http` and `https`.
 
-* `node >= 0.11.0`, `iojs >= 1.0.0`: use agentkeepalive@>=1.2.0
-* `node = 0.10.x`: use agentkeepalive@0.2.x
-
 ## Install
 
 ```bash

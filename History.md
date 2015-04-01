@@ -1,4 +1,10 @@
 
+2.0.0 / 2015-04-01
+==================
+
+ * fix: socket.destroyed always be undefined on 0.10.x
+ * Make it compatible with node v0.10.x (@lattmann)
+
 1.2.1 / 2015-03-23
 ==================
 

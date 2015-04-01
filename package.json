@@ -1,6 +1,6 @@
 {
   "name": "agentkeepalive",
-  "version": "1.2.1",
+  "version": "2.0.0",
   "description": "Missing keepalive http.Agent",
   "main": "index.js",
   "files": [
@@ -40,6 +40,6 @@
     "should-http": "~0.0.2"
   },
   "engines": { "node": ">= 0.10.0" },
-  "author": "fengmk2 <fengmk2@gmail.com> (http://fengmk2.github.com)",
+  "author": "fengmk2 <fengmk2@gmail.com> (http://fengmk2.com)",
   "license": "MIT"
 }
