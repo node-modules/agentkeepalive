@@ -27,8 +27,13 @@ describe('https_agent.test.js', function () {
     maxSockets: 5,
     maxFreeSockets: 5,
   });
+  var nodeTlsRejectUnauthorized = process.env.NODE_TLS_REJECT_UNAUTHORIZED;
+  var node10 = process.version.indexOf('v0.10.') === 0;
 
   before(function (done) {
+    if (node10) {
+        process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0;
+    }
     app = https.createServer({
       key: fs.readFileSync(__dirname + '/fixtures/agenttest-key.pem'),
       cert: fs.readFileSync(__dirname + '/fixtures/agenttest-cert.pem'),
@@ -61,6 +66,10 @@ describe('https_agent.test.js', function () {
   });
 
   after(function (done) {
+    if (node10) {
+      // recover original setting
+      process.env.NODE_TLS_REJECT_UNAUTHORIZED = nodeTlsRejectUnauthorized;
+    }
     setTimeout(done, 1500);
   });
 
