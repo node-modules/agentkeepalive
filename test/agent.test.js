@@ -101,9 +101,10 @@ describe('agent.test.js', function () {
         }, 20);
       });
     });
-    agentkeepalive.sockets.should.have.key(name);
-    agentkeepalive.sockets[name].should.length(1);
-    agentkeepalive.freeSockets.should.not.have.key(name);
+    var status = agentkeepalive.getCurrentStatus();
+    status.sockets.should.have.key(name);
+    status.sockets[name].should.equal(1);
+    status.freeSockets.should.not.have.key(name);
   });
 
   it('should request again and use the same socket', function (done) {
@@ -125,9 +126,10 @@ describe('agent.test.js', function () {
         agentkeepalive.sockets.should.have.key(name);
         agentkeepalive.freeSockets.should.have.not.key(name);
         setTimeout(function () {
-          agentkeepalive.sockets.should.not.have.key(name);
-          agentkeepalive.freeSockets.should.have.key(name);
-          agentkeepalive.freeSockets[name].should.length(1);
+          var status = agentkeepalive.getCurrentStatus();
+          status.sockets.should.not.have.key(name);
+          status.freeSockets.should.have.key(name);
+          status.freeSockets[name].should.equal(1);
           done();
         }, 10);
       });
