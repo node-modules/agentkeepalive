@@ -102,6 +102,8 @@ describe('agent.test.js', function () {
       });
     });
     var status = agentkeepalive.getCurrentStatus();
+    status.createSocketCount.should.equal(1);
+    status.timeoutSocketCount.should.equal(0);
     status.sockets.should.have.key(name);
     status.sockets[name].should.equal(1);
     status.freeSockets.should.not.have.key(name);
@@ -127,6 +129,10 @@ describe('agent.test.js', function () {
         agentkeepalive.freeSockets.should.have.not.key(name);
         setTimeout(function () {
           var status = agentkeepalive.getCurrentStatus();
+          status.createSocketCount.should.equal(1);
+          status.closeSocketCount.should.equal(0);
+          status.timeoutSocketCount.should.equal(0);
+          status.requestCount.should.equal(2);
           status.sockets.should.not.have.key(name);
           status.freeSockets.should.have.key(name);
           status.freeSockets[name].should.equal(1);
@@ -487,6 +493,8 @@ describe('agent.test.js', function () {
         throw new Error('should not call this');
       });
       req.setTimeout(400, function() {
+        var status = agentkeepalive.getCurrentStatus();
+        status.timeoutSocketCount.should.equal(1);
         setTimeout(done, 300);
       });
     });

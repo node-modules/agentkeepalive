@@ -103,6 +103,7 @@ setTimeout(function () {
 {
   createSocketCount: 10,
   closeSocketCount: 5,
+  timeoutSocketCount: 0,
   requestCount: 5,
   freeSockets: { 'localhost:57479::': 3 },
   sockets: { 'localhost:57479::': 5 },
