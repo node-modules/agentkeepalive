@@ -95,6 +95,21 @@ setTimeout(function () {
 
 ```
 
+### `agent.getCurrentStatus()`
+
+`agent.getCurrentStatus()` will return a object to show the status of this agent:
+
+```js
+{
+  createSocketCount: 10,
+  closeSocketCount: 5,
+  requestCount: 5,
+  freeSockets: { 'localhost:57479::': 3 },
+  sockets: { 'localhost:57479::': 5 },
+  requests: {}
+}
+```
+
 ### Support `https`
 
 ```js
