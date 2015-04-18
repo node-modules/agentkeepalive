@@ -1,4 +1,10 @@
 
+2.0.1 / 2015-04-19
+==================
+
+ * fix: add timeoutSocketCount to getCurrentStatus()
+ * feat(getCurrentStatus): add getCurrentStatus
+
 2.0.0 / 2015-04-01
 ==================
 
