@@ -731,6 +731,51 @@ describe('agent.test.js', function () {
     });
   });
 
+  it('should timeout and remove free socket', function (done) {
+    done = pedding(2, done);
+    var _keepaliveAgent = new Agent({
+      maxSockets: 1,
+      maxFreeSockets: 1,
+      keepAliveTimeout: 1000
+    });
+
+    var options = {
+      hostname: 'www.taobao.com',
+      port: 80,
+      path: '/',
+      method: 'GET',
+      agent : _keepaliveAgent
+    };
+
+    var index = 0;
+    var getRequest = function() {
+      var currentIndex = index++;
+      var req =  http.request(options, function(res) {
+        var size = 0;
+        res.on('data', function(chunk) {
+          size += chunk.length;
+        });
+        res.on('end', function() {
+          console.log('#%d req end, size: %d', currentIndex, size);
+          done();
+        });
+      });
+      req.on('error', done);
+      return req;
+    };
+
+    var req = getRequest();
+    // Get a reference to the socket.
+    req.on('socket', function(sock) {
+      // Listen to timeout and send another request immediately.
+      sock.on('timeout', function() {
+        console.log('socket:%s timeout', sock._host);
+        getRequest().end();
+      });
+    });
+    req.end();
+  });
+
   describe('keepAlive = false', function () {
     it('should close socket after request', function (done) {
       var name = 'localhost:' + port + '::';
