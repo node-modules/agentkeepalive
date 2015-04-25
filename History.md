@@ -1,4 +1,9 @@
 
+2.0.2 / 2015-04-25
+==================
+
+ * fix: remove socket from freeSockets on 'timeout' (@pmalouin)
+
 2.0.1 / 2015-04-19
 ==================
 
