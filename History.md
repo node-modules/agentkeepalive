@@ -1,4 +1,9 @@
 
+2.0.3 / 2015-08-03
+==================
+
+ * fix: add default error handler to avoid Unhandled error event throw
+
 2.0.2 / 2015-04-25
 ==================
 
