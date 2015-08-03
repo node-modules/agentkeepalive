@@ -2,6 +2,7 @@
  * agentkeepalive - test/agent.test.js
  *
  * Copyright(c) 2012 - 2013 fengmk2 <fengmk2@gmail.com>
+ * Copyright(c) node-modules
  * MIT Licensed
  */
 
@@ -799,4 +800,14 @@ describe('agent.test.js', function () {
       });
     });
   });
+
+  describe('getCurrentStatus()', function () {
+    it('should get current agent status', function () {
+      var status = agentkeepalive.getCurrentStatus();
+      console.log(status);
+      status.should.have.keys('createSocketCount', 'closeSocketCount', 'errorSocketCount', 'timeoutSocketCount',
+        'requestCount', 'freeSockets', 'sockets', 'requests');
+    });
+  });
+
 });
