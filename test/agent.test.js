@@ -1,6 +1,4 @@
-/*!
- * agentkeepalive - test/agent.test.js
- *
+/**
  * Copyright(c) 2012 - 2013 fengmk2 <fengmk2@gmail.com>
  * Copyright(c) node-modules
  * MIT Licensed
@@ -19,7 +17,7 @@ require('should-http');
 var pedding = require('pedding');
 var Agent = require('../');
 
-describe('agent.test.js', function () {
+describe('test/agent.test.js', function () {
 
   var agentkeepalive = new Agent({
     keepAliveTimeout: 1000,
@@ -810,4 +808,44 @@ describe('agent.test.js', function () {
     });
   });
 
+  describe('mock idle socket error', function() {
+    it('should idle socket emit error event', function(done) {
+      var agent = new Agent();
+
+      var options = {
+        host: 'www.taobao.com',
+        port: 80,
+        path: '/',
+        agent: agent
+      };
+
+      var socketKey = agent.getName(options);
+      var req = http.get(options, function(res) {
+        var size = 0;
+        res.on('data', function(chunk) {
+          size += chunk.length;
+        });
+        res.on('end', function() {
+          size.should.above(0);
+          Object.keys(agent.freeSockets).should.length(0);
+          process.nextTick(function() {
+            should.exist(agent.freeSockets[socketKey]);
+            agent.freeSockets[socketKey].should.length(1);
+            setTimeout(function() {
+              // agent should catch idle socket error event
+              agent.freeSockets[socketKey][0].emit('error', new Error('mock read ECONNRESET'));
+
+              setTimeout(function() {
+                // error socket should be destroy and remove
+                Object.keys(agent.freeSockets).should.length(0);
+                done();
+              }, 10);
+            }, 10);
+          });
+        });
+        res.resume();
+      });
+      req.on('error', done);
+    });
+  });
 });
