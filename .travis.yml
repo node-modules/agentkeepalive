@@ -8,4 +8,4 @@ node_js:
   - '5.3.0'
   - '5'
 script: 'npm run ci'
-after_script: 'npm i codecov && codecov'
+after_script: 'npm run codecov'
