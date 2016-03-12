@@ -2,7 +2,8 @@
 
 [![NPM version][npm-image]][npm-url]
 [![build status][travis-image]][travis-url]
-[![appveyor build status][appveyor-image]][appveyor-url]
+[![Circle status][circle-image]][circle-url]
+[![Appveyor status][appveyor-image]][appveyor-url]
 [![Test coverage][codecov-image]][codecov-url]
 [![David deps][david-image]][david-url]
 [![node version][node-image]][node-url]
@@ -12,6 +13,8 @@
 [npm-url]: https://npmjs.org/package/agentkeepalive
 [travis-image]: https://img.shields.io/travis/node-modules/agentkeepalive.svg?style=flat
 [travis-url]: https://travis-ci.org/node-modules/agentkeepalive
+[circle-image]: https://circleci.com/gh/node-modules/agentkeepalive.svg?style=svg
+[circle-url]: https://circleci.com/gh/node-modules/agentkeepalive
 [appveyor-image]: https://ci.appveyor.com/api/projects/status/k7ct4s47di6m5uy2?svg=true
 [appveyor-url]: https://ci.appveyor.com/project/fengmk2/agentkeepalive
 [codecov-image]: https://codecov.io/github/node-modules/agentkeepalive/coverage.svg?branch=master
