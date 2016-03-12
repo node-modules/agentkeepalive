@@ -1,8 +1,11 @@
+sudo: false
 language: node_js
 node_js:
   - '0.10'
-  - '0.11'
   - '0.12'
-  - 'iojs-1'
-script: "npm run test-travis"
-after_script: "npm install coveralls@2 && cat ./coverage/lcov.info | coveralls"
+  - '4.3.2'
+  - '4'
+  - '5.3.0'
+  - '5'
+script: 'npm run ci'
+after_script: 'npm i codecov && codecov'
