@@ -29,19 +29,20 @@
     "keepalive",
     "agentkeepalive"
   ],
-  "dependencies": {
-
-  },
+  "dependencies": {},
   "devDependencies": {
     "autod": "*",
     "contributors": "*",
     "istanbul": "*",
     "mocha": "*",
-    "pedding": "~1.0.0",
-    "should": "~4.0.4",
-    "should-http": "~0.0.2"
+    "pedding": "1",
+    "should": "4",
+    "should-http": "~0.0.2",
+    "jshint": "^2.9.1"
   },
-  "engines": { "node": ">= 0.10.0" },
+  "engines": {
+    "node": ">= 0.10.0"
+  },
   "author": "fengmk2 <fengmk2@gmail.com> (http://fengmk2.com)",
   "license": "MIT"
 }
