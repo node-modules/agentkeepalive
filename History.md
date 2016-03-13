@@ -1,4 +1,14 @@
 
+2.0.4 / 2016-03-13
+==================
+
+  * test: add Circle ci
+  * test: add appveyor ci build
+  * refactor: make sure only one error listener
+  * chore: use codecov
+  * fix: handle idle socket error
+  * test: run on more node versions
+
 2.0.3 / 2015-08-03
 ==================
 
