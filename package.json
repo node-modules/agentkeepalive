@@ -4,16 +4,17 @@
   "description": "Missing keepalive http.Agent",
   "main": "index.js",
   "files": [
-    "index.js", "lib/"
+    "index.js",
+    "lib"
   ],
   "scripts": {
     "test": "mocha -R spec -t 5000 -r should-http test/*.test.js",
-    "test-cov": "node node_modules/.bin/istanbul cover node_modules/.bin/_mocha -- -t 5000 -r should-http test/*.test.js",
-    "test-travis": "node node_modules/.bin/istanbul cover node_modules/.bin/_mocha --report lcovonly -- -t 5000 -r should-http test/*.test.js",
-    "jshint": "jshint .",
-    "autod": "autod -w --prefix '~' && npm run cnpm",
-    "cnpm": "npm install --registry=https://registry.npm.taobao.org",
-    "contributors": "contributors -f plain -o AUTHORS"
+    "test-cov": "istanbul cover node_modules/mocha/bin/_mocha -- -t 5000 -r should-http test/*.test.js",
+    "ci": "npm run lint && npm run test-cov",
+    "lint": "jshint .",
+    "autod": "autod -w --prefix '~'",
+    "contributors": "contributors -f plain -o AUTHORS",
+    "codecov": "npm i codecov && codecov"
   },
   "repository": {
     "type": "git",
@@ -24,22 +25,25 @@
   },
   "keywords": [
     "http",
+    "https",
     "agent",
-    "keepalive"
+    "keepalive",
+    "agentkeepalive"
   ],
-  "dependencies": {
-
-  },
+  "dependencies": {},
   "devDependencies": {
     "autod": "*",
     "contributors": "*",
     "istanbul": "*",
     "mocha": "*",
-    "pedding": "~1.0.0",
-    "should": "~4.0.4",
-    "should-http": "~0.0.2"
+    "pedding": "1",
+    "should": "4",
+    "should-http": "~0.0.2",
+    "jshint": "^2.9.1"
   },
-  "engines": { "node": ">= 0.10.0" },
+  "engines": {
+    "node": ">= 0.10.0"
+  },
   "author": "fengmk2 <fengmk2@gmail.com> (http://fengmk2.com)",
   "license": "MIT"
 }

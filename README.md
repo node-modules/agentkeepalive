@@ -2,8 +2,9 @@
 
 [![NPM version][npm-image]][npm-url]
 [![build status][travis-image]][travis-url]
-[![Test coverage][coveralls-image]][coveralls-url]
-[![Gittip][gittip-image]][gittip-url]
+[![Circle status][circle-image]][circle-url]
+[![Appveyor status][appveyor-image]][appveyor-url]
+[![Test coverage][codecov-image]][codecov-url]
 [![David deps][david-image]][david-url]
 [![node version][node-image]][node-url]
 [![npm download][download-image]][download-url]
@@ -12,10 +13,12 @@
 [npm-url]: https://npmjs.org/package/agentkeepalive
 [travis-image]: https://img.shields.io/travis/node-modules/agentkeepalive.svg?style=flat
 [travis-url]: https://travis-ci.org/node-modules/agentkeepalive
-[coveralls-image]: https://img.shields.io/coveralls/node-modules/agentkeepalive.svg?style=flat
-[coveralls-url]: https://coveralls.io/r/node-modules/agentkeepalive?branch=master
-[gittip-image]: https://img.shields.io/gittip/fengmk2.svg?style=flat
-[gittip-url]: https://www.gittip.com/fengmk2/
+[circle-image]: https://circleci.com/gh/node-modules/agentkeepalive.svg?style=svg
+[circle-url]: https://circleci.com/gh/node-modules/agentkeepalive
+[appveyor-image]: https://ci.appveyor.com/api/projects/status/k7ct4s47di6m5uy2?svg=true
+[appveyor-url]: https://ci.appveyor.com/project/fengmk2/agentkeepalive
+[codecov-image]: https://codecov.io/github/node-modules/agentkeepalive/coverage.svg?branch=master
+[codecov-url]: https://codecov.io/github/node-modules/agentkeepalive?branch=master
 [david-image]: https://img.shields.io/david/node-modules/agentkeepalive.svg?style=flat
 [david-url]: https://david-dm.org/node-modules/agentkeepalive
 [node-image]: https://img.shields.io/badge/node.js-%3E=_0.11-green.svg?style=flat-square

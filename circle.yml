@@ -1,0 +1,19 @@
+machine:
+  node:
+    version: '4'
+
+dependencies:
+  override:
+    - nvm ls
+
+test:
+  override:
+    - nvm i 0.10 && rm -rf node_modules && npm i && npm run ci && npm run codecov
+    - nvm i 0.12 && rm -rf node_modules && npm i && npm run ci && npm run codecov
+    - nvm i 4.3.2 && rm -rf node_modules && npm i && npm run ci && npm run codecov
+    - nvm i 4 && rm -rf node_modules && npm i && npm run ci && npm run codecov
+    - nvm i 5.3.0 && rm -rf node_modules && npm i && npm run ci && npm run codecov
+    - nvm i 5 && rm -rf node_modules && npm i && npm run ci && npm run codecov
+
+# https://circleci.com/docs/language-nodejs
+# https://discuss.circleci.com/t/testing-multiple-versions-of-node/542
