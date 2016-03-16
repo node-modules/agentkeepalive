@@ -1,6 +1,4 @@
-/*!
- * agentkeepalive - test/https_agent.test.js
- *
+/**
  * Copyright(c) 2012 - 2013 fengmk2 <fengmk2@gmail.com>
  * Copyright(c) node-modules
  * MIT Licensed
@@ -18,9 +16,9 @@ var urlparse = require('url').parse;
 var should = require('should');
 var pedding = require('pedding');
 var fs = require('fs');
+var utils = require('../lib/utils');
 
-describe('https_agent.test.js', function () {
-
+describe('test/https_agent.test.js', function() {
   var app = null;
   var port = null;
   var agentkeepalive = new HttpsAgent({
@@ -32,8 +30,8 @@ describe('https_agent.test.js', function () {
   var node10 = process.version.indexOf('v0.10.') === 0;
 
   before(function (done) {
-    if (node10) {
-        process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0;
+    if (utils.isNode10) {
+      process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0;
     }
     app = https.createServer({
       key: fs.readFileSync(__dirname + '/fixtures/agenttest-key.pem'),
@@ -67,7 +65,7 @@ describe('https_agent.test.js', function () {
   });
 
   after(function (done) {
-    if (node10) {
+    if (utils.isNode10) {
       // recover original setting
       process.env.NODE_TLS_REJECT_UNAUTHORIZED = nodeTlsRejectUnauthorized;
     }
