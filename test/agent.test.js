@@ -793,7 +793,7 @@ describe('test/agent.test.js', function () {
       throw new Error('should not run this');
     })
     .on('error', function (err) {
-      agentkeepalive.sockets.should.have.key(name)
+      agentkeepalive.sockets.should.have.key(name);
       agentkeepalive.sockets[name].should.length(1);
       done();
     });
@@ -821,7 +821,7 @@ describe('test/agent.test.js', function () {
     });
 
     Object.keys(agentkeepalive.sockets).should.length(1);
-  })
+  });
 
   describe('keepAlive = false', function () {
     it('should close socket after request', function (done) {
