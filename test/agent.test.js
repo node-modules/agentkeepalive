@@ -730,7 +730,7 @@ describe('test/agent.test.js', function () {
     });
   });
 
-  it('should timeout and remove free socket', function (done) {
+  it('should timeout and remove free socket', function(done) {
     done = pedding(2, done);
     var _keepaliveAgent = new Agent({
       maxSockets: 1,
@@ -775,7 +775,80 @@ describe('test/agent.test.js', function () {
     req.end();
   });
 
-  it('should not open more sockets than maxSockets', function (done) {
+  it('should not open more sockets than maxSockets when request success',
+  function(done) {
+    done = pedding(3, done);
+    var name = 'localhost:' + port + '::';
+
+    var agentkeepalive = new Agent({
+       keepAlive: true,
+       keepAliveTimeout: 1000,
+       maxSockets: 1,
+       maxFreeSockets: 1
+     });
+
+    http.get({
+      agent: agentkeepalive,
+      port: port,
+      path: '/hello1',
+    }, function(res) {
+      var info;
+      res.statusCode.should.equal(200);
+      res.on('data', function(data) {
+        info = JSON.parse(data);
+      });
+      res.on('end', function() {
+        info.url.should.equal('/hello1');
+        agentkeepalive.sockets.should.have.key(name);
+        agentkeepalive.sockets[name].should.length(1);
+        done();
+      });
+      res.resume();
+    });
+
+    http.get({
+      agent: agentkeepalive,
+      port: port,
+      path: '/hello2',
+    }, function(res) {
+      var info;
+      res.statusCode.should.equal(200);
+      res.on('data', function(data) {
+        info = JSON.parse(data);
+      });
+      res.on('end', function() {
+        info.url.should.equal('/hello2');
+        agentkeepalive.sockets.should.have.key(name);
+        agentkeepalive.sockets[name].should.length(1);
+        done();
+      });
+      res.resume();
+    });
+
+    http.get({
+      agent: agentkeepalive,
+      port: port,
+      path: '/hello3',
+    }, function(res) {
+      var info;
+      res.statusCode.should.equal(200);
+      res.on('data', function(data) {
+        info = JSON.parse(data);
+      });
+      res.on('end', function() {
+        info.url.should.equal('/hello3');
+        agentkeepalive.sockets.should.have.key(name);
+        agentkeepalive.sockets[name].should.length(1);
+        done();
+      });
+      res.resume();
+    });
+
+    Object.keys(agentkeepalive.sockets).should.length(1);
+    agentkeepalive.sockets[name].should.length(1);
+  });
+
+  it('should not open more sockets than maxSockets when request timeout', function(done) {
     var name = 'localhost:' + port + '::';
 
     var agentkeepalive = new Agent({
