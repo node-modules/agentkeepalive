@@ -1,4 +1,9 @@
 
+2.1.0 / 2016-04-02
+==================
+
+  * fix: opened sockets number overflow maxSockets
+
 2.0.5 / 2016-03-16
 ==================
 
