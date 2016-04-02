@@ -775,6 +775,54 @@ describe('test/agent.test.js', function () {
     req.end();
   });
 
+  it('should not open more sockets than maxSockets', function (done) {
+    var name = 'localhost:' + port + '::';
+
+    var agentkeepalive = new Agent({
+       keepAlive: true,
+       keepAliveTimeout: 1000,
+       maxSockets: 1,
+       maxFreeSockets: 1
+     });
+
+    http.get({
+      agent: agentkeepalive,
+      port: port,
+      path: '/hang',
+    }, function (res) {
+      throw new Error('should not run this');
+    })
+    .on('error', function (err) {
+      agentkeepalive.sockets.should.have.key(name);
+      agentkeepalive.sockets[name].should.length(1);
+      done();
+    });
+
+    http.get({
+      agent: agentkeepalive,
+      port: port,
+      path: '/hang',
+    }, function (res) {
+      throw new Error('should not run this');
+    })
+    .on('error', function (err) {
+      // do noting
+    });
+
+    http.get({
+      agent: agentkeepalive,
+      port: port,
+      path: '/hang',
+    }, function (res) {
+      throw new Error('should not run this');
+    })
+    .on('error', function (err) {
+       // do noting
+    });
+
+    Object.keys(agentkeepalive.sockets).should.length(1);
+  });
+
   describe('keepAlive = false', function () {
     it('should close socket after request', function (done) {
       var name = 'localhost:' + port + '::';
