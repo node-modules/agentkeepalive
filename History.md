@@ -1,4 +1,10 @@
 
+2.1.1 / 2016-04-06
+==================
+
+  * https: fix ssl socket leak when keepalive is used
+  * chore: remove circle ci image
+
 2.1.0 / 2016-04-02
 ==================
 
