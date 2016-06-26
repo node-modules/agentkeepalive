@@ -1,6 +1,6 @@
 {
   "name": "agentkeepalive",
-  "version": "2.1.1",
+  "version": "2.2.0",
   "description": "Missing keepalive http.Agent",
   "main": "index.js",
   "browser": "browser.js",
@@ -14,8 +14,6 @@
     "test-cov": "istanbul cover node_modules/mocha/bin/_mocha -- -t 5000 -r should-http test/*.test.js",
     "ci": "npm run lint && npm run test-cov",
     "lint": "jshint .",
-    "autod": "autod -w --prefix '~'",
-    "contributors": "contributors -f plain -o AUTHORS",
     "codecov": "npm i codecov && codecov"
   },
   "repository": {
@@ -34,8 +32,6 @@
   ],
   "dependencies": {},
   "devDependencies": {
-    "autod": "*",
-    "contributors": "*",
     "istanbul": "*",
     "mocha": "*",
     "pedding": "1",

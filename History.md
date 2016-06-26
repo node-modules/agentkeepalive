@@ -1,4 +1,10 @@
 
+2.2.0 / 2016-06-26
+==================
+
+  * feat: Add browser shim (noop) for isomorphic use. (#39)
+  * chore: add security check badge
+
 2.1.1 / 2016-04-06
 ==================
 
