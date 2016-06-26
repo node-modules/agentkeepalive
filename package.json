@@ -3,8 +3,10 @@
   "version": "2.1.1",
   "description": "Missing keepalive http.Agent",
   "main": "index.js",
+  "browser": "browser.js",
   "files": [
     "index.js",
+    "browser.js",
     "lib"
   ],
   "scripts": {
