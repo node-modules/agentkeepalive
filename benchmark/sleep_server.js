@@ -1,33 +1,22 @@
-/*!
- * agentkeepalive - benchmark/sleep_server.js
- * Copyright(c) 2012 fengmk2 <fengmk2@gmail.com>
- * MIT Licensed
- */
+'use strict';
 
-"use strict";
+const http = require('http');
 
-/**
- * Module dependencies.
- */
-
-var http = require('http');
-
-var count = 0;
-http.createServer(function (req, res) {
-  var size = 0;
-  var data = '';
-  req.on('data', function (chunk) {
+http.createServer((req, res) => {
+  let size = 0;
+  let data = '';
+  req.on('data', chunk => {
     size += chunk.length;
     data += chunk;
   });
-  req.on('end', function () {
-    var timeout = parseInt(req.url.substring(1), 10) || 1; // default 1ms
-    setTimeout(function () {
-      var result = {
-        timeout: timeout,
+  req.on('end', () => {
+    const timeout = parseInt(req.url.substring(1), 10) || 1; // default 1ms
+    setTimeout(() => {
+      const result = {
+        timeout,
         headers: req.headers,
-        size: size,
-        data: data
+        size,
+        data,
       };
       res.socket.setNoDelay(true);
       res.end(JSON.stringify(result));

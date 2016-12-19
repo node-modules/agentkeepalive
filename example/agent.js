@@ -1,49 +1,50 @@
-var http = require('http');
-var Agent = require('../');
-// var Agent = require('http').Agent;
+'use strict';
 
-var keepaliveAgent = new Agent({
-  keepAlive: true
+const http = require('http');
+const Agent = require('../');
+
+const keepaliveAgent = new Agent({
+  keepAlive: true,
 });
 // https://www.google.com/search?q=nodejs&sugexp=chrome,mod=12&sourceid=chrome&ie=UTF-8
 
-var options = {
+const options = {
   host: 'www.taobao.com',
   path: '/',
   method: 'GET',
   port: 80,
-  agent: keepaliveAgent
+  agent: keepaliveAgent,
 };
 
 function get() {
-  var start = Date.now();
-  var req = http.get(options, function (res) {
+  const start = Date.now();
+  const req = http.get(options, res => {
     console.log('STATUS1: %d, %d ms', res.statusCode, Date.now() - start);
     console.log('HEADERS1: %j', res.headers);
-    res.on('data', function (chunk) {
+    res.on('data', chunk => {
       console.log('BODY1: %d', chunk.length);
     });
-    res.on('end', function () {
+    res.on('end', () => {
       console.log('get end');
     });
   });
-  req.on('error', function (e) {
+  req.on('error', e => {
     console.log('problem with request: ' + e.message);
   });
 }
 
 get();
 
-setTimeout(function () {
+setTimeout(() => {
   console.log('keep alive sockets:', keepaliveAgent);
   process.exit();
 }, 300000);
 
-var count = 0;
+let count = 0;
 setInterval(function() {
-  var name = keepaliveAgent.getName(options);
-  var sockets = keepaliveAgent.sockets[name] || [];
-  var freeSockets = keepaliveAgent.freeSockets[name] || [];
+  const name = keepaliveAgent.getName(options);
+  const sockets = keepaliveAgent.sockets[name] || [];
+  const freeSockets = keepaliveAgent.freeSockets[name] || [];
   console.log('%ss, %s, sockets: %d, destroyed: %s, free sockets: %d, destroyed: %s', ++count,
     name, sockets.length, sockets[0] && sockets[0].destroyed,
     freeSockets.length, freeSockets[0] && freeSockets[0].destroyed);

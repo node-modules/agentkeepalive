@@ -1,8 +1,10 @@
-var http = require('http');
+'use strict';
 
-http.createServer(function(req, res) {
+const http = require('http');
+
+http.createServer((req, res) => {
   req.resume();
-  req.on('end', function() {
+  req.on('end', () => {
     res.statusCode = 200;
     res.end(req.method + ' ' + req.url);
   });
