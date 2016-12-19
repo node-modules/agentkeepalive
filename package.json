@@ -11,10 +11,9 @@
   ],
   "scripts": {
     "test": "egg-bin test",
-    "test-cov": "egg-bin cov",
-    "ci": "npm run lint && npm run test-cov",
-    "lint": "eslint lib test index.js",
-    "codecov": "npm i codecov && codecov"
+    "cov": "egg-bin cov",
+    "ci": "npm run lint && npm run cov",
+    "lint": "eslint lib test index.js"
   },
   "repository": {
     "type": "git",
@@ -33,12 +32,16 @@
   "dependencies": {},
   "devDependencies": {
     "egg-bin": "^1.9.1",
+    "egg-ci": "^1.1.0",
     "eslint": "^3.12.2",
     "eslint-config-egg": "^3.2.0",
     "pedding": "1"
   },
   "engines": {
-    "node": ">= 0.10.0"
+    "node": ">= 4.0.0"
+  },
+  "ci": {
+    "version": "4.3.2, 4, 6, 7"
   },
   "author": "fengmk2 <fengmk2@gmail.com> (https://fengmk2.com)",
   "license": "MIT"
