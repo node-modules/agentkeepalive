@@ -43,17 +43,17 @@ $ npm install agentkeepalive --save
 * `options` {Object} Set of configurable options to set on the agent.
   Can have the following fields:
   * `keepAlive` {Boolean} Keep sockets around in a pool to be used by
-    other requests in the future. Default = `true`
+    other requests in the future. Default = `true`.
   * `keepAliveMsecs` {Number} When using HTTP KeepAlive, how often
     to send TCP KeepAlive packets over sockets being kept alive.
     Default = `1000`.  Only relevant if `keepAlive` is set to `true`.
-  * `keepAliveTimeout`: {Number} Sets the free socket to timeout
-    after `keepAliveTimeout` milliseconds of inactivity on the free socket.
+  * `freeSocketKeepAliveTimeout`: {Number} Sets the free socket to timeout
+    after `freeSocketKeepAliveTimeout` milliseconds of inactivity on the free socket.
     Default is `15000`.
     Only relevant if `keepAlive` is set to `true`.
   * `timeout`: {Number} Sets the working socket to timeout
     after `timeout` milliseconds of inactivity on the working socket.
-    Default is `keepAliveTimeout * 2`.
+    Default is `freeSocketKeepAliveTimeout * 2`.
   * `maxSockets` {Number} Maximum number of sockets to allow per
     host. Default = `Infinity`.
   * `maxFreeSockets` {Number} Maximum number of sockets to leave open
@@ -63,25 +63,25 @@ $ npm install agentkeepalive --save
 ## Usage
 
 ```js
-var http = require('http');
-var Agent = require('agentkeepalive');
+const http = require('http');
+const Agent = require('agentkeepalive');
 
-var keepaliveAgent = new Agent({
+const keepaliveAgent = new Agent({
   maxSockets: 100,
   maxFreeSockets: 10,
   timeout: 60000,
-  keepAliveTimeout: 30000 // free socket keepalive for 30 seconds
+  freeSocketKeepAliveTimeout: 30000, // free socket keepalive for 30 seconds
 });
 
-var options = {
+const options = {
   host: 'cnodejs.org',
   port: 80,
   path: '/',
   method: 'GET',
-  agent: keepaliveAgent
+  agent: keepaliveAgent,
 };
 
-var req = http.request(options, function (res) {
+const req = http.request(options, res => {
   console.log('STATUS: ' + res.statusCode);
   console.log('HEADERS: ' + JSON.stringify(res.headers));
   res.setEncoding('utf8');
@@ -89,15 +89,13 @@ var req = http.request(options, function (res) {
     console.log('BODY: ' + chunk);
   });
 });
-
-req.on('error', function (e) {
+req.on('error', e => {
   console.log('problem with request: ' + e.message);
 });
 req.end();
 
-setTimeout(function () {
-  console.log('keep alive sockets:');
-  console.log(keepaliveAgent.unusedSockets);
+setTimeout(() => {
+  console.log('agent status: %j', keepaliveAgent.getCurrentStatus());
 }, 2000);
 
 ```
@@ -112,8 +110,8 @@ setTimeout(function () {
   closeSocketCount: 5,
   timeoutSocketCount: 0,
   requestCount: 5,
-  freeSockets: { 'localhost:57479::': 3 },
-  sockets: { 'localhost:57479::': 5 },
+  freeSockets: { 'localhost:57479:': 3 },
+  sockets: { 'localhost:57479:': 5 },
   requests: {}
 }
 ```
@@ -121,37 +119,35 @@ setTimeout(function () {
 ### Support `https`
 
 ```js
-var https = require('https');
-var HttpsAgent = require('agentkeepalive').HttpsAgent;
+const https = require('https');
+const HttpsAgent = require('agentkeepalive').HttpsAgent;
 
-var keepaliveAgent = new HttpsAgent();
+const keepaliveAgent = new HttpsAgent();
 // https://www.google.com/search?q=nodejs&sugexp=chrome,mod=12&sourceid=chrome&ie=UTF-8
-var options = {
+const options = {
   host: 'www.google.com',
   port: 443,
   path: '/search?q=nodejs&sugexp=chrome,mod=12&sourceid=chrome&ie=UTF-8',
   method: 'GET',
-  agent: keepaliveAgent
+  agent: keepaliveAgent,
 };
 
-var req = https.request(options, function (res) {
+const req = https.request(options, res => {
   console.log('STATUS: ' + res.statusCode);
   console.log('HEADERS: ' + JSON.stringify(res.headers));
   res.setEncoding('utf8');
-  res.on('data', function (chunk) {
+  res.on('data', chunk => {
     console.log('BODY: ' + chunk);
   });
 });
 
-req.on('error', function (e) {
+req.on('error', e => {
   console.log('problem with request: ' + e.message);
 });
 req.end();
 
-setTimeout(function () {
-  console.log('keep alive sockets:');
-  console.log(keepaliveAgent.unusedSockets);
-  process.exit();
+setTimeout(() => {
+  console.log('agent status: %j', keepaliveAgent.getCurrentStatus());
 }, 2000);
 ```
 
