@@ -229,9 +229,14 @@ describe('test/agent.test.js', () => {
   });
 
   it('should remove keepalive socket when server side destroy()', done => {
+    done = pedding(2, done);
     const name = 'localhost:' + port + ':';
     assert(!agentkeepalive.sockets[name]);
     assert(agentkeepalive.freeSockets[name].length === 1);
+
+    // should emit agent close event too
+    agentkeepalive.once('close', done);
+
     const req = http.get({
       agent: agentkeepalive,
       port,
