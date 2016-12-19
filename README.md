@@ -25,6 +25,13 @@
 
 The Node.js's missing `keep alive` `http.Agent`. Support `http` and `https`.
 
+## What's different from original `http.Agent`?
+
+- `keepAlive=true` by default
+- Disable Nagle's algorithm: `socket.setNoDelay(true)`
+- Add free socket timeout: avoid long time inactivity socket leak in the free-sockets queue.
+- Add active socket timeout: avoid long time inactivity socket leak in the active-sockets queue.
+
 ## Install
 
 ```bash
