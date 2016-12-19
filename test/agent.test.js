@@ -812,7 +812,7 @@ describe('test/agent.test.js', () => {
     });
 
     const options = {
-      hostname: 'www.taobao.com',
+      hostname: 'registry.npmjs.org',
       port: 80,
       path: '/',
       method: 'GET',
@@ -1002,7 +1002,7 @@ describe('test/agent.test.js', () => {
       const agent = new Agent();
 
       const options = {
-        host: 'www.taobao.com',
+        host: 'registry.npmjs.org',
         port: 80,
         path: '/',
         agent,
