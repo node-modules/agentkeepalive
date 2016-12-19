@@ -1,32 +1,20 @@
-/**
- * Copyright(c) 2012 - 2013 fengmk2 <fengmk2@gmail.com>
- * Copyright(c) node-modules
- * MIT Licensed
- */
+'use strict';
 
-"use strict";
+const assert = require('assert');
+const http = require('http');
+const urlparse = require('url').parse;
+const pedding = require('pedding');
+const Agent = require('../');
 
-/**
- * Module dependencies.
- */
-
-var http = require('http');
-var urlparse = require('url').parse;
-var should = require('should');
-require('should-http');
-var pedding = require('pedding');
-var Agent = require('../');
-
-describe('test/agent.test.js', function () {
-
-  var agentkeepalive = new Agent({
+describe('test/agent.test.js', () => {
+  const agentkeepalive = new Agent({
     keepAliveTimeout: 1000,
     maxSockets: 5,
     maxFreeSockets: 5,
   });
 
-  var port = null;
-  var app = http.createServer(function (req, res) {
+  let port = null;
+  const app = http.createServer((req, res) => {
     if (req.url === '/error') {
       res.destroy();
       return;
@@ -34,167 +22,258 @@ describe('test/agent.test.js', function () {
       // Wait forever.
       return;
     } else if (req.url === '/remote_close') {
-      setTimeout(function () {
+      setTimeout(() => {
         req.connection.end();
       }, 500);
     }
-    var info = urlparse(req.url, true);
+    const info = urlparse(req.url, true);
     if (info.query.timeout) {
-      setTimeout(function () {
+      setTimeout(() => {
         res.end(info.query.timeout);
       }, parseInt(info.query.timeout, 10));
       return;
     }
     res.end(JSON.stringify({
-      info: info,
+      info,
       url: req.url,
       headers: req.headers,
-      socket: req.socket._getpeername()
+      socket: req.socket._getpeername(),
     }));
   });
 
-  before(function (done) {
-    app.listen(0, function () {
+  before(done => {
+    app.listen(0, () => {
       port = app.address().port;
       done();
     });
   });
 
-  after(function (done) {
-    setTimeout(done, 1500);
+  after(done => setTimeout(done, 1500));
+
+  it('should default options set right', () => {
+    const agent = agentkeepalive;
+    assert(agent.keepAlive === true);
+    assert(agent.keepAliveMsecs === 1000);
+    assert(agent.maxSockets === 5);
+    assert(agent.maxFreeSockets === 5);
+    assert(agent.timeout === 30000);
   });
 
-  it('should default options set right', function () {
-    var agent = agentkeepalive;
-    agent.should.have.property('keepAlive', true);
-    agent.should.have.property('keepAliveMsecs', 1000);
-    agent.should.have.property('maxSockets', 5);
-    agent.should.have.property('maxFreeSockets', 5);
+  let remotePort = null;
+
+  it('should request with connection: keep-alive with http.Agent(keepAlive=true)', done => {
+    const agent = new http.Agent({
+      keepAlive: true,
+    });
+    const req = http.request({
+      method: 'GET',
+      port,
+      path: '/',
+      agent,
+    }, res => {
+      assert(res.statusCode === 200);
+      const chunks = [];
+      res.on('data', data => {
+        chunks.push(data);
+      });
+      res.on('end', () => {
+        const data = JSON.parse(Buffer.concat(chunks));
+        assert(data.headers.connection === 'keep-alive');
+        done();
+      });
+    });
+    req.end();
   });
 
-  var remotePort = null;
+  it('should request with connection: close with http.Agent()', done => {
+    const req = http.request({
+      method: 'GET',
+      port,
+      path: '/',
+    }, res => {
+      assert(res.statusCode === 200);
+      const chunks = [];
+      res.on('data', data => {
+        chunks.push(data);
+      });
+      res.on('end', () => {
+        const data = JSON.parse(Buffer.concat(chunks));
+        assert(data.headers.connection === 'close');
+        done();
+      });
+    });
+    req.end();
+  });
 
-  it('should request / 200 status', function (done) {
-    var name = 'localhost:' + port + '::';
-    agentkeepalive.sockets.should.not.have.key(name);
-    agentkeepalive.freeSockets.should.not.have.key(name);
+  it('should inactivity socket timeout', done => {
+    const name = 'localhost:' + port + ':';
+    const agentkeepalive = new Agent({
+      freeSocketKeepAliveTimeout: 5000,
+      timeout: 1000,
+    });
+    assert(!agentkeepalive.sockets[name]);
+    assert(!agentkeepalive.freeSockets[name]);
     http.get({
       agent: agentkeepalive,
-      port: port,
-      path: '/'
-    }, function (res) {
-      res.should.status(200);
-      res.on('data', function (data) {
-        data = JSON.parse(data);
-        // cache for next test
-        remotePort = data.socket.port;
+      port,
+      path: '/',
+    }, res => {
+      assert(res.statusCode === 200);
+      const chunks = [];
+      res.on('data', data => {
+        chunks.push(data);
       });
-      res.on('end', function () {
-        agentkeepalive.sockets.should.have.key(name);
-        agentkeepalive.freeSockets.should.not.have.key(name);
-        setTimeout(function () {
-          agentkeepalive.sockets.should.not.have.key(name);
-          agentkeepalive.freeSockets.should.have.key(name);
-          agentkeepalive.freeSockets[name].should.length(1);
+      res.on('end', () => {
+        const data = JSON.parse(Buffer.concat(chunks));
+        remotePort = data.socket.port;
+        assert(data.headers.connection === 'keep-alive');
+        assert(agentkeepalive.sockets[name]);
+        assert(!agentkeepalive.freeSockets[name]);
+        setTimeout(() => {
+          assert(!agentkeepalive.sockets[name]);
+          assert(agentkeepalive.freeSockets[name]);
+          assert(agentkeepalive.freeSockets[name].length === 1);
+
+          // request /hang timeout
+          http.get({
+            agent: agentkeepalive,
+            port,
+            path: '/hang',
+          }, () => {
+            assert(false, 'should not run this');
+          }).on('error', err => {
+            // TODO: should be a better error message than "socket hang up"
+            assert(err.message === 'socket hang up');
+            assert(err.code === 'ECONNRESET');
+            done();
+          });
+        }, 20);
+      });
+    });
+  });
+
+  it('should request / 200 status', done => {
+    const name = 'localhost:' + port + ':';
+    assert(!agentkeepalive.sockets[name]);
+    assert(!agentkeepalive.freeSockets[name]);
+    http.get({
+      agent: agentkeepalive,
+      port,
+      path: '/',
+    }, res => {
+      assert(res.statusCode === 200);
+      const chunks = [];
+      res.on('data', data => {
+        chunks.push(data);
+      });
+      res.on('end', () => {
+        const data = JSON.parse(Buffer.concat(chunks));
+        remotePort = data.socket.port;
+        assert(data.headers.connection === 'keep-alive');
+        assert(agentkeepalive.sockets[name]);
+        assert(!agentkeepalive.freeSockets[name]);
+        setTimeout(() => {
+          assert(!agentkeepalive.sockets[name]);
+          assert(agentkeepalive.freeSockets[name]);
+          assert(agentkeepalive.freeSockets[name].length === 1);
           done();
         }, 20);
       });
     });
-    var status = agentkeepalive.getCurrentStatus();
-    status.createSocketCount.should.equal(1);
-    status.timeoutSocketCount.should.equal(0);
-    status.sockets.should.have.key(name);
-    status.sockets[name].should.equal(1);
-    status.freeSockets.should.not.have.key(name);
+
+    const status = agentkeepalive.getCurrentStatus();
+    assert(status.createSocketCount === 1);
+    assert(status.timeoutSocketCount === 0);
+    assert(status.sockets[name] === 1);
+    assert(!status.freeSockets[name]);
   });
 
-  it('should request again and use the same socket', function (done) {
-    var name = 'localhost:' + port + '::';
-    agentkeepalive.sockets.should.not.have.key(name);
-    agentkeepalive.freeSockets.should.have.key(name);
-    agentkeepalive.freeSockets[name].should.length(1);
+  it('should request again and use the same socket', done => {
+    const name = 'localhost:' + port + ':';
+    assert(!agentkeepalive.sockets[name]);
+    assert(agentkeepalive.freeSockets[name]);
+    assert(agentkeepalive.freeSockets[name].length === 1);
+
     http.get({
       agent: agentkeepalive,
-      port: port,
+      port,
       path: '/foo',
-    }, function (res) {
-      res.should.status(200);
-      res.on('data', function (data) {
-        data = JSON.parse(data);
-        data.socket.port.should.equal(remotePort);
+    }, res => {
+      assert(res.statusCode === 200);
+      const chunks = [];
+      res.on('data', data => {
+        chunks.push(data);
       });
-      res.on('end', function () {
-        agentkeepalive.sockets.should.have.key(name);
-        agentkeepalive.freeSockets.should.have.not.key(name);
-        setTimeout(function () {
-          var status = agentkeepalive.getCurrentStatus();
-          status.createSocketCount.should.equal(1);
-          status.closeSocketCount.should.equal(0);
-          status.timeoutSocketCount.should.equal(0);
-          status.requestCount.should.equal(2);
-          status.sockets.should.not.have.key(name);
-          status.freeSockets.should.have.key(name);
-          status.freeSockets[name].should.equal(1);
+      res.on('end', () => {
+        const data = JSON.parse(Buffer.concat(chunks));
+        assert(data.socket.port === remotePort);
+
+        assert(agentkeepalive.sockets[name]);
+        assert(!agentkeepalive.freeSockets[name]);
+        setTimeout(() => {
+          const status = agentkeepalive.getCurrentStatus();
+          assert(status.createSocketCount === 1);
+          assert(status.closeSocketCount === 0);
+          assert(status.timeoutSocketCount === 0);
+          assert(status.requestCount === 2);
+          assert(!status.sockets[name]);
+          assert(status.freeSockets[name]);
+          assert(status.freeSockets[name] === 1);
           done();
         }, 10);
       });
     });
-    agentkeepalive.sockets.should.have.key(name);
-    agentkeepalive.sockets[name].should.length(1);
-    agentkeepalive.freeSockets.should.have.not.key(name);
+    assert(agentkeepalive.sockets[name]);
+    assert(agentkeepalive.sockets[name].length === 1);
+    assert(!agentkeepalive.freeSockets[name]);
   });
 
-  it('should remove keepalive socket when server side destroy()', function (done) {
-    var name = 'localhost:' + port + '::';
-    agentkeepalive.sockets.should.have.not.key(name);
-    agentkeepalive.freeSockets.should.have.key(name);
-    agentkeepalive.freeSockets[name].should.length(1);
-    var req = http.get({
+  it('should remove keepalive socket when server side destroy()', done => {
+    const name = 'localhost:' + port + ':';
+    assert(!agentkeepalive.sockets[name]);
+    assert(agentkeepalive.freeSockets[name].length === 1);
+    const req = http.get({
       agent: agentkeepalive,
-      port: port,
+      port,
       path: '/error',
-    }, function (res) {
+    }, () => {
       throw new Error('should not call this');
     });
-    req.on('error', function (err) {
-      should.exist(err);
-      err.message.should.equal('socket hang up');
-      agentkeepalive.sockets.should.have.key(name);
-      agentkeepalive.freeSockets.should.have.not.key(name);
-      setTimeout(function () {
-        agentkeepalive.sockets.should.not.have.key(name);
-        agentkeepalive.freeSockets.should.have.not.key(name);
+    req.on('error', err => {
+      assert(err.message === 'socket hang up');
+      assert(agentkeepalive.sockets[name].length === 1);
+      assert(!agentkeepalive.freeSockets[name]);
+      setTimeout(() => {
+        assert(!agentkeepalive.sockets[name]);
+        assert(!agentkeepalive.freeSockets[name]);
         done();
       }, 10);
     });
-    agentkeepalive.sockets.should.have.key(name);
-    agentkeepalive.sockets[name].should.length(1);
-    agentkeepalive.freeSockets.should.have.not.key(name);
+    assert(agentkeepalive.sockets[name].length === 1);
+    assert(!agentkeepalive.freeSockets[name]);
   });
 
-  it('should remove socket when socket.destroy()', function (done) {
-    var name = 'localhost:' + port + '::';
-    agentkeepalive.sockets.should.have.not.key(name);
-    agentkeepalive.freeSockets.should.have.not.key(name);
+  it('should remove socket when socket.destroy()', done => {
+    const name = 'localhost:' + port + ':';
+    assert(!agentkeepalive.sockets[name]);
+    assert(!agentkeepalive.freeSockets[name]);
     http.get({
       agent: agentkeepalive,
-      port: port,
+      port,
       path: '/',
-    }, function (res) {
-      res.should.status(200);
+    }, res => {
+      assert(res.statusCode === 200);
       res.resume();
-      res.on('end', function () {
-        agentkeepalive.sockets.should.have.key(name);
-        agentkeepalive.sockets[name].should.length(1);
-        agentkeepalive.freeSockets.should.have.not.key(name);
-        setTimeout(function () {
-          agentkeepalive.sockets.should.have.not.key(name);
-          agentkeepalive.freeSockets.should.have.key(name);
-          agentkeepalive.freeSockets[name].should.length(1);
+      res.on('end', () => {
+        assert(agentkeepalive.sockets[name].length === 1);
+        assert(!agentkeepalive.freeSockets[name]);
+        setTimeout(() => {
+          assert(!agentkeepalive.sockets[name]);
+          assert(agentkeepalive.freeSockets[name].length === 1);
           agentkeepalive.freeSockets[name][0].destroy();
-          setTimeout(function () {
-            agentkeepalive.sockets.should.not.have.key(name);
-            agentkeepalive.freeSockets.should.not.have.key(name);
+          setTimeout(() => {
+            assert(!agentkeepalive.sockets[name]);
+            assert(!agentkeepalive.freeSockets[name]);
             done();
           }, 10);
         }, 10);
@@ -202,559 +281,553 @@ describe('test/agent.test.js', function () {
     }).on('error', done);
   });
 
-  it('should use new socket when hit the max keepalive time: 1000ms', function (done) {
-    var name = 'localhost:' + port + '::';
-    agentkeepalive.sockets.should.have.not.key(name);
-    agentkeepalive.freeSockets.should.have.not.key(name);
+  it('should use new socket when hit the max keepalive time: 1000ms', done => {
+    const name = 'localhost:' + port + ':';
+    assert(!agentkeepalive.sockets[name]);
+    assert(!agentkeepalive.freeSockets[name]);
     http.get({
       agent: agentkeepalive,
-      port: port,
+      port,
       path: '/',
-    }, function (res) {
-      res.should.status(200);
-      var lastPort = null;
-      res.on('data', function (data) {
+    }, res => {
+      assert(res.statusCode === 200);
+      let lastPort = null;
+      res.on('data', data => {
         data = JSON.parse(data);
         lastPort = data.socket.port;
-        should.exist(lastPort);
+        assert(lastPort > 0);
       });
-      res.on('end', function () {
-        agentkeepalive.sockets.should.have.key(name);
-        agentkeepalive.sockets[name].should.length(1);
-        agentkeepalive.freeSockets.should.have.not.key(name);
-        setTimeout(function () {
-          agentkeepalive.sockets.should.have.not.key(name);
-          agentkeepalive.freeSockets.should.have.not.key(name);
+      res.on('end', () => {
+        assert(agentkeepalive.sockets[name].length === 1);
+        assert(!agentkeepalive.freeSockets[name]);
+
+        // free keepAlive socket timeout and destroy
+        setTimeout(() => {
+          assert(!agentkeepalive.sockets[name]);
+          assert(!agentkeepalive.freeSockets[name]);
           http.get({
             agent: agentkeepalive,
-            port: port,
+            port,
             path: '/',
-          }, function (res) {
-            res.should.status(200);
-            res.on('data', function (data) {
+          }, res => {
+            assert(res.statusCode === 200);
+            res.on('data', data => {
               data = JSON.parse(data);
-              should.exist(data.socket.port);
-              data.socket.port.should.not.equal(lastPort);
+              assert(data.socket.port > 0);
+              assert(data.socket.port !== lastPort);
             });
-            res.on('end', function () {
-              done();
-            });
+            res.on('end', done);
           });
         }, 2000);
       });
     });
   });
 
-  it('should disable keepalive when keepAlive=false', function (done) {
-    var name = 'localhost:' + port + '::';
-    var agent = new Agent({
-      keepAlive: false
+  it('should disable keepalive when keepAlive=false', done => {
+    const name = 'localhost:' + port + ':';
+    const agent = new Agent({
+      keepAlive: false,
     });
-    agent.keepAlive.should.equal(false);
+    assert(agent.keepAlive === false);
+
     http.get({
-      agent: agent,
-      port: port,
+      agent,
+      port,
       path: '/',
-    }, function (res) {
-      res.should.status(200);
-      res.on('data', function () {});
-      res.on('end', function () {
-        agent.sockets.should.have.key(name);
-        agent.freeSockets.should.not.have.key(name);
-        setTimeout(function () {
-          agent.sockets.should.have.not.key(name);
-          agent.freeSockets.should.not.have.key(name);
+    }, res => {
+      assert(res.statusCode === 200);
+      res.on('data', data => {
+        assert(JSON.parse(data).headers.connection === 'close');
+      });
+      res.on('end', () => {
+        assert(agent.sockets[name].length === 1);
+        assert(!agent.freeSockets[name]);
+        setTimeout(() => {
+          assert(!agent.sockets[name]);
+          assert(!agent.freeSockets[name]);
           done();
         }, 10);
       });
     });
-    agent.sockets.should.have.key(name);
-    agent.sockets[name].should.length(1);
-    agent.freeSockets.should.not.have.key(name);
   });
 
-  it('should not keepalive when client.abort()', function (done) {
-    var name = 'localhost:' + port + '::';
-    agentkeepalive.sockets.should.have.not.key(name);
-    var req = http.get({
+  it('should not keepalive when client.abort()', done => {
+    const name = 'localhost:' + port + ':';
+    assert(!agentkeepalive.sockets[name]);
+    const req = http.get({
       agent: agentkeepalive,
-      port: port,
+      port,
       path: '/',
-    }, function (res) {
+    }, () => {
       throw new Error('should not call this.');
     });
-    req.on('error', function (err) {
-      should.exist(err);
-      err.message.should.equal('socket hang up');
-      agentkeepalive.sockets.should.not.have.key(name);
-      agentkeepalive.freeSockets.should.have.not.key(name);
+    req.on('error', err => {
+      assert(err.message, 'socket hang up');
+      assert(!agentkeepalive.sockets[name]);
+      assert(!agentkeepalive.freeSockets[name]);
       done();
     });
-    process.nextTick(function () {
+    process.nextTick(() => {
       req.abort();
     });
+    assert(agentkeepalive.sockets[name].length === 1);
   });
 
-  it('should keep 1 socket', function (done) {
-    var name = 'localhost:' + port + '::';
-    var agent = new Agent({
+  it('should keep 1 socket', done => {
+    const name = 'localhost:' + port + ':';
+    const agent = new Agent({
       maxSockets: 1,
       maxFreeSockets: 1,
     });
-    var lastPort = null;
+    let lastPort = null;
     http.get({
-      agent: agent,
-      port: port,
+      agent,
+      port,
       path: '/',
-    }, function (res) {
-      agent.sockets[name].should.length(1);
-      agent.requests[name].should.length(1);
-      res.should.status(200);
-      res.on('data', function (data) {
+    }, res => {
+      assert(agent.sockets[name].length === 1);
+      assert(agent.requests[name].length === 1);
+      assert(res.statusCode === 200);
+      res.on('data', data => {
         data = JSON.parse(data);
         lastPort = data.socket.port;
-        should.exist(lastPort);
+        assert(lastPort > 0);
       });
-      res.on('end', function () {
+      res.on('end', () => {
         // should be reuse
-        process.nextTick(function () {
-          agent.sockets.should.have.key(name);
-          agent.sockets[name].should.length(1);
-          agent.freeSockets.should.not.have.key(name);
+        process.nextTick(() => {
+          assert(agent.sockets[name].length === 1);
+          assert(!agent.freeSockets[name]);
         });
       });
     });
 
     http.get({
-      agent: agent,
-      port: port,
+      agent,
+      port,
       path: '/',
-    }, function (res) {
-      agent.sockets[name].should.length(1);
-      agent.requests.should.not.have.key(name);
-      res.should.status(200);
-      res.on('data', function (data) {
+    }, res => {
+      assert(agent.sockets[name].length === 1);
+      assert(!agent.requests[name]);
+      assert(res.statusCode === 200);
+
+      res.on('data', data => {
         data = JSON.parse(data);
-        data.socket.port.should.equal(lastPort);
+        assert(data.socket.port === lastPort);
       });
-      res.on('end', function () {
-        setTimeout(function () {
+      res.on('end', () => {
+        setTimeout(() => {
           // should keepalive 1 socket
-          agent.sockets.should.have.not.key(name);
-          agent.freeSockets.should.have.key(name);
-          agent.freeSockets[name].should.length(1);
+          assert(!agent.sockets[name]);
+          assert(agent.freeSockets[name].length === 1);
           done();
         }, 10);
       });
     });
-    agent.requests[name].should.length(1);
+
+    // has 1 request pedding in the requests queue
+    assert(agent.requests[name].length === 1);
   });
 
-  it('should keep 1 free socket', function (done) {
-    var name = 'localhost:' + port + '::';
-    var agent = new Agent({
+  it('should keep 1 free socket', done => {
+    const name = 'localhost:' + port + ':';
+    const agent = new Agent({
       maxSockets: 2,
       maxFreeSockets: 1,
     });
-    var lastPort = null;
+    let lastPort = null;
     http.get({
-      agent: agent,
-      port: port,
+      agent,
+      port,
       path: '/',
-    }, function (res) {
-      agent.sockets.should.have.key(name);
-      res.should.status(200);
-      res.on('data', function (data) {
+    }, res => {
+      assert(agent.sockets[name]);
+      assert(res.statusCode === 200);
+
+      res.on('data', data => {
         data = JSON.parse(data);
         lastPort = data.socket.port;
-        should.exist(lastPort);
+        assert(lastPort > 0);
       });
-      res.on('end', function () {
+      res.on('end', () => {
         // should be reuse
-        setTimeout(function () {
-          agent.freeSockets.should.have.key(name);
-          agent.freeSockets[name].should.length(1);
+        setTimeout(() => {
+          assert(agent.freeSockets[name].length === 1);
         }, 100);
       });
     });
 
     http.get({
-      agent: agent,
-      port: port,
+      agent,
+      port,
       path: '/',
-    }, function (res) {
-      agent.sockets.should.have.key(name);
-      res.should.status(200);
-      res.on('data', function (data) {
+    }, res => {
+      assert(agent.sockets[name]);
+      assert(res.statusCode === 200);
+      res.on('data', data => {
         data = JSON.parse(data);
-        data.socket.port.should.not.equal(lastPort);
+        assert(data.socket.port !== lastPort);
       });
-      res.on('end', function () {
-        setTimeout(function () {
+      res.on('end', () => {
+        setTimeout(() => {
           // should keepalive 1 socket
-          agent.sockets.should.have.not.key(name);
-          agent.freeSockets.should.have.key(name);
-          agent.freeSockets[name].should.length(1);
+          assert(!agent.sockets[name]);
+          assert(agent.freeSockets[name].length === 1);
           done();
         }, 100);
       });
     });
-    agent.requests.should.not.have.key(name);
+    assert(!agent.requests[name]);
   });
 
-  it('should keep 2 free socket', function (done) {
+  it('should keep 2 free socket', done => {
     done = pedding(2, done);
-    var name = 'localhost:' + port + '::';
-    var agent = new Agent({
+    const name = 'localhost:' + port + ':';
+    const agent = new Agent({
       maxSockets: 2,
       maxFreeSockets: 2,
     });
-    var lastPort = null;
+    let lastPort = null;
     http.get({
-      agent: agent,
-      port: port,
+      agent,
+      port,
       path: '/',
-    }, function (res) {
-      agent.sockets.should.have.key(name);
-      res.should.status(200);
-      res.on('data', function (data) {
+    }, res => {
+      assert(agent.sockets[name].length);
+      assert(res.statusCode === 200);
+      res.on('data', data => {
         data = JSON.parse(data);
         lastPort = data.socket.port;
-        should.exist(lastPort);
+        assert(lastPort > 0);
       });
-      res.on('end', function () {
+      res.on('end', () => {
         // should be reuse
-        process.nextTick(function () {
-          agent.freeSockets.should.have.key(name);
+        process.nextTick(() => {
+          assert(agent.freeSockets[name]);
           done();
         });
       });
     });
 
     http.get({
-      agent: agent,
-      port: port,
+      agent,
+      port,
       path: '/',
-    }, function (res) {
-      agent.sockets.should.have.key(name);
-      res.should.status(200);
-      res.on('data', function (data) {
+    }, res => {
+      assert(agent.sockets[name].length);
+      assert(res.statusCode === 200);
+      res.on('data', data => {
         data = JSON.parse(data);
-        data.socket.port.should.not.equal(lastPort);
+        assert(data.socket.port !== lastPort);
       });
-      res.on('end', function () {
-        setTimeout(function () {
-          // should keepalive 1 socket
-          agent.sockets.should.have.not.key(name);
-          agent.freeSockets.should.have.key(name);
-          agent.freeSockets[name].should.length(2);
+      res.on('end', () => {
+        setTimeout(() => {
+          // should keepalive 2 free sockets
+          assert(!agent.sockets[name]);
+          assert(agent.freeSockets[name].length === 2);
           done();
         }, 10);
       });
     });
-    agent.requests.should.not.have.key(name);
+    assert(!agent.requests[name]);
   });
 
-  it('should request /remote_close 200 status, after 500ms free socket close', function (done) {
-    var name = 'localhost:' + port + '::';
-    agentkeepalive.sockets.should.not.have.key(name);
+  it('should request /remote_close 200 status, after 500ms free socket close', done => {
+    const name = 'localhost:' + port + ':';
+    assert(!agentkeepalive.sockets[name]);
+
     http.get({
       agent: agentkeepalive,
-      port: port,
-      path: '/remote_close'
-    }, function (res) {
-      res.should.status(200);
+      port,
+      path: '/remote_close',
+    }, res => {
+      assert(res.statusCode === 200);
       res.resume();
-      res.on('end', function () {
-        agentkeepalive.sockets.should.have.key(name);
-        agentkeepalive.freeSockets.should.not.have.key(name);
-        setTimeout(function () {
-          agentkeepalive.sockets.should.not.have.key(name);
-          agentkeepalive.freeSockets.should.not.have.key(name);
+      res.on('end', () => {
+        assert(agentkeepalive.sockets[name]);
+        assert(!agentkeepalive.freeSockets[name]);
+        setTimeout(() => {
+          assert(!agentkeepalive.sockets[name]);
+          assert(!agentkeepalive.freeSockets[name]);
           done();
         }, 550);
       });
     });
-    agentkeepalive.sockets.should.have.key(name);
-    agentkeepalive.sockets[name].should.length(1);
   });
 
-  it('should fire timeout callback', function (done) {
-    var req = http.get({
+  it('should fire timeout callback', done => {
+    done = pedding(2, done);
+    const lastStatus = agentkeepalive.getCurrentStatus();
+    http.get({
       agent: agentkeepalive,
-      port: port,
+      port,
       path: '/',
-    }, function (res) {
-      var req = http.get({
-        port: port,
-        path: '/hang',
-      }, function (res) {
-        throw new Error('should not call this');
-      });
-      req.setTimeout(400, function() {
-        var status = agentkeepalive.getCurrentStatus();
-        status.timeoutSocketCount.should.equal(1);
-        setTimeout(done, 300);
+    }, res => {
+      assert(res.statusCode === 200);
+      res.resume();
+      res.on('end', () => {
+        const req = http.get({
+          agent: agentkeepalive,
+          port,
+          path: '/hang',
+        }, () => {
+          throw new Error('should not call this');
+        });
+        req.setTimeout(400, () => {
+          const status = agentkeepalive.getCurrentStatus();
+          assert(status.timeoutSocketCount - lastStatus.timeoutSocketCount === 1);
+          setTimeout(done, 300);
+        });
+        req.on('error', err => {
+          assert(err.message === 'socket hang up');
+          done();
+        });
       });
     });
   });
 
-  it('should free socket timeout', function (done) {
+  it('should free socket timeout and emit agent timeout event', done => {
     done = pedding(2, done);
-    var name = 'localhost:' + port + '::';
-    var agent = Agent({
+    const name = 'localhost:' + port + ':';
+    const agent = new Agent({
       keepAliveTimeout: 1000,
     });
     agent.on('timeout', done);
-    var lastPort = null;
+
+    let lastPort = null;
     http.get({
-      agent: agent,
-      port: port,
+      agent,
+      port,
       path: '/',
-    }, function (res) {
-      agent.sockets[name].should.length(1);
-      res.should.status(200);
-      res.on('data', function (data) {
+    }, res => {
+      assert(agent.sockets[name].length === 1);
+      assert(res.statusCode === 200);
+      res.on('data', data => {
         data = JSON.parse(data);
         lastPort = data.socket.port;
-        should.exist(lastPort);
+        assert(lastPort > 0);
       });
-      res.on('end', function () {
-        process.nextTick(function () {
-          agent.sockets.should.not.have.key(name);
-          agent.freeSockets.should.have.key(name);
-          agent.freeSockets[name].should.length(1);
-          setTimeout(function () {
-            agent.freeSockets.should.not.have.key(name);
+      res.on('end', () => {
+        process.nextTick(() => {
+          assert(!agent.sockets[name]);
+          assert(agent.freeSockets[name].length === 1);
+          // free socket timeout after 1s
+          setTimeout(() => {
+            assert(!agent.freeSockets[name]);
             done();
           }, 1100);
         });
       });
     });
-    should.exist(agent);
-    agent.sockets.should.have.key(name);
-    agent.sockets[name].should.length(1);
   });
 
-  it('should working socket timeout', function (done) {
+  it('should working socket timeout and emit agent timeout event', done => {
     done = pedding(2, done);
-    var name = 'localhost:' + port + '::';
-    var agent = Agent({
-      keepAliveTimeout: 1000,
+    const name = 'localhost:' + port + ':';
+    const agent = new Agent({
+      timeout: 1000,
     });
     agent.on('timeout', done);
-    var lastPort = null;
+
     http.get({
-      agent: agent,
-      port: port,
+      agent,
+      port,
       path: '/hang',
-    }, function (res) {
+    }, () => {
       throw new Error('should not run this');
-    }).on('error', function (err) {
-      should.exist(err);
-      // socket.destroy();
-      err.message.should.equal('socket hang up');
-      err.code.should.equal('ECONNRESET');
-      agent.sockets.should.not.have.key(name);
+    }).on('error', err => {
+      assert(err.message === 'socket hang up');
+      assert(err.code === 'ECONNRESET');
+      assert(!agent.sockets[name]);
       done();
     });
-    should.exist(agent);
-    agent.sockets.should.have.key(name);
-    agent.sockets[name].should.length(1);
+    assert(agent.sockets[name].length === 1);
   });
 
-  it('should destroy free socket before timeout', function (done) {
-    var name = 'localhost:' + port + '::';
-    var agent = new Agent({
+  it('should destroy free socket before timeout', done => {
+    const name = 'localhost:' + port + ':';
+    const agent = new Agent({
       keepAliveTimeout: 1000,
     });
-    var lastPort = null;
+    let lastPort = null;
     http.get({
-      agent: agent,
-      port: port,
+      agent,
+      port,
       path: '/',
-    }, function (res) {
-      agent.sockets[name].should.length(1);
-      res.should.status(200);
-      res.on('data', function (data) {
+    }, res => {
+      assert(agent.sockets[name].length === 1);
+      assert(res.statusCode === 200);
+      res.on('data', data => {
         data = JSON.parse(data);
         lastPort = data.socket.port;
-        should.exist(lastPort);
+        assert(lastPort > 0);
       });
-      res.on('end', function () {
-        process.nextTick(function () {
-          agent.sockets.should.not.have.key(name);
-          agent.freeSockets.should.have.key(name);
-          agent.freeSockets[name].should.length(1);
+      res.on('end', () => {
+        process.nextTick(() => {
+          assert(!agent.sockets[name]);
+          assert(agent.freeSockets[name].length === 1);
           agent.freeSockets[name][0].destroy();
-          setTimeout(function () {
-            agent.freeSockets.should.not.have.key(name);
+          setTimeout(() => {
+            assert(!agent.freeSockets[name]);
             done();
           }, 10);
         });
       });
     });
-    agent.sockets[name].should.length(1);
+    assert(agent.sockets[name].length === 1);
   });
 
-  it('should remove error socket and create new one handle pedding request', function (done) {
+  it('should remove error socket and create new one handle pedding request', done => {
     done = pedding(2, done);
-    var name = 'localhost:' + port + '::';
-    var agent = new Agent({
+    const name = 'localhost:' + port + ':';
+    const agent = new Agent({
       keepAliveTimeout: 1000,
       maxSockets: 1,
-      maxFreeSockets: 1
+      maxFreeSockets: 1,
     });
-    var lastPort = null;
+    let lastPort = null;
     http.get({
-      agent: agent,
-      port: port,
+      agent,
+      port,
       path: '/error',
-    }, function (res) {
+    }, () => {
       throw new Error('never run this');
-    }).on('error', function (err) {
-      err.message.should.equal('socket hang up');
-    }).on('close', function () {
-      done();
-    });
+    }).on('error', err => {
+      assert(err.message === 'socket hang up');
+    }).on('close', () => done());
 
     http.get({
-      agent: agent,
-      port: port,
+      agent,
+      port,
       path: '/',
-    }, function (res) {
-      agent.sockets[name].should.length(1);
-      res.should.status(200);
-      res.on('data', function (data) {
+    }, res => {
+      assert(agent.sockets[name].length === 1);
+      assert(res.statusCode === 200);
+      res.on('data', data => {
         data = JSON.parse(data);
         lastPort = data.socket.port;
-        should.exist(lastPort);
+        assert(lastPort > 0);
       });
-      res.on('end', function () {
-        process.nextTick(function () {
-          agent.sockets.should.not.have.key(name);
-          agent.freeSockets.should.have.key(name);
-          agent.freeSockets[name].should.length(1);
+      res.on('end', () => {
+        process.nextTick(() => {
+          assert(!agent.sockets[name]);
+          assert(agent.freeSockets[name].length === 1);
           done();
         });
       });
     });
-    agent.requests.should.have.key(name);
-    agent.requests[name].should.length(1);
+    assert(agent.requests[name].length === 1);
   });
 
-  it('should destroy all sockets', function (done) {
+  it('should destroy all sockets', done => {
     done = pedding(2, done);
-    var name = 'localhost:' + port + '::';
-    var agent = new Agent({
+    const name = 'localhost:' + port + ':';
+    const agent = new Agent({
       keepAliveTimeout: 1000,
     });
-    var lastPort = null;
+    let lastPort = null;
     http.get({
-      agent: agent,
-      port: port,
+      agent,
+      port,
       path: '/',
-    }, function (res) {
+    }, res => {
       http.get({
-        agent: agent,
-        port: port,
+        agent,
+        port,
         path: '/',
-      }).on('error', function (err) {
-        err.message.should.equal('socket hang up');
-        setTimeout(function () {
-          agent.sockets.should.not.have.key(name);
-          agent.freeSockets.should.not.have.key(name);
+      }).on('error', err => {
+        assert(err.message === 'socket hang up');
+        setTimeout(() => {
+          assert(!agent.sockets[name]);
+          assert(!agent.freeSockets[name]);
           done();
         }, 10);
       });
 
-      res.should.status(200);
-      res.on('data', function (data) {
+      assert(res.statusCode === 200);
+      res.on('data', data => {
         data = JSON.parse(data);
         lastPort = data.socket.port;
-        should.exist(lastPort);
+        assert(lastPort > 0);
       });
-      res.on('end', function () {
+      res.on('end', () => {
         agent.destroy();
         done();
       });
     });
   });
 
-  it('should keep max sockets: bugfix for orginal keepalive agent', function (_done) {
-    var agentkeepalive = new Agent({
+  it('should keep max sockets: bugfix for orginal keepalive agent', _done => {
+    const agentkeepalive = new Agent({
       keepAlive: true,
       keepAliveMsecs: 1000,
       maxSockets: 2,
       maxFreeSockets: 2,
     });
-    var done = pedding(2, function (err) {
-      should.not.exist(err);
-      var pool = agentkeepalive.sockets[Object.keys(agentkeepalive.sockets)[0]];
-      should.not.exist(pool);
+    const done = pedding(2, err => {
+      assert(!err);
+      const pool = agentkeepalive.sockets[Object.keys(agentkeepalive.sockets)[0]];
+      assert(!pool);
       // all sockets on free list now
-      var freepool = agentkeepalive.freeSockets[Object.keys(agentkeepalive.freeSockets)[0]];
-      should.exist(freepool);
-      freepool.length.should.equal(2);
+      const freepool = agentkeepalive.freeSockets[Object.keys(agentkeepalive.freeSockets)[0]];
+      assert(freepool.length === 2);
       _done();
     });
 
     http.get({
       agent: agentkeepalive,
-      port: port,
+      port,
       path: '/',
-    }, function (res) {
-      res.statusCode.should.equal(200);
-      res.on('data', function (data) {
-      });
-      res.on('end', function () {
-        var pool = agentkeepalive.sockets[Object.keys(agentkeepalive.sockets)[0]];
-        should.exist(pool);
+    }, res => {
+      assert(res.statusCode === 200);
+      res.resume();
+      res.on('end', () => {
+        const pool = agentkeepalive.sockets[Object.keys(agentkeepalive.sockets)[0]];
+        assert(pool);
         setTimeout(done, 10);
       });
     });
 
     http.get({
       agent: agentkeepalive,
-      port: port,
+      port,
       path: '/',
-    }, function (res) {
-      res.statusCode.should.equal(200);
-      res.on('data', function (data) {
-      });
-      res.on('end', function () {
-        var pool = agentkeepalive.sockets[Object.keys(agentkeepalive.sockets)[0]];
-        should.exist(pool);
+    }, res => {
+      assert(res.statusCode === 200);
+      res.resume();
+      res.on('end', () => {
+        const pool = agentkeepalive.sockets[Object.keys(agentkeepalive.sockets)[0]];
+        assert(pool);
         setTimeout(done, 10);
       });
     });
   });
 
-  it('should timeout and remove free socket', function(done) {
+  it('should timeout and remove free socket', done => {
     done = pedding(2, done);
-    var _keepaliveAgent = new Agent({
+    const _keepaliveAgent = new Agent({
       maxSockets: 1,
       maxFreeSockets: 1,
-      keepAliveTimeout: 1000
+      keepAliveTimeout: 1000,
     });
 
-    var options = {
+    const options = {
       hostname: 'www.taobao.com',
       port: 80,
       path: '/',
       method: 'GET',
-      agent : _keepaliveAgent
+      agent: _keepaliveAgent,
     };
 
-    var index = 0;
-    var getRequest = function() {
-      var currentIndex = index++;
-      var req =  http.request(options, function(res) {
-        var size = 0;
-        res.on('data', function(chunk) {
+    let index = 0;
+    const getRequest = () => {
+      const currentIndex = index++;
+      const req = http.request(options, res => {
+        let size = 0;
+        res.on('data', chunk => {
           size += chunk.length;
         });
-        res.on('end', function() {
+        res.on('end', () => {
           console.log('#%d req end, size: %d', currentIndex, size);
           done();
         });
@@ -763,11 +836,11 @@ describe('test/agent.test.js', function () {
       return req;
     };
 
-    var req = getRequest();
+    const req = getRequest();
     // Get a reference to the socket.
-    req.on('socket', function(sock) {
+    req.on('socket', sock => {
       // Listen to timeout and send another request immediately.
-      sock.on('timeout', function() {
+      sock.on('timeout', () => {
         console.log('socket:%s timeout', sock._host);
         getRequest().end();
       });
@@ -775,32 +848,29 @@ describe('test/agent.test.js', function () {
     req.end();
   });
 
-  it('should not open more sockets than maxSockets when request success',
-  function(done) {
+  it('should not open more sockets than maxSockets when request success', done => {
     done = pedding(3, done);
-    var name = 'localhost:' + port + '::';
-
-    var agentkeepalive = new Agent({
-       keepAlive: true,
-       keepAliveTimeout: 1000,
-       maxSockets: 1,
-       maxFreeSockets: 1
-     });
+    const name = 'localhost:' + port + ':';
+    const agentkeepalive = new Agent({
+      keepAlive: true,
+      keepAliveTimeout: 1000,
+      maxSockets: 1,
+      maxFreeSockets: 1,
+    });
 
     http.get({
       agent: agentkeepalive,
-      port: port,
+      port,
       path: '/hello1',
-    }, function(res) {
-      var info;
-      res.statusCode.should.equal(200);
-      res.on('data', function(data) {
+    }, res => {
+      let info;
+      assert(res.statusCode === 200);
+      res.on('data', data => {
         info = JSON.parse(data);
       });
-      res.on('end', function() {
-        info.url.should.equal('/hello1');
-        agentkeepalive.sockets.should.have.key(name);
-        agentkeepalive.sockets[name].should.length(1);
+      res.on('end', () => {
+        assert(info.url === '/hello1');
+        assert(agentkeepalive.sockets[name].length === 1);
         done();
       });
       res.resume();
@@ -808,18 +878,17 @@ describe('test/agent.test.js', function () {
 
     http.get({
       agent: agentkeepalive,
-      port: port,
+      port,
       path: '/hello2',
-    }, function(res) {
-      var info;
-      res.statusCode.should.equal(200);
-      res.on('data', function(data) {
+    }, res => {
+      let info;
+      assert(res.statusCode === 200);
+      res.on('data', data => {
         info = JSON.parse(data);
       });
-      res.on('end', function() {
-        info.url.should.equal('/hello2');
-        agentkeepalive.sockets.should.have.key(name);
-        agentkeepalive.sockets[name].should.length(1);
+      res.on('end', () => {
+        assert(info.url === '/hello2');
+        assert(agentkeepalive.sockets[name].length === 1);
         done();
       });
       res.resume();
@@ -827,92 +896,89 @@ describe('test/agent.test.js', function () {
 
     http.get({
       agent: agentkeepalive,
-      port: port,
+      port,
       path: '/hello3',
-    }, function(res) {
-      var info;
-      res.statusCode.should.equal(200);
-      res.on('data', function(data) {
+    }, res => {
+      let info;
+      assert(res.statusCode === 200);
+      res.on('data', data => {
         info = JSON.parse(data);
       });
-      res.on('end', function() {
-        info.url.should.equal('/hello3');
-        agentkeepalive.sockets.should.have.key(name);
-        agentkeepalive.sockets[name].should.length(1);
+      res.on('end', () => {
+        assert(info.url === '/hello3');
+        assert(agentkeepalive.sockets[name].length === 1);
         done();
       });
       res.resume();
     });
 
-    Object.keys(agentkeepalive.sockets).should.length(1);
-    agentkeepalive.sockets[name].should.length(1);
+    assert(Object.keys(agentkeepalive.sockets).length === 1);
+    assert(agentkeepalive.sockets[name].length === 1);
   });
 
-  it('should not open more sockets than maxSockets when request timeout', function(done) {
-    var name = 'localhost:' + port + '::';
-
-    var agentkeepalive = new Agent({
-       keepAlive: true,
-       keepAliveTimeout: 1000,
-       maxSockets: 1,
-       maxFreeSockets: 1
-     });
+  it('should not open more sockets than maxSockets when request timeout', done => {
+    const name = 'localhost:' + port + ':';
+    const agentkeepalive = new Agent({
+      keepAlive: true,
+      timeout: 1000,
+      maxSockets: 1,
+      maxFreeSockets: 1,
+    });
 
     http.get({
       agent: agentkeepalive,
-      port: port,
+      port,
       path: '/hang',
-    }, function (res) {
+    }, () => {
       throw new Error('should not run this');
     })
-    .on('error', function (err) {
-      agentkeepalive.sockets.should.have.key(name);
-      agentkeepalive.sockets[name].should.length(1);
+    .on('error', () => {
+      assert(agentkeepalive.sockets[name].length === 1);
       done();
     });
 
     http.get({
       agent: agentkeepalive,
-      port: port,
+      port,
       path: '/hang',
-    }, function (res) {
+    }, () => {
       throw new Error('should not run this');
     })
-    .on('error', function (err) {
+    .on('error', () => {
       // do noting
     });
 
     http.get({
       agent: agentkeepalive,
-      port: port,
+      port,
       path: '/hang',
-    }, function (res) {
+    }, () => {
       throw new Error('should not run this');
     })
-    .on('error', function (err) {
+    .on('error', () => {
        // do noting
     });
 
-    Object.keys(agentkeepalive.sockets).should.length(1);
+    assert(Object.keys(agentkeepalive.sockets).length === 1);
   });
 
-  describe('keepAlive = false', function () {
-    it('should close socket after request', function (done) {
-      var name = 'localhost:' + port + '::';
-      var agent = new Agent({
+  describe('keepAlive = false', () => {
+    it('should close socket after request', done => {
+      const name = 'localhost:' + port + ':';
+      const agent = new Agent({
         keepAlive: false,
       });
       http.get({
-        agent: agent,
-        port: port,
+        agent,
+        port,
         path: '/',
-      }, function (res) {
-        res.should.status(200);
+      }, res => {
+        assert(res.statusCode === 200);
         res.resume();
-        res.on('end', function () {
-          setTimeout(function () {
-            agent.sockets.should.not.have.key(name);
-            agent.freeSockets.should.not.have.key(name);
+        res.on('end', () => {
+          setTimeout(() => {
+            assert(!agent.sockets[name]);
+            assert(!agent.freeSockets[name]);
             done();
           }, 10);
         });
@@ -920,45 +986,48 @@ describe('test/agent.test.js', function () {
     });
   });
 
-  describe('getCurrentStatus()', function () {
-    it('should get current agent status', function () {
-      var status = agentkeepalive.getCurrentStatus();
+  describe('getCurrentStatus()', () => {
+    it('should get current agent status', () => {
+      const status = agentkeepalive.getCurrentStatus();
       console.log(status);
-      status.should.have.keys('createSocketCount', 'closeSocketCount', 'errorSocketCount', 'timeoutSocketCount',
-        'requestCount', 'freeSockets', 'sockets', 'requests');
+      assert.deepEqual(Object.keys(status), [
+        'createSocketCount', 'createSocketErrorCount', 'closeSocketCount', 'errorSocketCount', 'timeoutSocketCount',
+        'requestCount', 'freeSockets', 'sockets', 'requests',
+      ]);
     });
   });
 
-  describe('mock idle socket error', function() {
-    it('should idle socket emit error event', function(done) {
-      var agent = new Agent();
+  describe('mock idle socket error', () => {
+    it('should idle socket emit error event', done => {
+      const agent = new Agent();
 
-      var options = {
+      const options = {
         host: 'www.taobao.com',
         port: 80,
         path: '/',
-        agent: agent
+        agent,
       };
 
-      var socketKey = agent.getName(options);
-      var req = http.get(options, function(res) {
-        var size = 0;
-        res.on('data', function(chunk) {
+      const socketKey = agent.getName(options);
+      const req = http.get(options, res => {
+        let size = 0;
+        assert(res.headers.connection === 'keep-alive');
+        res.on('data', chunk => {
           size += chunk.length;
         });
-        res.on('end', function() {
-          size.should.above(0);
-          Object.keys(agent.freeSockets).should.length(0);
-          process.nextTick(function() {
-            should.exist(agent.freeSockets[socketKey]);
-            agent.freeSockets[socketKey].should.length(1);
-            setTimeout(function() {
+        res.on('end', () => {
+          assert(size > 0);
+          assert(Object.keys(agent.sockets).length === 1);
+          assert(Object.keys(agent.freeSockets).length === 0);
+          process.nextTick(() => {
+            assert(agent.freeSockets[socketKey].length === 1);
+            setTimeout(() => {
               // agent should catch idle socket error event
               agent.freeSockets[socketKey][0].emit('error', new Error('mock read ECONNRESET'));
 
-              setTimeout(function() {
+              setTimeout(() => {
                 // error socket should be destroy and remove
-                Object.keys(agent.freeSockets).should.length(0);
+                assert(Object.keys(agent.freeSockets).length === 0);
                 done();
               }, 10);
             }, 10);

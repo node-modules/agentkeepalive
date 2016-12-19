@@ -10,10 +10,10 @@
     "lib"
   ],
   "scripts": {
-    "test": "mocha -R spec -t 5000 -r should-http test/*.test.js",
-    "test-cov": "istanbul cover node_modules/mocha/bin/_mocha -- -t 5000 -r should-http test/*.test.js",
+    "test": "egg-bin test",
+    "test-cov": "egg-bin cov",
     "ci": "npm run lint && npm run test-cov",
-    "lint": "jshint .",
+    "lint": "eslint lib test index.js",
     "codecov": "npm i codecov && codecov"
   },
   "repository": {
@@ -32,16 +32,14 @@
   ],
   "dependencies": {},
   "devDependencies": {
-    "istanbul": "*",
-    "mocha": "*",
-    "pedding": "1",
-    "should": "4",
-    "should-http": "~0.0.2",
-    "jshint": "^2.9.1"
+    "egg-bin": "^1.9.1",
+    "eslint": "^3.12.2",
+    "eslint-config-egg": "^3.2.0",
+    "pedding": "1"
   },
   "engines": {
     "node": ">= 0.10.0"
   },
-  "author": "fengmk2 <fengmk2@gmail.com> (http://fengmk2.com)",
+  "author": "fengmk2 <fengmk2@gmail.com> (https://fengmk2.com)",
   "license": "MIT"
 }
