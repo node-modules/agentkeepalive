@@ -1,4 +1,13 @@
 
+3.0.0 / 2016-12-20
+==================
+
+  * fix: emit agent socket close event
+  * test: add remove excess calls to removeSocket
+  * test: use egg-ci
+  * test: refactor test with eslint rules
+  * feat: merge _http_agent.js from 7.2.1
+
 2.2.0 / 2016-06-26
 ==================
 
