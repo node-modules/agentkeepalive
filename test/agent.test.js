@@ -108,8 +108,8 @@ describe('test/agent.test.js', () => {
   it('should inactivity socket timeout', done => {
     const name = 'localhost:' + port + ':';
     const agentkeepalive = new Agent({
-      freeSocketKeepAliveTimeout: 5000,
-      timeout: 1000,
+      freeSocketKeepAliveTimeout: '5s',
+      timeout: '1s',
     });
     assert(!agentkeepalive.sockets[name]);
     assert(!agentkeepalive.freeSockets[name]);
