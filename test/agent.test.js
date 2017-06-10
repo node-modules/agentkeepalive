@@ -57,6 +57,7 @@ describe('test/agent.test.js', () => {
     assert(agent.maxSockets === 5);
     assert(agent.maxFreeSockets === 5);
     assert(agent.timeout === 30000);
+    assert(!agent.socketActiveTTL);
   });
 
   let remotePort = null;
@@ -994,7 +995,6 @@ describe('test/agent.test.js', () => {
   describe('getCurrentStatus()', () => {
     it('should get current agent status', () => {
       const status = agentkeepalive.getCurrentStatus();
-      console.log(status);
       assert.deepEqual(Object.keys(status), [
         'createSocketCount', 'createSocketErrorCount', 'closeSocketCount', 'errorSocketCount', 'timeoutSocketCount',
         'requestCount', 'freeSockets', 'sockets', 'requests',
@@ -1041,6 +1041,88 @@ describe('test/agent.test.js', () => {
         res.resume();
       });
       req.on('error', done);
+    });
+  });
+
+  describe('options.socketActiveTTL', () => {
+    it('should expire active socket when it is out of ttl', done => {
+      const name = 'localhost:' + port + ':';
+      const agent = new Agent({
+        keepAlive: true,
+        keepAliveMsecs: 1000,
+        maxSockets: 5,
+        maxFreeSockets: 5,
+        timeout: 30000,
+        freeSocketKeepAliveTimeout: 5000,
+        socketActiveTTL: 500,
+      });
+      http.get({
+        agent,
+        port,
+        path: '/',
+      }, res => {
+        assert(res.statusCode === 200);
+        res.resume();
+        res.on('end', () => {
+          const firstCreatedTime = agent.sockets[name].pop().createdTime;
+          setTimeout(function() {
+            http.get({
+              agent,
+              port,
+              path: '/',
+            }, res => {
+              assert(res.statusCode === 200);
+              res.resume();
+              res.on('end', () => {
+                const currentCreatedTime = agent.sockets[name].pop().createdTime;
+                assert(firstCreatedTime < currentCreatedTime);
+                done();
+              });
+            });
+          }, 600);
+        });
+      });
+
+    });
+
+    it('should not expire active socket when it is in ttl', done => {
+      const name = 'localhost:' + port + ':';
+      const agent = new Agent({
+        keepAlive: true,
+        keepAliveMsecs: 1000,
+        maxSockets: 5,
+        maxFreeSockets: 5,
+        timeout: 30000,
+        freeSocketKeepAliveTimeout: 5000,
+        socketActiveTTL: 1000,
+      });
+      http.get({
+        agent,
+        port,
+        path: '/',
+      }, res => {
+        assert(res.statusCode === 200);
+        res.resume();
+        res.on('end', () => {
+          const firstCreatedTime = agent.sockets[name].pop().createdTime;
+          setTimeout(function() {
+            http.get({
+              agent,
+              port,
+              path: '/',
+            }, res => {
+              assert(res.statusCode === 200);
+              res.resume();
+              res.on('end', () => {
+                const currentCreatedTime = agent.sockets[name].pop().createdTime;
+                assert(firstCreatedTime === currentCreatedTime);
+                done();
+              });
+            });
+          }, 600);
+        });
+      });
+
     });
   });
 });
