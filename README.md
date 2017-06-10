@@ -59,7 +59,7 @@ $ npm install agentkeepalive --save
   * `maxFreeSockets` {Number} Maximum number of sockets to leave open
     in a free state. Only relevant if `keepAlive` is set to `true`.
     Default = `256`.
-  * `socketActiveTTL` {Number} Sets the socket active time to live, even if it's in use. 
+  * `socketActiveTTL` {Number} Sets the socket active time to live, even if it's in use.
     If not setted the behaviour continues the same (the socket will be released only when free)
     Default = `null`.
 
@@ -215,6 +215,7 @@ Socket created:
 
 ## License
 
+```
 (The MIT License)
 
 Copyright(c) 2012 - 2015 fengmk2 <fengmk2@gmail.com>
@@ -238,3 +239,4 @@ IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
 CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+```
