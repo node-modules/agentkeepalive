@@ -98,10 +98,16 @@ req.on('error', e => {
 req.end();
 
 setTimeout(() => {
-  console.log('agent status: %j', keepaliveAgent.getCurrentStatus());
+  if (keepaliveAgent.statusChanged) {
+    console.log('[%s] agent status changed: %j', Date(), keepaliveAgent.getCurrentStatus());
+  }
 }, 2000);
 
 ```
+
+### `getter agent.statusChanged`
+
+counters have change or not after last checkpoint.
 
 ### `agent.getCurrentStatus()`
 
@@ -218,8 +224,8 @@ Socket created:
 ```
 (The MIT License)
 
-Copyright(c) 2012 - 2015 fengmk2 <fengmk2@gmail.com>
 Copyright(c) node-modules and other contributors.
+Copyright(c) 2012 - 2015 fengmk2 <fengmk2@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
