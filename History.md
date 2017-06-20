@@ -1,4 +1,10 @@
 
+3.3.0 / 2017-06-20
+==================
+
+  * feat: add statusChanged getter (#51)
+  * chore: format License
+
 3.2.0 / 2017-06-10
 ==================
 
