@@ -996,9 +996,57 @@ describe('test/agent.test.js', () => {
     it('should get current agent status', () => {
       const status = agentkeepalive.getCurrentStatus();
       assert.deepEqual(Object.keys(status), [
-        'createSocketCount', 'createSocketErrorCount', 'closeSocketCount', 'errorSocketCount', 'timeoutSocketCount',
+        'createSocketCount', 'createSocketErrorCount', 'closeSocketCount',
+        'errorSocketCount', 'timeoutSocketCount',
         'requestCount', 'freeSockets', 'sockets', 'requests',
       ]);
+    });
+  });
+
+  describe('getter statusChanged', () => {
+    it('should get statusChanged', () => {
+      const agentkeepalive = new Agent({
+        keepAliveTimeout: 1000,
+        maxSockets: 5,
+        maxFreeSockets: 5,
+      });
+      assert(agentkeepalive.statusChanged === false);
+      assert(agentkeepalive.statusChanged === false);
+      agentkeepalive.createSocketCount++;
+      assert(agentkeepalive.createSocketCount !== agentkeepalive.createSocketCountLastCheck);
+      assert(agentkeepalive.statusChanged === true);
+      assert(agentkeepalive.createSocketCount === agentkeepalive.createSocketCountLastCheck);
+      assert(agentkeepalive.statusChanged === false);
+
+      agentkeepalive.createSocketErrorCount++;
+      assert(agentkeepalive.createSocketErrorCount !== agentkeepalive.createSocketErrorCountLastCheck);
+      assert(agentkeepalive.statusChanged === true);
+      assert(agentkeepalive.createSocketErrorCount === agentkeepalive.createSocketErrorCountLastCheck);
+      assert(agentkeepalive.statusChanged === false);
+
+      agentkeepalive.closeSocketCount++;
+      assert(agentkeepalive.closeSocketCount !== agentkeepalive.closeSocketCountLastCheck);
+      assert(agentkeepalive.statusChanged === true);
+      assert(agentkeepalive.closeSocketCount === agentkeepalive.closeSocketCountLastCheck);
+      assert(agentkeepalive.statusChanged === false);
+
+      agentkeepalive.errorSocketCount++;
+      assert(agentkeepalive.errorSocketCount !== agentkeepalive.errorSocketCountLastCheck);
+      assert(agentkeepalive.statusChanged === true);
+      assert(agentkeepalive.errorSocketCount === agentkeepalive.errorSocketCountLastCheck);
+      assert(agentkeepalive.statusChanged === false);
+
+      agentkeepalive.timeoutSocketCount++;
+      assert(agentkeepalive.timeoutSocketCount !== agentkeepalive.timeoutSocketCountLastCheck);
+      assert(agentkeepalive.statusChanged === true);
+      assert(agentkeepalive.timeoutSocketCount === agentkeepalive.timeoutSocketCountLastCheck);
+      assert(agentkeepalive.statusChanged === false);
+
+      agentkeepalive.requestCount++;
+      assert(agentkeepalive.requestCount !== agentkeepalive.requestCountLastCheck);
+      assert(agentkeepalive.statusChanged === true);
+      assert(agentkeepalive.requestCount === agentkeepalive.requestCountLastCheck);
+      assert(agentkeepalive.statusChanged === false);
     });
   });
 
