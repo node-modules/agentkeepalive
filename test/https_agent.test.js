@@ -56,7 +56,7 @@ describe('test/https_agent.test.js', () => {
       agent: agentkeepalive,
       port,
       path: '/',
-      rejectUnauthorized: false,
+      ca: fs.readFileSync(__dirname + '/fixtures/ca.pem'),
     }, res => {
       assert(res.statusCode === 200);
       res.resume();
@@ -76,7 +76,7 @@ describe('test/https_agent.test.js', () => {
       agent: agentkeepalive,
       port,
       path: '/',
-      rejectUnauthorized: false,
+      ca: fs.readFileSync(__dirname + '/fixtures/ca.pem'),
     }, res => {
       assert(res.statusCode === 200);
       res.resume();
