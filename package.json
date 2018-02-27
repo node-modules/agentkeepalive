@@ -10,8 +10,8 @@
     "lib"
   ],
   "scripts": {
-    "test": "egg-bin test && node test/server_timeout.js",
-    "cov": "egg-bin cov && node test/server_timeout.js",
+    "test": "egg-bin test",
+    "cov": "egg-bin cov",
     "ci": "npm run lint && npm run cov",
     "lint": "eslint lib test index.js",
     "autod": "autod"
