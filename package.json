@@ -10,8 +10,8 @@
     "lib"
   ],
   "scripts": {
-    "test": "egg-bin test",
-    "cov": "egg-bin cov",
+    "test": "egg-bin test && node test/server_timeout.js",
+    "cov": "egg-bin cov && node test/server_timeout.js",
     "ci": "npm run lint && npm run cov",
     "lint": "eslint lib test index.js",
     "autod": "autod"
@@ -45,7 +45,7 @@
     "node": ">= 4.0.0"
   },
   "ci": {
-    "version": "4.3.2, 4, 6, 7, 8"
+    "version": "4.3.2, 4, 6, 8, 9"
   },
   "author": "fengmk2 <fengmk2@gmail.com> (https://fengmk2.com)",
   "license": "MIT"
