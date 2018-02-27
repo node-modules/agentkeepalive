@@ -7,6 +7,7 @@ const Agent = require('..');
 describe('test/server_timeout.test.js', () => {
   let port;
   let server;
+  let timer;
   before(done => {
     server = http.createServer((req, res) => {
       if (server.keepAliveTimeout) {
@@ -22,6 +23,10 @@ describe('test/server_timeout.test.js', () => {
       port = server.address().port;
       done(err);
     });
+  });
+
+  after(() => {
+    clearInterval(timer);
   });
 
   it('should handle Keep-Alive header and not throw reset error', done => {
@@ -67,7 +72,7 @@ describe('test/server_timeout.test.js', () => {
       req.end();
     }
 
-    setInterval(request, server.keepAliveTimeout);
+    timer = setInterval(request, server.keepAliveTimeout);
     request();
   });
 });
