@@ -10,7 +10,7 @@ describe('test/server_timeout.test.js', () => {
   before(done => {
     server = http.createServer((req, res) => {
       if (server.keepAliveTimeout) {
-        res.setHeader('Keep-Alive', `time=${parseInt(server.keepAliveTimeout / 1000)}`);
+        res.setHeader('Keep-Alive', `timeout=${parseInt(server.keepAliveTimeout / 1000)}`);
       }
       res.end('Hello World, ' + req.connection.remotePort);
     });
@@ -47,8 +47,8 @@ describe('test/server_timeout.test.js', () => {
           const text = Buffer.concat(chunks).toString();
           console.log('[%s] status: %s, text: %s, headers: %j', count, text, res.statusCode, res.headers);
           assert(res.headers.connection === 'keep-alive');
-          assert(res.headers['keep-alive'] === 'time=1');
-          const m = /^time=(\d+?)/.exec(res.headers['keep-alive']);
+          assert(res.headers['keep-alive'] === 'timeout=1');
+          const m = /^timeout=(\d+?)/.exec(res.headers['keep-alive']);
           if (m) {
             const keepAliveTimeout = parseInt(m[1]) * 1000 - 500;
             if (keepAliveTimeout > 0) {
