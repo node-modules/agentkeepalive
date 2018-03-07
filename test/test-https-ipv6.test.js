@@ -5,6 +5,15 @@ const assert = require('assert');
 const fs = require('fs');
 const constants = require('constants');
 const HttpsAgent = require('..').HttpsAgent;
+const os = require('os');
+
+function isIPv6Available() {
+  const networkInterfaces = os.networkInterfaces();
+  return !!Object.keys(networkInterfaces).find(ifName => {
+    const addresses = networkInterfaces[ifName];
+    return !!addresses.find(addr => addr.family === 'IPv6');
+  });
+}
 
 describe('test/test-ipv6.test.js', () => {
   let port;
@@ -18,7 +27,11 @@ describe('test/test-ipv6.test.js', () => {
     secureOptions: constants.SSL_OP_NO_TICKET,
   };
 
-  before(done => {
+  before(function(done) {
+    if (!isIPv6Available()) {
+      this.skip();
+    }
+
     // Create TLS1.2 server
     server = https.createServer(options, (req, res) => {
       res.end('ohai');
