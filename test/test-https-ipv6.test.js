@@ -30,7 +30,10 @@ describe('test/test-ipv6.test.js', () => {
   });
 
   it('should GET / success with 200 status from ::1', function(done) {
-    if (process.version < 'v9.1.' && process.version < 'v8.10' && process.version < 'v10.') {
+    const m = process.version.match(/^v(\d+)\.(\d+)/);
+    const major = parseInt(m[1]);
+    const minor = parseInt(m[2]);
+    if (major < 8 || (major === 8 && minor < 10) || (major === 9 && minor < 1)) {
       // This only works in node-versions with the fix for
       // https://github.com/nodejs/node/issues/14736 included.
       this.skip();
