@@ -34,11 +34,11 @@
     "humanize-ms": "^1.2.1"
   },
   "devDependencies": {
-    "autod": "^2.8.0",
-    "egg-bin": "^1.10.3",
-    "egg-ci": "^1.7.0",
-    "eslint": "^3.19.0",
-    "eslint-config-egg": "^4.2.0",
+    "autod": "^3.0.1",
+    "egg-bin": "^1.11.1",
+    "egg-ci": "^1.8.0",
+    "eslint": "^4.19.1",
+    "eslint-config-egg": "^6.0.0",
     "pedding": "^1.1.0"
   },
   "engines": {
