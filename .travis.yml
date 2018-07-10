@@ -1,7 +1,6 @@
 sudo: false
 language: node_js
 node_js:
-  - '4.3.2'
   - '4'
   - '6'
   - '8'
