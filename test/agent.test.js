@@ -938,10 +938,10 @@ describe('test/agent.test.js', () => {
     }, () => {
       throw new Error('should not run this');
     })
-    .on('error', () => {
-      assert(agentkeepalive.sockets[name].length === 1);
-      done();
-    });
+      .on('error', () => {
+        assert(agentkeepalive.sockets[name].length === 1);
+        done();
+      });
 
     http.get({
       agent: agentkeepalive,
@@ -950,9 +950,9 @@ describe('test/agent.test.js', () => {
     }, () => {
       throw new Error('should not run this');
     })
-    .on('error', () => {
+      .on('error', () => {
       // do noting
-    });
+      });
 
     http.get({
       agent: agentkeepalive,
@@ -961,9 +961,9 @@ describe('test/agent.test.js', () => {
     }, () => {
       throw new Error('should not run this');
     })
-    .on('error', () => {
-       // do noting
-    });
+      .on('error', () => {
+        // do noting
+      });
 
     assert(Object.keys(agentkeepalive.sockets).length === 1);
   });

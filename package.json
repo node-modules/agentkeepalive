@@ -34,18 +34,18 @@
     "humanize-ms": "^1.2.1"
   },
   "devDependencies": {
-    "autod": "^2.8.0",
-    "egg-bin": "^1.10.3",
-    "egg-ci": "^1.7.0",
-    "eslint": "^3.19.0",
-    "eslint-config-egg": "^4.2.0",
+    "autod": "^3.0.1",
+    "egg-bin": "^1.11.1",
+    "egg-ci": "^1.8.0",
+    "eslint": "^4.19.1",
+    "eslint-config-egg": "^6.0.0",
     "pedding": "^1.1.0"
   },
   "engines": {
     "node": ">= 4.0.0"
   },
   "ci": {
-    "version": "4.3.2, 4, 6, 8, 9"
+    "version": "4, 6, 8, 10"
   },
   "author": "fengmk2 <fengmk2@gmail.com> (https://fengmk2.com)",
   "license": "MIT"
