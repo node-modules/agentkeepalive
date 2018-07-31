@@ -6,6 +6,7 @@
   "browser": "browser.js",
   "files": [
     "index.js",
+    "index.d.ts",
     "browser.js",
     "lib"
   ],
