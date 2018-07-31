@@ -1,4 +1,10 @@
 
+3.5.1 / 2018-07-31
+==================
+
+**fixes**
+  * [[`495f1ab`](http://github.com/node-modules/agentkeepalive/commit/495f1ab625d43945d72f68096b97db723d4f0657)] - fix: add the lost npm files (#66) (Henry Zhuang <<zhuanghengfei@gmail.com>>)
+
 3.5.0 / 2018-07-31
 ==================
 
