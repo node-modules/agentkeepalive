@@ -1,4 +1,14 @@
 
+3.5.0 / 2018-07-31
+==================
+
+**features**
+  * [[`16f5aea`](http://github.com/node-modules/agentkeepalive/commit/16f5aeadfda57f1c602652f1472a63cc83cd05bf)] - feat: add typing define. (#65) (Henry Zhuang <<zhuanghengfei@gmail.com>>)
+
+**others**
+  * [[`28fa062`](http://github.com/node-modules/agentkeepalive/commit/28fa06246fb5103f88ebeeb8563757a9078b8157)] - docs: add "per host" to description of maxFreeSockets (tony-gutierrez <<tony.gutierrez@bluefletch.com>>)
+  * [[`7df2577`](http://github.com/node-modules/agentkeepalive/commit/7df25774f00a1031ca4daad2878a17e0539072a2)] - test: run test on node 10 (#63) (fengmk2 <<fengmk2@gmail.com>>)
+
 3.4.1 / 2018-03-08
 ==================
 
