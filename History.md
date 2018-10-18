@@ -1,4 +1,10 @@
 
+3.5.2 / 2018-10-19
+==================
+
+**fixes**
+  * [[`5751fc1`](http://github.com/node-modules/agentkeepalive/commit/5751fc1180ed6544602c681ffbd08ca66a0cb12c)] - fix: sockLen being miscalculated when removing sockets (#60) (Ehden Sinai <<cixel@users.noreply.github.com>>)
+
 3.5.1 / 2018-07-31
 ==================
 

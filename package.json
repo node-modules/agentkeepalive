@@ -1,6 +1,6 @@
 {
   "name": "agentkeepalive",
-  "version": "3.5.1",
+  "version": "3.5.2",
   "description": "Missing keepalive http.Agent",
   "main": "index.js",
   "browser": "browser.js",
