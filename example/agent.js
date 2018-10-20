@@ -1,11 +1,9 @@
 'use strict';
 
 const http = require('http');
-const Agent = require('../');
+const Agent = require('..');
 
-const keepaliveAgent = new Agent({
-  keepAlive: true,
-});
+const agent = new Agent();
 // https://www.google.com/search?q=nodejs&sugexp=chrome,mod=12&sourceid=chrome&ie=UTF-8
 
 const options = {
@@ -13,7 +11,7 @@ const options = {
   path: '/',
   method: 'GET',
   port: 80,
-  agent: keepaliveAgent,
+  agent,
 };
 
 function get() {
@@ -36,15 +34,15 @@ function get() {
 get();
 
 setTimeout(() => {
-  console.log('keep alive sockets:', keepaliveAgent);
+  console.log('keep alive sockets:', agent);
   process.exit();
 }, 300000);
 
 let count = 0;
-setInterval(function() {
-  const name = keepaliveAgent.getName(options);
-  const sockets = keepaliveAgent.sockets[name] || [];
-  const freeSockets = keepaliveAgent.freeSockets[name] || [];
+setInterval(() => {
+  const name = agent.getName(options);
+  const sockets = agent.sockets[name] || [];
+  const freeSockets = agent.freeSockets[name] || [];
   console.log('%ss, %s, sockets: %d, destroyed: %s, free sockets: %d, destroyed: %s', ++count,
     name, sockets.length, sockets[0] && sockets[0].destroyed,
     freeSockets.length, freeSockets[0] && freeSockets[0].destroyed);

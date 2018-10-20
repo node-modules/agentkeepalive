@@ -10,7 +10,7 @@ describe('test/https_agent.test.js', () => {
   let app = null;
   let port = null;
   const agentkeepalive = new HttpsAgent({
-    keepAliveTimeout: 1000,
+    freeSocketTimeout: 1000,
     timeout: 2000,
     maxSockets: 5,
     maxFreeSockets: 5,
@@ -24,6 +24,7 @@ describe('test/https_agent.test.js', () => {
         res.destroy();
         return;
       } else if (req.url === '/hang') {
+        console.log('[new https request] %s %s', req.method, req.url);
         // Wait forever.
         return;
       }
@@ -61,7 +62,9 @@ describe('test/https_agent.test.js', () => {
       assert(res.statusCode === 200);
       res.resume();
       res.on('end', () => {
-        process.nextTick(() => {
+        assert(Object.keys(agentkeepalive.sockets).length === 1);
+        assert(Object.keys(agentkeepalive.freeSockets).length === 0);
+        setImmediate(() => {
           assert(Object.keys(agentkeepalive.sockets).length === 0);
           assert(Object.keys(agentkeepalive.freeSockets).length === 1);
           done();
@@ -69,6 +72,7 @@ describe('test/https_agent.test.js', () => {
       });
     });
     assert(Object.keys(agentkeepalive.sockets).length === 1);
+    assert(Object.keys(agentkeepalive.freeSockets).length === 0);
   });
 
   it('should free socket timeout', done => {

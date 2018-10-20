@@ -23,7 +23,7 @@
 [download-image]: https://img.shields.io/npm/dm/agentkeepalive.svg?style=flat-square
 [download-url]: https://npmjs.org/package/agentkeepalive
 
-The Node.js's missing `keep alive` `http.Agent`. Support `http` and `https`.
+The enhancement features `keep alive` `http.Agent`. Support `http` and `https`.
 
 ## What's different from original `http.Agent`?
 
@@ -31,6 +31,7 @@ The Node.js's missing `keep alive` `http.Agent`. Support `http` and `https`.
 - Disable Nagle's algorithm: `socket.setNoDelay(true)`
 - Add free socket timeout: avoid long time inactivity socket leak in the free-sockets queue.
 - Add active socket timeout: avoid long time inactivity socket leak in the active-sockets queue.
+- TTL for active socket.
 
 ## Install
 
@@ -47,13 +48,13 @@ $ npm install agentkeepalive --save
   * `keepAliveMsecs` {Number} When using the keepAlive option, specifies the initial delay
     for TCP Keep-Alive packets. Ignored when the keepAlive option is false or undefined. Defaults to 1000.
     Default = `1000`.  Only relevant if `keepAlive` is set to `true`.
-  * `freeSocketKeepAliveTimeout`: {Number} Sets the free socket to timeout
-    after `freeSocketKeepAliveTimeout` milliseconds of inactivity on the free socket.
+  * `freeSocketTimeout`: {Number} Sets the free socket to timeout
+    after `freeSocketTimeout` milliseconds of inactivity on the free socket.
     Default is `15000`.
     Only relevant if `keepAlive` is set to `true`.
   * `timeout`: {Number} Sets the working socket to timeout
     after `timeout` milliseconds of inactivity on the working socket.
-    Default is `freeSocketKeepAliveTimeout * 2`.
+    Default is `freeSocketTimeout * 2`.
   * `maxSockets` {Number} Maximum number of sockets to allow per
     host. Default = `Infinity`.
   * `maxFreeSockets` {Number} Maximum number of sockets (per host) to leave open
@@ -72,8 +73,8 @@ const Agent = require('agentkeepalive');
 const keepaliveAgent = new Agent({
   maxSockets: 100,
   maxFreeSockets: 10,
-  timeout: 60000,
-  freeSocketKeepAliveTimeout: 30000, // free socket keepalive for 30 seconds
+  timeout: 60000, // active socket keepalive for 60 seconds
+  freeSocketTimeout: 30000, // free socket keepalive for 30 seconds
 });
 
 const options = {
@@ -211,7 +212,7 @@ Shortest transaction:         0.00
 
 Socket created:
 
-```
+```bash
 [proxy.js:120000] keepalive, 50 created, 60000 requestFinished, 1200 req/socket, 0 requests, 0 sockets, 0 unusedSockets, 50 timeout
 {" <10ms":662," <15ms":17825," <20ms":20552," <30ms":17646," <40ms":2315," <50ms":567," <100ms":377," <150ms":56," <200ms":0," >=200ms+":0}
 ----------------------------------------------------------------
@@ -221,7 +222,7 @@ Socket created:
 
 ## License
 
-```
+```txt
 (The MIT License)
 
 Copyright(c) node-modules and other contributors.

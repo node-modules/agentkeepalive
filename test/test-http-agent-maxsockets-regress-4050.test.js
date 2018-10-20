@@ -6,7 +6,7 @@
 const assert = require('assert');
 const http = require('http');
 
-describe('test/test-http-agent-maxsockets-regress-4050.test', () => {
+describe('test/test-http-agent-maxsockets-regress-4050.test.js', () => {
   it('should keep active sockets <= MAX_SOCKETS when all requests abort', done => {
     const MAX_SOCKETS = 2;
 

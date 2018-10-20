@@ -15,12 +15,16 @@ declare module "agentkeepalive" {
   }
 
   interface HttpOptions extends http.AgentOptions {
+    keepAlive?: boolean;
+    freeSocketTimeout?: number;
     freeSocketKeepAliveTimeout?: number;
     timeout?: number;
     socketActiveTTL?: number;
   }
 
   interface HttpsOptions extends https.AgentOptions {
+    keepAlive?: boolean;
+    freeSocketTimeout?: number;
     freeSocketKeepAliveTimeout?: number;
     timeout?: number;
     socketActiveTTL?: number;
