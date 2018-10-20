@@ -317,12 +317,14 @@ describe('test/agent.test.js', () => {
       path: '/',
     }, res => {
       const socket1 = res.socket;
-      assert(socket1.timeout === 1000);
+      const timeout = socket1.timeout || socket1._idleTimeout;
+      assert(timeout === 1000);
       assert(res.statusCode === 200);
       res.resume();
       res.on('end', () => {
         setImmediate(() => {
-          assert(socket1.timeout === 1000);
+          const timeout = socket1.timeout || socket1._idleTimeout;
+          assert(timeout === 1000);
           http.get({
             agent,
             port,
@@ -330,7 +332,8 @@ describe('test/agent.test.js', () => {
           }, res => {
             const socket2 = res.socket;
             assert(socket2 === socket1);
-            assert(socket2.timeout === 1000);
+            const timeout = socket2.timeout || socket2._idleTimeout;
+            assert(timeout === 1000);
             assert(res.statusCode === 200);
             res.resume();
             res.on('end', done);
@@ -352,12 +355,14 @@ describe('test/agent.test.js', () => {
       path: '/?timeout=80',
     }, res => {
       const socket1 = res.socket;
-      assert(socket1.timeout === 100);
+      const timeout = socket1.timeout || socket1._idleTimeout;
+      assert(timeout === 100);
       assert(res.statusCode === 200);
       res.resume();
       res.on('end', () => {
         setTimeout(() => {
-          assert(socket1.timeout === 100);
+          const timeout = socket1.timeout || socket1._idleTimeout;
+          assert(timeout === 100);
           http.get({
             agent,
             port,
@@ -365,7 +370,8 @@ describe('test/agent.test.js', () => {
           }, res => {
             const socket2 = res.socket;
             assert(socket2 === socket1);
-            assert(socket2.timeout === 100);
+            const timeout = socket2.timeout || socket2._idleTimeout;
+            assert(timeout === 100);
             assert(res.statusCode === 200);
             res.resume();
             res.on('end', done);
@@ -422,7 +428,7 @@ describe('test/agent.test.js', () => {
     const agent = new Agent({
       timeout: 100,
     });
-    http.get({
+    const req = http.get({
       agent,
       port,
       path: '/hang',
@@ -431,6 +437,8 @@ describe('test/agent.test.js', () => {
     const originalException = process.listeners('uncaughtException').pop();
     process.removeListener('uncaughtException', originalException);
     process.once('uncaughtException', err => {
+      // ignore future req error
+      req.on('error', () => {});
       process.on('uncaughtException', originalException);
       assert(err);
       assert(err.message === 'Socket timeout');
@@ -1705,7 +1713,8 @@ describe('test/agent.test.js', () => {
         res.resume();
         res.on('end', () => {
           setTimeout(function() {
-            assert(socket1.timeout <= 1000);
+            const timeout = socket1.timeout || socket1._idleTimeout;
+            assert(timeout <= 1000);
             const req2 = http.get({
               agent,
               port,
@@ -1743,7 +1752,8 @@ describe('test/agent.test.js', () => {
         res.resume();
         res.on('end', () => {
           setTimeout(function() {
-            assert(socket1.timeout === 500);
+            const timeout = socket1.timeout || socket1._idleTimeout;
+            assert(timeout === 500);
             const req2 = http.get({
               agent,
               port,
