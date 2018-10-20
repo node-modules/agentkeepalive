@@ -1,6 +1,6 @@
 machine:
   node:
-    version: '4'
+    version: '8'
 
 dependencies:
   override:
@@ -8,10 +8,8 @@ dependencies:
 
 test:
   override:
-    - nvm i 4.3.2 && rm -rf node_modules && npm i npminstall && node_modules/.bin/npminstall && npm run ci
-    - nvm i 4 && rm -rf node_modules && npm i npminstall && node_modules/.bin/npminstall && npm run ci
-    - nvm i 6 && rm -rf node_modules && npm i npminstall && node_modules/.bin/npminstall && npm run ci
-    - nvm i 7 && rm -rf node_modules && npm i npminstall && node_modules/.bin/npminstall && npm run ci
+    - nvm i 8 && rm -rf node_modules && npm i npminstall && node_modules/.bin/npminstall && npm run ci
+    - nvm i 10 && rm -rf node_modules && npm i npminstall && node_modules/.bin/npminstall && npm run ci
 
 # https://circleci.com/docs/language-nodejs
 # https://discuss.circleci.com/t/testing-multiple-versions-of-node/542

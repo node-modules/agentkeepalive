@@ -3,16 +3,14 @@
 const https = require('https');
 const HttpsAgent = require('..').HttpsAgent;
 
-const keepaliveAgent = new HttpsAgent({
-  keepAlive: true,
-});
+const agent = new HttpsAgent();
 // https://www.google.com/search?q=nodejs&sugexp=chrome,mod=12&sourceid=chrome&ie=UTF-8
 const options = {
   host: 'github.com',
   port: 443,
   path: '/',
   method: 'GET',
-  agent: keepaliveAgent,
+  agent,
 };
 
 let start = Date.now();
@@ -44,6 +42,6 @@ req.on('error', e => {
 req.end();
 
 setTimeout(() => {
-  console.log('keep alive sockets:', keepaliveAgent);
+  console.log('keep alive sockets:', agent);
   process.exit();
 }, 5000);
