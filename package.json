@@ -48,6 +48,9 @@
   "ci": {
     "version": "4, 6, 8, 10"
   },
+  "publishConfig": {
+    "tag": "latest-3"
+  },
   "author": "fengmk2 <fengmk2@gmail.com> (https://fengmk2.com)",
   "license": "MIT"
 }
