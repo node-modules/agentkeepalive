@@ -5,6 +5,7 @@ const urlparse = require('url').parse;
 const fs = require('fs');
 const assert = require('assert');
 const HttpsAgent = require('..').HttpsAgent;
+// const HttpsAgent = https.Agent;
 
 describe('test/https_agent.test.js', () => {
   let app = null;
@@ -20,6 +21,7 @@ describe('test/https_agent.test.js', () => {
       key: fs.readFileSync(__dirname + '/fixtures/agenttest-key.pem'),
       cert: fs.readFileSync(__dirname + '/fixtures/agenttest-cert.pem'),
     }, (req, res) => {
+      req.resume();
       if (req.url === '/error') {
         res.destroy();
         return;
@@ -30,9 +32,13 @@ describe('test/https_agent.test.js', () => {
       }
       const info = urlparse(req.url, true);
       if (info.query.timeout) {
+        console.log('[new https request] %s %s, query %j', req.method, req.url, info.query);
         setTimeout(() => {
+          res.writeHeader(200, {
+            'Content-Length': `${info.query.timeout.length}`,
+          });
           res.end(info.query.timeout);
-        }, parseInt(info.query.timeout, 10));
+        }, parseInt(info.query.timeout));
         return;
       }
       res.end(JSON.stringify({
@@ -73,6 +79,77 @@ describe('test/https_agent.test.js', () => {
     });
     assert(Object.keys(agentkeepalive.sockets).length === 1);
     assert(Object.keys(agentkeepalive.freeSockets).length === 0);
+  });
+
+  it('should req handle custom timeout error', done => {
+    const req = https.get({
+      agent: agentkeepalive,
+      port,
+      path: '/?timeout=100',
+      ca: fs.readFileSync(__dirname + '/fixtures/ca.pem'),
+      timeout: 50,
+    }, res => {
+      console.log(res.statusCode, res.headers);
+      res.resume();
+      res.on('end', () => {
+        done(new Error('should not run this'));
+      });
+    }).on('error', err => {
+      assert(err);
+      assert(err.message === 'socket hang up');
+      done();
+    });
+
+    // node 8 don't support options.timeout on http.get
+    if (process.version.startsWith('v8.')) {
+      req.setTimeout(50);
+    }
+    req.on('timeout', () => {
+      req.abort();
+    });
+  });
+
+  it('should agent handle default timeout error [bugfix for node 8, 10]', done => {
+    const agent = new HttpsAgent({
+      freeSocketTimeout: 1000,
+      timeout: 50,
+      maxSockets: 5,
+      maxFreeSockets: 5,
+    });
+    https.get({
+      agent,
+      port,
+      path: '/?timeout=100',
+      ca: fs.readFileSync(__dirname + '/fixtures/ca.pem'),
+    }, res => {
+      console.log(res.statusCode, res.headers);
+      res.resume();
+      res.on('end', () => {
+        done(new Error('should not run this'));
+      });
+    }).on('error', err => {
+      assert(err);
+      assert(err.message === 'Socket timeout');
+      done();
+    });
+  });
+
+  it('should don\'t set timeout on options.timeout = 0', done => {
+    const agent = new HttpsAgent({
+      freeSocketTimeout: 1000,
+      timeout: 0,
+      maxSockets: 5,
+      maxFreeSockets: 5,
+    });
+    https.get({
+      agent,
+      port,
+      path: '/',
+      ca: fs.readFileSync(__dirname + '/fixtures/ca.pem'),
+    }, res => {
+      res.resume();
+      res.on('end', done);
+    });
   });
 
   it('should free socket timeout', done => {
