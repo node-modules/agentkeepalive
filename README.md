@@ -33,6 +33,10 @@ The enhancement features `keep alive` `http.Agent`. Support `http` and `https`.
 - Add active socket timeout: avoid long time inactivity socket leak in the active-sockets queue.
 - TTL for active socket.
 
+## Node.js version required
+
+Support Node.js >= `8.0.0`
+
 ## Install
 
 ```bash

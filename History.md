@@ -1,4 +1,14 @@
 
+4.0.0 / 2018-10-23
+==================
+
+**features**
+  * [[`5c9f3bb`](http://github.com/node-modules/agentkeepalive/commit/5c9f3bbd60555744edcf777105b148982a1a42b6)] - feat: impl the new Agent extend http.Agent (fengmk2 <<fengmk2@gmail.com>>)
+
+**others**
+  * [[`498c8f1`](http://github.com/node-modules/agentkeepalive/commit/498c8f13cf76600d3dd6e1c91cdf2d8292355dff)] - chore: move LICENSE from readme to file (fengmk2 <<fengmk2@gmail.com>>)
+  * [[`4f39894`](http://github.com/node-modules/agentkeepalive/commit/4f398942ba2f90cf4501239e56ac4e6344931a01)] - bugfix: support agent.options.timeout on https agent (fengmk2 <<fengmk2@gmail.com>>)
+
 3.5.2 / 2018-10-19
 ==================
 
