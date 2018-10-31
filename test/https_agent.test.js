@@ -5,7 +5,6 @@ const urlparse = require('url').parse;
 const fs = require('fs');
 const assert = require('assert');
 const HttpsAgent = require('..').HttpsAgent;
-// const HttpsAgent = https.Agent;
 
 describe('test/https_agent.test.js', () => {
   let app = null;
@@ -216,6 +215,38 @@ describe('test/https_agent.test.js', () => {
             });
           });
         });
+      });
+    });
+  });
+
+  describe('request timeout > agent timeout', () => {
+    it('should use request timeout', done => {
+      const agent = new HttpsAgent({
+        keepAlive: true,
+        timeout: 2000,
+      });
+      const req = https.get({
+        agent,
+        port,
+        path: '/?timeout=20000',
+        timeout: 2500,
+        ca: fs.readFileSync(__dirname + '/fixtures/ca.pem'),
+      }, res => {
+        console.error(res.statusCode, res.headers);
+        assert.fail('should not get res here');
+      });
+
+      let isTimeout = false;
+      req.on('timeout', () => {
+        isTimeout = true;
+        req.abort();
+      });
+      req.on('error', err => {
+        assert(isTimeout);
+        assert(err);
+        assert(err.message === 'socket hang up');
+        assert(err.code === 'ECONNRESET');
+        done();
       });
     });
   });

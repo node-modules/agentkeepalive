@@ -1495,6 +1495,37 @@ describe('test/agent.test.js', () => {
     assert(Object.keys(agentkeepalive.sockets).length === 1);
   });
 
+  describe('request timeout > agent timeout', () => {
+    it('should use request timeout', done => {
+      const agent = new Agent({
+        keepAlive: true,
+        timeout: 1000,
+      });
+      const req = http.get({
+        agent,
+        port,
+        path: '/?timeout=20000',
+        timeout: 1500,
+      }, res => {
+        console.error(res.statusCode, res.headers);
+        assert.fail('should not get res here');
+      });
+
+      let isTimeout = false;
+      req.on('timeout', () => {
+        isTimeout = true;
+        req.abort();
+      });
+      req.on('error', err => {
+        assert(isTimeout);
+        assert(err);
+        assert(err.message === 'socket hang up');
+        assert(err.code === 'ECONNRESET');
+        done();
+      });
+    });
+  });
+
   describe('keepAlive = false', () => {
     it('should close socket after request', done => {
       const name = 'localhost:' + port + ':';
