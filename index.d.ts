@@ -2,7 +2,7 @@ declare module "agentkeepalive" {
   import * as http from 'http';
   import * as https from 'https';
 
-  interface AgentStatus {
+  export interface AgentStatus {
     createSocketCount: number,
     createSocketErrorCount: number,
     closeSocketCount: number,
@@ -14,7 +14,7 @@ declare module "agentkeepalive" {
     requests: object,
   }
 
-  interface HttpOptions extends http.AgentOptions {
+  export interface HttpOptions extends http.AgentOptions {
     keepAlive?: boolean;
     freeSocketTimeout?: number;
     freeSocketKeepAliveTimeout?: number;
@@ -22,7 +22,7 @@ declare module "agentkeepalive" {
     socketActiveTTL?: number;
   }
 
-  interface HttpsOptions extends https.AgentOptions {
+  export interface HttpsOptions extends https.AgentOptions {
     keepAlive?: boolean;
     freeSocketTimeout?: number;
     freeSocketKeepAliveTimeout?: number;
