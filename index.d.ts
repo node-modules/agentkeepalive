@@ -38,8 +38,11 @@ declare module "agentkeepalive" {
   }
 
   namespace internal {
-    export class HttpsAgent extends internal {
+    export class HttpsAgent extends https.Agent {
       constructor(opts?: HttpsOptions);
+      readonly statusChanged: boolean;
+      createSocket(req: http.IncomingMessage, options: https.RequestOptions, cb: Function): void;
+      getCurrentStatus(): AgentStatus;
     }
   }
 
