@@ -1,4 +1,15 @@
 
+4.0.1 / 2019-02-19
+==================
+
+**fixes**
+  * [[`bad1ac0`](http://github.com/node-modules/agentkeepalive/commit/bad1ac0e710fbc486717e14e68c59266d35df6a8)] - fix: HttpsAgent Type Definition (#71) (#72) (Andrew Leedham <<AndrewLeedham@outlook.com>>)
+  * [[`f48a4a7`](http://github.com/node-modules/agentkeepalive/commit/f48a4a701ea6fbe43781c91e1c0aaad6e328ac7f)] - fix: export interface (#70) (Vinay <<vinaybedre@gmail.com>>)
+
+**others**
+  * [[`9124343`](http://github.com/node-modules/agentkeepalive/commit/91243437cfdd324cb97f39dee76746d5e5f4cd72)] - chore: add agent.options.keepAlive instead agent.keepAlive (fengmk2 <<fengmk2@gmail.com>>)
+  * [[`d177d40`](http://github.com/node-modules/agentkeepalive/commit/d177d40422fe7296990b4e270cf498e3f33c18fa)] - test: add request timeout bigger than agent timeout cases (fengmk2 <<fengmk2@gmail.com>>)
+
 4.0.0 / 2018-10-23
 ==================
 
