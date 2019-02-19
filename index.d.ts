@@ -30,21 +30,17 @@ declare module "agentkeepalive" {
     socketActiveTTL?: number;
   }
 
-  class internal extends http.Agent {
+  export default class HttpAgent extends http.Agent {
     constructor(opts?: HttpOptions);
     readonly statusChanged: boolean;
     createSocket(req: http.IncomingMessage, options: http.RequestOptions, cb: Function): void;
     getCurrentStatus(): AgentStatus;
   }
 
-  namespace internal {
-    export class HttpsAgent extends https.Agent {
-      constructor(opts?: HttpsOptions);
-      readonly statusChanged: boolean;
-      createSocket(req: http.IncomingMessage, options: https.RequestOptions, cb: Function): void;
-      getCurrentStatus(): AgentStatus;
-    }
+  export class HttpsAgent extends https.Agent {
+    constructor(opts?: HttpsOptions);
+    readonly statusChanged: boolean;
+    createSocket(req: http.IncomingMessage, options: https.RequestOptions, cb: Function): void;
+    getCurrentStatus(): AgentStatus;
   }
-
-  export = internal;
 }
