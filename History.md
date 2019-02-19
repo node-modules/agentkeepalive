@@ -1,4 +1,10 @@
 
+4.0.2 / 2019-02-19
+==================
+
+**fixes**
+  * [[`56d4a9b`](http://github.com/node-modules/agentkeepalive/commit/56d4a9b2a4499ea28943ddb590358d7831a02cb1)] - fix: HttpAgent export = internal (#74) (Andrew Leedham <<AndrewLeedham@outlook.com>>)
+
 4.0.1 / 2019-02-19
 ==================
 
