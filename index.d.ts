@@ -33,14 +33,14 @@ declare module "agentkeepalive" {
   export default class HttpAgent extends http.Agent {
     constructor(opts?: HttpOptions);
     readonly statusChanged: boolean;
-    createConnection(options: NetConnectOpts, connectionListener?: () => void): Socket;
+    createConnection(options: HttpOptions, connectionListener?: () => void): Socket;
     getCurrentStatus(): AgentStatus;
   }
 
   export class HttpsAgent extends https.Agent {
     constructor(opts?: HttpsOptions);
     readonly statusChanged: boolean;
-    createConnection(options: NetConnectOpts, connectionListener?: () => void): Socket;
+    createConnection(options: HttpsOptions, connectionListener?: () => void): Socket;
     getCurrentStatus(): AgentStatus;
   }
 }
