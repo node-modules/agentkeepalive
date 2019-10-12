@@ -1,4 +1,13 @@
 
+4.1.0 / 2019-10-12
+==================
+
+**features**
+  * [[`fe33b80`](http://github.com/node-modules/agentkeepalive/commit/fe33b800acc09109388bfe65107550952b6fc7b0)] - feat: Add `reusedSocket` property on client request (#82) (Weijia Wang <<starkwang@126.com>>)
+
+**others**
+  * [[`77ba744`](http://github.com/node-modules/agentkeepalive/commit/77ba744667bb6b9e5986a53e5222f62094db12b9)] - docs: fix grammar in readme (#81) (Herrington Darkholme <<2883231+HerringtonDarkholme@users.noreply.github.com>>)
+
 4.0.2 / 2019-02-19
 ==================
 
