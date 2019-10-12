@@ -165,6 +165,30 @@ setTimeout(() => {
 }, 2000);
 ```
 
+### Support `req.reusedSocket`
+
+This agent implements the `req.reusedSocket` to determine whether a request is send through a reused socket.
+
+When server closes connection at unfortunate time ([keep-alive race](https://code-examples.net/en/q/28a8069)), the http client will throw a `ECONNRESET` error. Under this circumstance, `req.reusedSocket` is useful when we want to retry the request automatically.
+
+```js
+const http = require('http');
+const Agent = require('agentkeepalive');
+const agent = new Agent();
+
+const req = http
+  .get('http://localhost:3000', { agent }, (res) => {
+    // ...
+  })
+  .on('error', (err) => {
+    if (req.reusedSocket && err.code === 'ECONNRESET') {
+      // retry the request or anything else...
+    }
+  })
+```
+
+This behavior is consistent with Node.js core. But through `agentkeepalive`, you can use this feature in older Node.js version.
+
 ## [Benchmark](https://github.com/node-modules/agentkeepalive/tree/master/benchmark)
 
 run the benchmark:
