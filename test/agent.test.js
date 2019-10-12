@@ -1495,6 +1495,43 @@ describe('test/agent.test.js', () => {
     assert(Object.keys(agentkeepalive.sockets).length === 1);
   });
 
+  it('should set req.reusedSocket to true when reuse socket', done => {
+    const agent = new Agent({
+      keepAlive: true,
+    });
+
+    // First request
+    const req1 = http.get({
+      port,
+      path: '/',
+      agent,
+    }, res => {
+      assert(res.statusCode === 200);
+      res.on('data', () => {});
+      res.on('end', () => {
+        setTimeout(() => {
+          // Second request
+          const req2 = http.get({
+            port,
+            path: '/',
+            agent,
+          }, res => {
+            assert(res.statusCode === 200);
+            res.on('data', () => {});
+            res.on('end', () => {
+              done();
+            });
+          });
+          // Second request reuses the socket
+          assert(req2.reusedSocket);
+        }, 10);
+      });
+    });
+
+    // First request doesn't reuse the socket
+    assert(!req1.reusedSocket);
+  });
+
   describe('request timeout > agent timeout', () => {
     it('should use request timeout', done => {
       const agent = new Agent({
