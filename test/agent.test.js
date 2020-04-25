@@ -881,7 +881,7 @@ describe('test/agent.test.js', () => {
           assert(!agentkeepalive.sockets[name]);
           assert(!agentkeepalive.freeSockets[name]);
           done();
-        }, 550);
+        }, 1000);
       });
     });
   });
