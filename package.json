@@ -55,7 +55,7 @@
   },
   "ci": {
     "type": "github",
-    "version": "8, 10, 12, 14"
+    "version": "8, 10, 12"
   },
   "author": "fengmk2 <fengmk2@gmail.com> (https://fengmk2.com)",
   "license": "MIT"
