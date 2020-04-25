@@ -11,9 +11,9 @@
     "lib"
   ],
   "scripts": {
-    "test": "npm run lint && egg-bin test",
-    "test-local": "egg-bin test",
-    "cov": "egg-bin cov",
+    "test": "npm run lint && egg-bin test --full-trace",
+    "test-local": "egg-bin test --full-trace",
+    "cov": "egg-bin cov --full-trace",
     "ci": "npm run lint && npm run cov",
     "lint": "eslint lib test index.js",
     "autod": "autod"
