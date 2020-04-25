@@ -54,7 +54,8 @@
     "node": ">= 8.0.0"
   },
   "ci": {
-    "version": "8, 10, 12"
+    "type": "github",
+    "version": "8, 10, 12, 14"
   },
   "author": "fengmk2 <fengmk2@gmail.com> (https://fengmk2.com)",
   "license": "MIT"
