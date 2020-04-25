@@ -1,4 +1,10 @@
 
+4.1.2 / 2020-04-25
+==================
+
+**fixes**
+  * [[`de66b02`](http://github.com/node-modules/agentkeepalive/commit/de66b0206d064a97129c2c31bcdabd4d64557b91)] - fix: detect http request timeout handler (#88) (fengmk2 <<fengmk2@gmail.com>>)
+
 4.1.1 / 2020-04-25
 ==================
 
