@@ -47,7 +47,9 @@ describe('test/test-https-agent-session-eviction.test.js', () => {
             const name = Object.keys(httpsAgent.freeSockets);
             const socket = httpsAgent.freeSockets[name][0];
             socket.on('close', err => {
+              if (socket.destroyed) return;
               assert.equal(err.message, 'mock close error');
+              socket.destroy();
               done();
             });
             socket.emit('close', new Error('mock close error'));

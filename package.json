@@ -41,12 +41,14 @@
   },
   "devDependencies": {
     "autod": "^3.0.1",
+    "coffee": "^5.3.0",
     "egg-bin": "^4.9.0",
     "egg-ci": "^1.10.0",
     "eslint": "^5.7.0",
     "eslint-config-egg": "^7.1.0",
     "mm": "^2.4.1",
-    "pedding": "^1.1.0"
+    "pedding": "^1.1.0",
+    "typescript": "^3.8.3"
   },
   "engines": {
     "node": ">= 8.0.0"
