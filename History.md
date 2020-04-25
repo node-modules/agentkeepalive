@@ -1,4 +1,13 @@
 
+4.1.1 / 2020-04-25
+==================
+
+**fixes**
+  * [[`bbd20c0`](http://github.com/node-modules/agentkeepalive/commit/bbd20c03b8cf7dfb00b3aad1ada26d4ab90d2d6e)] - fix: definition error (#87) (吖猩 <<whxaxes@qq.com>>)
+
+**others**
+  * [[`3b01699`](http://github.com/node-modules/agentkeepalive/commit/3b01699b8e90022d5f56898dd709e4fe7ee7cdaa)] - test: run test on node 12 (#84) (Igor Savin <<iselwin@gmail.com>>)
+
 4.1.0 / 2019-10-12
 ==================
 
