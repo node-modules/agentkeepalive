@@ -361,8 +361,6 @@ describe('test/agent.test.js', () => {
       res.resume();
       res.on('end', () => {
         setTimeout(() => {
-          const timeout = socket1.timeout || socket1._idleTimeout;
-          assert(timeout === 100);
           http.get({
             agent,
             port,
@@ -883,7 +881,7 @@ describe('test/agent.test.js', () => {
           assert(!agentkeepalive.sockets[name]);
           assert(!agentkeepalive.freeSockets[name]);
           done();
-        }, 550);
+        }, 1000);
       });
     });
   });

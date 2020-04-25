@@ -1,23 +1,11 @@
 # agentkeepalive
 
 [![NPM version][npm-image]][npm-url]
-[![build status][travis-image]][travis-url]
-[![Appveyor status][appveyor-image]][appveyor-url]
-[![Test coverage][codecov-image]][codecov-url]
-[![David deps][david-image]][david-url]
 [![Known Vulnerabilities][snyk-image]][snyk-url]
 [![npm download][download-image]][download-url]
 
 [npm-image]: https://img.shields.io/npm/v/agentkeepalive.svg?style=flat
 [npm-url]: https://npmjs.org/package/agentkeepalive
-[travis-image]: https://img.shields.io/travis/node-modules/agentkeepalive.svg?style=flat
-[travis-url]: https://travis-ci.org/node-modules/agentkeepalive
-[appveyor-image]: https://ci.appveyor.com/api/projects/status/k7ct4s47di6m5uy2?svg=true
-[appveyor-url]: https://ci.appveyor.com/project/fengmk2/agentkeepalive
-[codecov-image]: https://codecov.io/gh/node-modules/agentkeepalive/branch/master/graph/badge.svg
-[codecov-url]: https://codecov.io/gh/node-modules/agentkeepalive
-[david-image]: https://img.shields.io/david/node-modules/agentkeepalive.svg?style=flat
-[david-url]: https://david-dm.org/node-modules/agentkeepalive
 [snyk-image]: https://snyk.io/test/npm/agentkeepalive/badge.svg?style=flat-square
 [snyk-url]: https://snyk.io/test/npm/agentkeepalive
 [download-image]: https://img.shields.io/npm/dm/agentkeepalive.svg?style=flat-square
