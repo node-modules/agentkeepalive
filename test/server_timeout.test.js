@@ -29,7 +29,7 @@ describe('test/server_timeout.test.js', () => {
     clearInterval(timer);
   });
 
-  it.only('should handle Keep-Alive header and not throw reset error', done => {
+  it('should handle Keep-Alive header and not throw reset error', done => {
     const keepaliveAgent = new Agent({
       keepAlive: true,
     });
