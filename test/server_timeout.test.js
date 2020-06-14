@@ -29,7 +29,7 @@ describe('test/server_timeout.test.js', () => {
     clearInterval(timer);
   });
 
-  it('should handle Keep-Alive header and not throw reset error', done => {
+  it.only('should handle Keep-Alive header and not throw reset error', done => {
     const keepaliveAgent = new Agent({
       keepAlive: true,
     });
@@ -57,7 +57,7 @@ describe('test/server_timeout.test.js', () => {
           if (m) {
             const keepAliveTimeout = parseInt(m[1]) * 1000 - 500;
             if (keepAliveTimeout > 0) {
-              res.socket.freeSocketKeepAliveTimeout = keepAliveTimeout;
+              req.socket.freeSocketKeepAliveTimeout = keepAliveTimeout;
             }
           }
           if (count > 5) {
