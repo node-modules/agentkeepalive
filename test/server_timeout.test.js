@@ -57,7 +57,7 @@ describe('test/server_timeout.test.js', () => {
           if (m) {
             const keepAliveTimeout = parseInt(m[1]) * 1000 - 500;
             if (keepAliveTimeout > 0) {
-              res.socket.freeSocketKeepAliveTimeout = keepAliveTimeout;
+              req.socket.freeSocketKeepAliveTimeout = keepAliveTimeout;
             }
           }
           if (count > 5) {
