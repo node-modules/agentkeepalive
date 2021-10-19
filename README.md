@@ -46,7 +46,7 @@ $ npm install agentkeepalive --save
     Only relevant if `keepAlive` is set to `true`.
   * `timeout`: {Number} Sets the working socket to timeout
     after `timeout` milliseconds of inactivity on the working socket.
-    Default is `freeSocketTimeout * 2`.
+    Default is `freeSocketTimeout * 2` so long as that value is greater to or equal to 30 seconds, otherwise the default is 30 seconds.
   * `maxSockets` {Number} Maximum number of sockets to allow per
     host. Default = `Infinity`.
   * `maxFreeSockets` {Number} Maximum number of sockets (per host) to leave open
