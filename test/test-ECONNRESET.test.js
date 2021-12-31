@@ -26,7 +26,7 @@ describe('test/test-ECONNRESET.test.js', () => {
     clearInterval(timer);
   });
 
-  it('should handle Keep-Alive header and not throw reset error', done => {
+  it('should resolved socket hang up and ECONNRESET errors', done => {
     const keepaliveAgent = new Agent({
       keepAlive: true,
       freeSocketTimeout: 900,
