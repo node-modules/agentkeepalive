@@ -58,6 +58,7 @@ describe('test/test-ipv6.test.js', () => {
       port,
       path: '/',
       ca: fs.readFileSync(__dirname + '/fixtures/ca.pem'),
+      rejectUnauthorized: false,
     }, res => {
       assert(res.statusCode === 200);
       res.resume();

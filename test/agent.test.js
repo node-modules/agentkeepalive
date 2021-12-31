@@ -70,8 +70,8 @@ describe('test/agent.test.js', () => {
     assert(agent.keepAliveMsecs === 1000);
     assert(agent.maxSockets === 5);
     assert(agent.maxFreeSockets === 5);
-    assert(agent.timeout === 30000);
-    assert(agent.options.timeout === 30000);
+    assert(agent.timeout === 8000);
+    assert(agent.options.timeout === 8000);
     assert(agent.freeSocketKeepAliveTimeout === 1000);
     assert(agent.options.freeSocketTimeout === 1000);
     assert(!agent.socketActiveTTL);
@@ -1648,7 +1648,7 @@ describe('test/agent.test.js', () => {
       const agent = new Agent();
 
       const options = {
-        host: 'registry.npmjs.org',
+        host: 'r.cnpmjs.org',
         port: 80,
         path: '/',
         agent,
