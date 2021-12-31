@@ -2,6 +2,7 @@
 
 [![NPM version][npm-image]][npm-url]
 [![Known Vulnerabilities][snyk-image]][snyk-url]
+[![Node.js CI](https://github.com/node-modules/agentkeepalive/actions/workflows/nodejs.yml/badge.svg)](https://github.com/node-modules/agentkeepalive/actions/workflows/nodejs.yml)
 [![npm download][download-image]][download-url]
 
 [npm-image]: https://img.shields.io/npm/v/agentkeepalive.svg?style=flat
@@ -239,3 +240,7 @@ Socket created:
 ## License
 
 [MIT](LICENSE)
+
+## Contributors
+
+[![](https://ergatejs.implements.io/badges/contributors/node-modules/agentkeepalive.svg?size=96)](https://github.com/node-modules/agentkeepalive/graphs/contributors)
