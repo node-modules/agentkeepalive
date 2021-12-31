@@ -42,11 +42,11 @@ $ npm install agentkeepalive --save
     Default = `1000`.  Only relevant if `keepAlive` is set to `true`.
   * `freeSocketTimeout`: {Number} Sets the free socket to timeout
     after `freeSocketTimeout` milliseconds of inactivity on the free socket.
-    Default is `15000`.
+    The default [server-side timeout](https://nodejs.org/api/http.html#serverkeepalivetimeout) is 5000 milliseconds, to [avoid ECONNRESET exceptions](https://medium.com/ssense-tech/reduce-networking-errors-in-nodejs-23b4eb9f2d83), we set the default value to `4000` milliseconds.
     Only relevant if `keepAlive` is set to `true`.
   * `timeout`: {Number} Sets the working socket to timeout
     after `timeout` milliseconds of inactivity on the working socket.
-    Default is `freeSocketTimeout * 2` so long as that value is greater than or equal to 30 seconds, otherwise the default is 30 seconds.
+    Default is `freeSocketTimeout * 2` so long as that value is greater than or equal to 8 seconds, otherwise the default is 8 seconds.
   * `maxSockets` {Number} Maximum number of sockets to allow per
     host. Default = `Infinity`.
   * `maxFreeSockets` {Number} Maximum number of sockets (per host) to leave open

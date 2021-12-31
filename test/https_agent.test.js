@@ -63,6 +63,7 @@ describe('test/https_agent.test.js', () => {
       port,
       path: '/',
       ca: fs.readFileSync(__dirname + '/fixtures/ca.pem'),
+      rejectUnauthorized: false,
     }, res => {
       assert(res.statusCode === 200);
       res.resume();
@@ -87,6 +88,7 @@ describe('test/https_agent.test.js', () => {
       path: '/?timeout=100',
       ca: fs.readFileSync(__dirname + '/fixtures/ca.pem'),
       timeout: 50,
+      rejectUnauthorized: false,
     }, res => {
       console.log(res.statusCode, res.headers);
       res.resume();
@@ -114,6 +116,7 @@ describe('test/https_agent.test.js', () => {
       timeout: 50,
       maxSockets: 5,
       maxFreeSockets: 5,
+      rejectUnauthorized: false,
     });
     https.get({
       agent,
@@ -139,6 +142,7 @@ describe('test/https_agent.test.js', () => {
       timeout: 0,
       maxSockets: 5,
       maxFreeSockets: 5,
+      rejectUnauthorized: false,
     });
     https.get({
       agent,
@@ -157,6 +161,7 @@ describe('test/https_agent.test.js', () => {
       port,
       path: '/',
       ca: fs.readFileSync(__dirname + '/fixtures/ca.pem'),
+      rejectUnauthorized: false,
     }, res => {
       assert(res.statusCode === 200);
       res.resume();
@@ -230,6 +235,7 @@ describe('test/https_agent.test.js', () => {
         port,
         path: '/?timeout=20000',
         timeout: 2500,
+        rejectUnauthorized: false,
         ca: fs.readFileSync(__dirname + '/fixtures/ca.pem'),
       }, res => {
         console.error(res.statusCode, res.headers);
