@@ -11,6 +11,7 @@
     "lib"
   ],
   "scripts": {
+    "contributor": "git-contributor",
     "test": "npm run lint && egg-bin test --full-trace",
     "test-local": "egg-bin test --full-trace",
     "cov": "cross-env DEBUG=agentkeepalive egg-bin cov --full-trace",
@@ -47,6 +48,7 @@
     "egg-ci": "^1.10.0",
     "eslint": "^5.7.0",
     "eslint-config-egg": "^7.1.0",
+    "git-contributor": "^1.0.10",
     "mm": "^2.4.1",
     "pedding": "^1.1.0",
     "typescript": "^3.8.3"
@@ -61,6 +63,6 @@
     },
     "version": "8, 10, 12, 14, 16"
   },
-  "author": "fengmk2 <fengmk2@gmail.com> (https://fengmk2.com)",
+  "author": "fengmk2 <fengmk2@gmail.com> (https://github.com/fengmk2)",
   "license": "MIT"
 }

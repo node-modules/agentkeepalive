@@ -241,6 +241,16 @@ Socket created:
 
 [MIT](LICENSE)
 
+<!-- GITCONTRIBUTOR_START -->
+
 ## Contributors
 
-[![](https://ergatejs.implements.io/badges/contributors/node-modules/agentkeepalive.svg?size=96)](https://github.com/node-modules/agentkeepalive/graphs/contributors)
+|[<img src="https://avatars.githubusercontent.com/u/156269?v=4" width="100px;"/><br/><sub><b>fengmk2</b></sub>](https://github.com/fengmk2)<br/>|[<img src="https://avatars.githubusercontent.com/u/985607?v=4" width="100px;"/><br/><sub><b>dead-horse</b></sub>](https://github.com/dead-horse)<br/>|[<img src="https://avatars.githubusercontent.com/u/5557458?v=4" width="100px;"/><br/><sub><b>AndrewLeedham</b></sub>](https://github.com/AndrewLeedham)<br/>|[<img src="https://avatars.githubusercontent.com/u/5243774?v=4" width="100px;"/><br/><sub><b>ngot</b></sub>](https://github.com/ngot)<br/>|[<img src="https://avatars.githubusercontent.com/u/26738844?v=4" width="100px;"/><br/><sub><b>aaronArinder</b></sub>](https://github.com/aaronArinder)<br/>|[<img src="https://avatars.githubusercontent.com/u/10976983?v=4" width="100px;"/><br/><sub><b>alexpenev-s</b></sub>](https://github.com/alexpenev-s)<br/>|
+| :---: | :---: | :---: | :---: | :---: | :---: |
+|[<img src="https://avatars.githubusercontent.com/u/4985201?v=4" width="100px;"/><br/><sub><b>DylanPiercey</b></sub>](https://github.com/DylanPiercey)<br/>|[<img src="https://avatars.githubusercontent.com/u/3770250?v=4" width="100px;"/><br/><sub><b>cixel</b></sub>](https://github.com/cixel)<br/>|[<img src="https://avatars.githubusercontent.com/u/2883231?v=4" width="100px;"/><br/><sub><b>HerringtonDarkholme</b></sub>](https://github.com/HerringtonDarkholme)<br/>|[<img src="https://avatars.githubusercontent.com/u/1433247?v=4" width="100px;"/><br/><sub><b>denghongcai</b></sub>](https://github.com/denghongcai)<br/>|[<img src="https://avatars.githubusercontent.com/u/1847934?v=4" width="100px;"/><br/><sub><b>kibertoad</b></sub>](https://github.com/kibertoad)<br/>|[<img src="https://avatars.githubusercontent.com/u/5236150?v=4" width="100px;"/><br/><sub><b>pangorgo</b></sub>](https://github.com/pangorgo)<br/>|
+|[<img src="https://avatars.githubusercontent.com/u/588898?v=4" width="100px;"/><br/><sub><b>mattiash</b></sub>](https://github.com/mattiash)<br/>|[<img src="https://avatars.githubusercontent.com/u/1411117?v=4" width="100px;"/><br/><sub><b>pmalouin</b></sub>](https://github.com/pmalouin)<br/>|[<img src="https://avatars.githubusercontent.com/u/1404810?v=4" width="100px;"/><br/><sub><b>SimenB</b></sub>](https://github.com/SimenB)<br/>|[<img src="https://avatars.githubusercontent.com/u/2630384?v=4" width="100px;"/><br/><sub><b>vinaybedre</b></sub>](https://github.com/vinaybedre)<br/>|[<img src="https://avatars.githubusercontent.com/u/10933333?v=4" width="100px;"/><br/><sub><b>starkwang</b></sub>](https://github.com/starkwang)<br/>|[<img src="https://avatars.githubusercontent.com/u/6897780?v=4" width="100px;"/><br/><sub><b>killagu</b></sub>](https://github.com/killagu)<br/>|
+[<img src="https://avatars.githubusercontent.com/u/15345331?v=4" width="100px;"/><br/><sub><b>tony-gutierrez</b></sub>](https://github.com/tony-gutierrez)<br/>|[<img src="https://avatars.githubusercontent.com/u/5856440?v=4" width="100px;"/><br/><sub><b>whxaxes</b></sub>](https://github.com/whxaxes)<br/>
+
+This project follows the git-contributor [spec](https://github.com/xudafeng/git-contributor), auto updated at `Mon Feb 21 2022 23:05:27 GMT+0800`.
+
+<!-- GITCONTRIBUTOR_END -->
