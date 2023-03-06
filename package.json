@@ -36,7 +36,7 @@
   ],
   "dependencies": {
     "debug": "^4.1.0",
-    "depd": "^1.1.2",
+    "depd": "^2.0.0",
     "humanize-ms": "^1.2.1"
   },
   "devDependencies": {
