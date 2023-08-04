@@ -1,4 +1,10 @@
 
+4.4.0 / 2023-08-05
+==================
+
+**features**
+  * [[`c7c1e93`](http://github.com/node-modules/agentkeepalive/commit/c7c1e93beba7310d7c2cc9647dd211a686d21cac)] - feat: return socket from createConnection (#113) (Nabeel Bukhari <<nabeel.bukhari@hotmail.com>>)
+
 4.3.0 / 2023-03-06
 ==================
 

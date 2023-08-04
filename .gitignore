@@ -17,3 +17,4 @@ npm-debug.log
 coverage/
 .nyc_output/
 test/fixtures/ts/*.js
+package-lock.json
