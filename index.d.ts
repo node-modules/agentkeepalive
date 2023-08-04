@@ -1,5 +1,6 @@
 import * as http from 'http';
 import * as https from 'https';
+import * as net from 'net';
 
 interface PlainObject {
   [key: string]: any;
@@ -8,6 +9,7 @@ interface PlainObject {
 declare class HttpAgent extends http.Agent {
   constructor(opts?: AgentKeepAlive.HttpOptions);
   readonly statusChanged: boolean;
+  createConnection(options: net.NetConnectOpts, cb?: Function): net.Socket;
   createSocket(req: http.IncomingMessage, options: http.RequestOptions, cb: Function): void;
   getCurrentStatus(): AgentKeepAlive.AgentStatus;
 }
@@ -52,6 +54,7 @@ declare namespace AgentKeepAlive {
   export class HttpsAgent extends https.Agent {
     constructor(opts?: HttpsOptions);
     readonly statusChanged: boolean;
+    createConnection(options: net.NetConnectOpts, cb?: Function): net.Socket;
     createSocket(req: http.IncomingMessage, options: http.RequestOptions, cb: Function): void;
     getCurrentStatus(): AgentStatus;
   }
