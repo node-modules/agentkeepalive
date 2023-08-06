@@ -35,7 +35,6 @@
     "HttpsAgent"
   ],
   "dependencies": {
-    "depd": "^2.0.0",
     "humanize-ms": "^1.2.1"
   },
   "devDependencies": {
