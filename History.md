@@ -1,4 +1,10 @@
 
+4.5.0 / 2023-08-06
+==================
+
+**others**
+  * [[`1e5e312`](http://github.com/node-modules/agentkeepalive/commit/1e5e312f36491243372dbfee0dd47607e7b3d94a)] - deps: remove debug and depd (#114) (fengmk2 <<fengmk2@gmail.com>>)
+
 4.4.0 / 2023-08-05
 ==================
 
