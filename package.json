@@ -14,8 +14,7 @@
     "test": "egg-bin test",
     "cov": "egg-bin cov",
     "ci": "npm run lint && npm run cov",
-    "lint": "eslint lib test index.js",
-    "autod": "autod"
+    "lint": "eslint lib test index.js"
   },
   "repository": {
     "type": "git",
@@ -35,18 +34,13 @@
     "humanize-ms": "^1.2.1"
   },
   "devDependencies": {
-    "autod": "^3.0.1",
     "egg-bin": "^1.11.1",
-    "egg-ci": "^1.8.0",
     "eslint": "^4.19.1",
     "eslint-config-egg": "^6.0.0",
     "pedding": "^1.1.0"
   },
   "engines": {
     "node": ">= 4.0.0"
-  },
-  "ci": {
-    "version": "4, 6, 8, 10"
   },
   "publishConfig": {
     "tag": "latest-3"
