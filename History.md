@@ -1,4 +1,13 @@
 
+3.5.3 / 2024-05-08
+==================
+
+**fixes**
+  * [[`d1e789f`](http://github.com/node-modules/agentkeepalive/commit/d1e789fa83c9e636514ea297876c82d7968496cc)] - fix: use Object.assign (#117) (fengmk2 <<suqian.yf@antgroup.com>>)
+
+**others**
+  * [[`1b8393d`](http://github.com/node-modules/agentkeepalive/commit/1b8393ddd9896b14e5c68cef71d01548c41d9f2a)] - chore: add latest-3 tag (fengmk2 <<fengmk2@gmail.com>>)
+
 3.5.2 / 2018-10-19
 ==================
 
