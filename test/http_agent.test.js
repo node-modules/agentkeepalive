@@ -105,7 +105,9 @@ describe('test/agent.test.js', () => {
     req.end();
   });
 
-  it('should request with connection: close with http.Agent()', done => {
+  // NOTE: The test is irrelevant since NodeJS >= v19 as behavior is changed and it has default `keep-alive`
+  //        see https://nodejs.org/en/blog/announcements/v19-release-announce#https11-keepalive-by-default
+  it.skip('should request with connection: close with http.Agent()', done => {
     const req = http.request({
       method: 'GET',
       port,
