@@ -5,7 +5,7 @@ const http = require('http');
 const urlparse = require('url').parse;
 const pedding = require('pedding');
 const mm = require('mm');
-const Agent = require('..');
+const HttpAgent = require('..').HttpAgent;
 const {
   CURRENT_ID,
   SOCKET_NAME,
@@ -15,7 +15,7 @@ const {
 } = require('..').constants;
 
 describe('test/agent.test.js', () => {
-  const agentkeepalive = new Agent({
+  const agentkeepalive = new HttpAgent({
     keepAliveTimeout: 1000,
     maxSockets: 5,
     maxFreeSockets: 5,
@@ -127,7 +127,7 @@ describe('test/agent.test.js', () => {
 
   it('should destroy inactivity socket timeout by agent itself', done => {
     const name = 'localhost:' + port + ':';
-    const agentkeepalive = new Agent({
+    const agentkeepalive = new HttpAgent({
       freeSocketKeepAliveTimeout: '5s',
       timeout: '1s',
     });
@@ -178,7 +178,7 @@ describe('test/agent.test.js', () => {
 
   it('should let request handle the socket timeout', done => {
     const name = 'localhost:' + port + ':';
-    const agentkeepalive = new Agent({
+    const agentkeepalive = new HttpAgent({
       freeSocketKeepAliveTimeout: '5s',
       timeout: '1s',
     });
@@ -272,7 +272,7 @@ describe('test/agent.test.js', () => {
   });
 
   it('should mock CURRENT_ID cross MAX_SAFE_INTEGER', _done => {
-    const agent = new Agent({
+    const agent = new HttpAgent({
       timeout: 1000,
       freeSocketTimeout: 1000,
       maxSockets: 10,
@@ -306,7 +306,7 @@ describe('test/agent.test.js', () => {
   });
 
   it('should work on timeout same as freeSocketTimeout', done => {
-    const agent = new Agent({
+    const agent = new HttpAgent({
       timeout: 1000,
       freeSocketTimeout: 1000,
     });
@@ -344,7 +344,7 @@ describe('test/agent.test.js', () => {
   });
 
   it('should work on freeSocketTimeout = 0', done => {
-    const agent = new Agent({
+    const agent = new HttpAgent({
       timeout: 100,
       freeSocketTimeout: 0,
     });
@@ -380,7 +380,7 @@ describe('test/agent.test.js', () => {
   });
 
   it('should createConnection error', done => {
-    const agent = new Agent();
+    const agent = new HttpAgent();
     mm.error(require('http').Agent.prototype, 'createConnection', 'mock createConnection error');
     http.get({
       agent,
@@ -394,7 +394,7 @@ describe('test/agent.test.js', () => {
   });
 
   it('should keepSocketAlive return false, no use any socket', done => {
-    const agent = new Agent();
+    const agent = new HttpAgent();
     mm(require('http').Agent.prototype, 'keepSocketAlive', () => {
       return false;
     });
@@ -423,7 +423,7 @@ describe('test/agent.test.js', () => {
   });
 
   it('should agent emit socket error event', done => {
-    const agent = new Agent({
+    const agent = new HttpAgent({
       timeout: 100,
     });
     const req = http.get({
@@ -446,7 +446,7 @@ describe('test/agent.test.js', () => {
 
   it('should mock socket error', done => {
     done = pedding(2, done);
-    const agent = new Agent({
+    const agent = new HttpAgent({
       timeout: 100,
     });
     const req = http.get({
@@ -519,7 +519,7 @@ describe('test/agent.test.js', () => {
   });
 
   it('should remove keepalive socket when server side destroy()', done => {
-    const agent = new Agent({
+    const agent = new HttpAgent({
       keepAliveTimeout: 1000,
       maxSockets: 5,
       maxFreeSockets: 5,
@@ -570,7 +570,7 @@ describe('test/agent.test.js', () => {
   });
 
   it('should remove socket when socket.destroy()', done => {
-    const agentkeepalive = new Agent({
+    const agentkeepalive = new HttpAgent({
       freeSocketTimeout: 1000,
       maxSockets: 5,
       maxFreeSockets: 5,
@@ -603,7 +603,7 @@ describe('test/agent.test.js', () => {
   });
 
   it('should use new socket when hit the max keepalive time: 1000ms', done => {
-    const agentkeepalive = new Agent({
+    const agentkeepalive = new HttpAgent({
       freeSocketTimeout: 1000,
       maxSockets: 5,
       maxFreeSockets: 5,
@@ -651,7 +651,7 @@ describe('test/agent.test.js', () => {
 
   it('should disable keepalive when keepAlive=false', done => {
     const name = 'localhost:' + port + ':';
-    const agent = new Agent({
+    const agent = new HttpAgent({
       keepAlive: false,
     });
     assert(agent.keepAlive === false);
@@ -678,7 +678,7 @@ describe('test/agent.test.js', () => {
   });
 
   it('should not keepalive when client.abort()', done => {
-    const agentkeepalive = new Agent({
+    const agentkeepalive = new HttpAgent({
       freeSocketTimeout: 1000,
       maxSockets: 5,
       maxFreeSockets: 5,
@@ -706,7 +706,7 @@ describe('test/agent.test.js', () => {
 
   it('should keep 1 socket', done => {
     const name = 'localhost:' + port + ':';
-    const agent = new Agent({
+    const agent = new HttpAgent({
       maxSockets: 1,
       maxFreeSockets: 1,
     });
@@ -762,7 +762,7 @@ describe('test/agent.test.js', () => {
 
   it('should keep 1 free socket', done => {
     const name = 'localhost:' + port + ':';
-    const agent = new Agent({
+    const agent = new HttpAgent({
       maxSockets: 2,
       maxFreeSockets: 1,
     });
@@ -814,7 +814,7 @@ describe('test/agent.test.js', () => {
   it('should keep 2 free socket', done => {
     done = pedding(2, done);
     const name = 'localhost:' + port + ':';
-    const agent = new Agent({
+    const agent = new HttpAgent({
       maxSockets: 2,
       maxFreeSockets: 2,
     });
@@ -888,7 +888,7 @@ describe('test/agent.test.js', () => {
 
   it('should fire req timeout callback the first use socket', done => {
     done = pedding(2, done);
-    const agent = new Agent({
+    const agent = new HttpAgent({
       maxSockets: 2,
       maxFreeSockets: 2,
     });
@@ -924,7 +924,7 @@ describe('test/agent.test.js', () => {
 
   it('should fire req timeout callback the second use socket', done => {
     done = pedding(2, done);
-    const agent = new Agent({
+    const agent = new HttpAgent({
       maxSockets: 2,
       maxFreeSockets: 2,
     });
@@ -965,7 +965,7 @@ describe('test/agent.test.js', () => {
 
   it('should free socket timeout work', done => {
     const name = 'localhost:' + port + ':';
-    const agent = new Agent({
+    const agent = new HttpAgent({
       keepAliveTimeout: 100,
     });
 
@@ -998,7 +998,7 @@ describe('test/agent.test.js', () => {
 
   it('should first use working socket timeout', done => {
     const name = 'localhost:' + port + ':';
-    const agent = new Agent({
+    const agent = new HttpAgent({
       timeout: 100,
     });
     http.get({
@@ -1018,7 +1018,7 @@ describe('test/agent.test.js', () => {
 
   it('should reuse working socket timeout', done => {
     const name = 'localhost:' + port + ':';
-    const agent = new Agent({
+    const agent = new HttpAgent({
       timeout: 100,
     });
     http.get({
@@ -1050,7 +1050,7 @@ describe('test/agent.test.js', () => {
 
   it('should destroy free socket before timeout', done => {
     const name = 'localhost:' + port + ':';
-    const agent = new Agent();
+    const agent = new HttpAgent();
     let lastPort = null;
     http.get({
       agent,
@@ -1094,7 +1094,7 @@ describe('test/agent.test.js', () => {
   it('should remove error socket and create new one handle pedding request', done => {
     done = pedding(2, done);
     const name = 'localhost:' + port + ':';
-    const agent = new Agent({
+    const agent = new HttpAgent({
       maxSockets: 1,
       maxFreeSockets: 1,
     });
@@ -1143,7 +1143,7 @@ describe('test/agent.test.js', () => {
   it('should destroy all sockets when freeSockets is empty', done => {
     done = pedding(2, done);
     const name = 'localhost:' + port + ':';
-    const agent = new Agent();
+    const agent = new HttpAgent();
     http.get({
       agent,
       port,
@@ -1175,7 +1175,7 @@ describe('test/agent.test.js', () => {
   it('should destroy both sockets and freeSockets', done => {
     done = pedding(2, done);
     const name = 'localhost:' + port + ':';
-    const agent = new Agent();
+    const agent = new HttpAgent();
     http.get({
       agent,
       port,
@@ -1211,7 +1211,7 @@ describe('test/agent.test.js', () => {
 
   it('should keep max sockets: bugfix for orginal keepalive agent', _done => {
     const name = 'localhost:' + port + ':';
-    const agentkeepalive = new Agent({
+    const agentkeepalive = new HttpAgent({
       maxSockets: 2,
       maxFreeSockets: 2,
     });
@@ -1254,7 +1254,7 @@ describe('test/agent.test.js', () => {
 
   it('should make sure max sockets limit work', _done => {
     const name = 'localhost:' + port + ':';
-    const agentkeepalive = new Agent({
+    const agentkeepalive = new HttpAgent({
       maxSockets: 2,
       maxFreeSockets: 2,
     });
@@ -1332,7 +1332,7 @@ describe('test/agent.test.js', () => {
   it('should timeout and remove free socket', done => {
     done = pedding(2, done);
     const name = 'localhost:' + port + ':';
-    const agent = new Agent({
+    const agent = new HttpAgent({
       maxSockets: 1,
       maxFreeSockets: 1,
       freeSocketTimeout: 1000,
@@ -1382,7 +1382,7 @@ describe('test/agent.test.js', () => {
   it('should not open more sockets than maxSockets when request success', done => {
     done = pedding(3, done);
     const name = 'localhost:' + port + ':';
-    const agentkeepalive = new Agent({
+    const agentkeepalive = new HttpAgent({
       keepAlive: true,
       keepAliveTimeout: 1000,
       maxSockets: 1,
@@ -1449,7 +1449,7 @@ describe('test/agent.test.js', () => {
 
   it('should not open more sockets than maxSockets when request timeout', done => {
     const name = 'localhost:' + port + ':';
-    const agentkeepalive = new Agent({
+    const agentkeepalive = new HttpAgent({
       keepAlive: true,
       timeout: 1000,
       maxSockets: 1,
@@ -1494,7 +1494,7 @@ describe('test/agent.test.js', () => {
   });
 
   it('should set req.reusedSocket to true when reuse socket', done => {
-    const agent = new Agent({
+    const agent = new HttpAgent({
       keepAlive: true,
     });
 
@@ -1532,7 +1532,7 @@ describe('test/agent.test.js', () => {
 
   describe('request timeout > agent timeout', () => {
     it('should use request timeout', done => {
-      const agent = new Agent({
+      const agent = new HttpAgent({
         keepAlive: true,
         timeout: 1000,
       });
@@ -1564,7 +1564,7 @@ describe('test/agent.test.js', () => {
   describe('keepAlive = false', () => {
     it('should close socket after request', done => {
       const name = 'localhost:' + port + ':';
-      const agent = new Agent({
+      const agent = new HttpAgent({
         keepAlive: false,
       });
       http.get({
@@ -1598,7 +1598,7 @@ describe('test/agent.test.js', () => {
 
   describe('getter statusChanged', () => {
     it('should get statusChanged', () => {
-      const agentkeepalive = new Agent({
+      const agentkeepalive = new HttpAgent({
         keepAliveTimeout: 1000,
         maxSockets: 5,
         maxFreeSockets: 5,
@@ -1645,7 +1645,7 @@ describe('test/agent.test.js', () => {
 
   describe('mock idle socket error', () => {
     it('should idle socket emit error event', done => {
-      const agent = new Agent();
+      const agent = new HttpAgent();
 
       const options = {
         host: 'r.cnpmjs.org',
@@ -1687,7 +1687,7 @@ describe('test/agent.test.js', () => {
 
   describe('options.socketActiveTTL', () => {
     it('should expire on free socket timeout when it is out of ttl', done => {
-      const agent = new Agent({
+      const agent = new HttpAgent({
         keepAlive: true,
         maxSockets: 5,
         maxFreeSockets: 5,
@@ -1728,7 +1728,7 @@ describe('test/agent.test.js', () => {
     });
 
     it('should expire on socket reuse detect when it is out of ttl', done => {
-      const agent = new Agent({
+      const agent = new HttpAgent({
         keepAlive: true,
         socketActiveTTL: 10,
       });
@@ -1764,7 +1764,7 @@ describe('test/agent.test.js', () => {
     });
 
     it('should not expire active socket when it is in ttl', done => {
-      const agent = new Agent({
+      const agent = new HttpAgent({
         socketActiveTTL: 1000,
       });
       const req1 = http.get({
@@ -1802,7 +1802,7 @@ describe('test/agent.test.js', () => {
     });
 
     it('should TTL diff > freeSocketTimeout', done => {
-      const agent = new Agent({
+      const agent = new HttpAgent({
         freeSocketTimeout: 500,
         socketActiveTTL: 1000,
       });

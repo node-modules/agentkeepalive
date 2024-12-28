@@ -1,8 +1,8 @@
 'use strict';
 
-const Agent = require('../');
+const HttpAgent = require('../').HttpAgent;
 
-const agent = new Agent({
+const agent = new HttpAgent({
   keepAlive: true,
   maxSockets: 2,
   maxFreeSockets: 2,
@@ -54,7 +54,7 @@ function showAgentDetail() {
   }
 
   const requestPerSocket = agent.createSocketCount && agent.requestFinishedCount / agent.createSocketCount;
-  console.log('[%s] [worker:%d] Agent(%s,%sms,%s,%s): requests: %d, created: %d, timeout: %d, reqs/socket: %s, pedding requests: %j, alive sockets: %j, free sockets: %j',
+  console.log('[%s] [worker:%d] HttpAgent(%s,%sms,%s,%s): requests: %d, created: %d, timeout: %d, reqs/socket: %s, pedding requests: %j, alive sockets: %j, free sockets: %j',
     Date(), process.pid,
     agent.keepAlive && agent.options.keepAlive, agent.keepAliveMsecs,
     agent.maxSockets, agent.maxFreeSockets,

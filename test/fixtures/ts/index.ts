@@ -1,19 +1,18 @@
-import http from 'http';
-import Agent from '../../..';
-import assert from 'assert';
+import * as http from 'http';
+import { constants, HttpAgent, HttpsAgent, HttpOptions, HttpsOptions, AgentStatus } from '../../..';
+import * as assert from 'assert';
 
-const constants = Agent.constants;
 assert(constants.CREATE_ID);
 assert(constants.CREATE_HTTPS_CONNECTION);
 assert(constants.CURRENT_ID);
 
-const httpOpt: Agent.HttpOptions = {
+const httpOpt: HttpOptions = {
   maxSockets: 100,
   maxFreeSockets: 10,
   timeout: 60000, // active socket keepalive for 60 seconds
   freeSocketTimeout: 30000, // free socket keepalive for 30 seconds
 };
-const keepaliveAgent = new Agent(httpOpt);
+const keepaliveAgent = new HttpAgent(httpOpt);
 
 const options = {
   host: 'cnodejs.org',
@@ -40,19 +39,18 @@ req.end();
 
 setTimeout(() => {
   if (keepaliveAgent.statusChanged) {
-    const httpAgentStatus: Agent.AgentStatus = keepaliveAgent.getCurrentStatus();
+    const httpAgentStatus: AgentStatus = keepaliveAgent.getCurrentStatus();
     console.log('[%s] agent status changed: %j', Date(), httpAgentStatus);
   }
 }, 2000);
 
 // https
-const HttpsAgent = Agent.HttpsAgent;
-const httpsOpt: Agent.HttpsOptions = {
+const httpsOpt: HttpsOptions = {
   maxSockets: 100,
   maxFreeSockets: 10,
   timeout: 60000, // active socket keepalive for 60 seconds
   freeSocketTimeout: 30000, // free socket keepalive for 30 seconds
 };
 const keepaliveHttpsAgent = new HttpsAgent(httpsOpt);
-const httpsAgentStatus: Agent.AgentStatus = keepaliveHttpsAgent.getCurrentStatus();
+const httpsAgentStatus: AgentStatus = keepaliveHttpsAgent.getCurrentStatus();
 assert(httpsAgentStatus);

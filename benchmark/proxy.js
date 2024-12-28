@@ -1,19 +1,19 @@
 'use strict';
 
 var http = require('http');
-var AgentKeepalive = require('../');
+var HttpAgent = require('../').HttpAgent;
 
 var maxSockets = parseInt(process.argv[2]) || 10;
 var maxFreeSockets = parseInt(process.argv[3]) || maxSockets;
 var SERVER = process.argv[4] || '127.0.0.1';
 
-var agentKeepalive = new AgentKeepalive({
+var agentKeepalive = new HttpAgent({
   keepAlive: true,
   maxSockets: maxSockets,
   maxFreeSockets: maxFreeSockets,
   keepAliveTimeout: 30000,
 });
-var agentHttp = new AgentKeepalive({
+var agentHttp = new HttpAgent({
   maxSockets: maxSockets,
   keepAlive: false,
 });
