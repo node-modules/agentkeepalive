@@ -1,4 +1,10 @@
 
+4.6.0 / 2024-12-29
+==================
+
+**features**
+  * [[`7d79ddd`](http://github.com/node-modules/agentkeepalive/commit/7d79ddd2e4a5685013b4a8fee810a823028d517a)] - feat: export `HttpAgent` as standalone class to avoid namespace clutter and support ESM style imports (#119) (Radoslav Kirilov <<smoke@users.noreply.github.com>>)
+
 4.5.0 / 2023-08-06
 ==================
 
