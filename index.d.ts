@@ -6,7 +6,7 @@ interface PlainObject {
   [key: string]: any;
 }
 
-declare class HttpAgent extends http.Agent {
+declare class _HttpAgent extends http.Agent {
   constructor(opts?: AgentKeepAlive.HttpOptions);
   readonly statusChanged: boolean;
   createConnection(options: net.NetConnectOpts, cb?: Function): net.Socket;
@@ -25,7 +25,10 @@ interface Constants {
   SOCKET_REQUEST_FINISHED_COUNT: Symbol;
 }
 
-declare class AgentKeepAlive extends HttpAgent {}
+/**
+ * @deprecated instead use `import { HttpAgent } from 'agentkeepalive'; or `const HttpAgent = require('agentkeepalive').HttpAgent;`
+ */
+declare class AgentKeepAlive extends _HttpAgent {}
 
 declare namespace AgentKeepAlive {
   export interface AgentStatus {
@@ -51,6 +54,7 @@ declare namespace AgentKeepAlive {
   export interface HttpOptions extends http.AgentOptions, CommonHttpOption { }
   export interface HttpsOptions extends https.AgentOptions, CommonHttpOption { }
 
+  export class HttpAgent extends _HttpAgent {}
   export class HttpsAgent extends https.Agent {
     constructor(opts?: HttpsOptions);
     readonly statusChanged: boolean;

@@ -21,7 +21,6 @@
     "skipLibCheck": false,
     "skipDefaultLibCheck": false,
     "importHelpers": false,
-    "inlineSourceMap": true,
-    "esModuleInterop": true
+    "inlineSourceMap": true
   }
 }

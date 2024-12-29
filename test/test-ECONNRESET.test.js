@@ -2,7 +2,7 @@
 
 const assert = require('assert');
 const http = require('http');
-const Agent = require('..');
+const HttpAgent = require('..').HttpAgent;
 
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -27,7 +27,7 @@ describe('test/test-ECONNRESET.test.js', () => {
   });
 
   it('should resolved socket hang up and ECONNRESET errors', done => {
-    const keepaliveAgent = new Agent({
+    const keepaliveAgent = new HttpAgent({
       keepAlive: true,
       freeSocketTimeout: 900,
     });

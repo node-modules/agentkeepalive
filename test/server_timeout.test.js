@@ -2,7 +2,7 @@
 
 const assert = require('assert');
 const http = require('http');
-const Agent = require('..');
+const HttpAgent = require('..').HttpAgent;
 
 describe('test/server_timeout.test.js', () => {
   let port;
@@ -30,7 +30,7 @@ describe('test/server_timeout.test.js', () => {
   });
 
   it('should handle Keep-Alive header and not throw reset error', done => {
-    const keepaliveAgent = new Agent({
+    const keepaliveAgent = new HttpAgent({
       keepAlive: true,
     });
 

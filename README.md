@@ -61,9 +61,9 @@ $ npm install agentkeepalive --save
 
 ```js
 const http = require('http');
-const Agent = require('agentkeepalive');
+const HttpAgent = require('agentkeepalive').HttpAgent;
 
-const keepaliveAgent = new Agent({
+const keepaliveAgent = new HttpAgent({
   maxSockets: 100,
   maxFreeSockets: 10,
   timeout: 60000, // active socket keepalive for 60 seconds
@@ -162,8 +162,8 @@ When server closes connection at unfortunate time ([keep-alive race](https://cod
 
 ```js
 const http = require('http');
-const Agent = require('agentkeepalive');
-const agent = new Agent();
+const HttpAgent = require('agentkeepalive').HttpAgent;
+const agent = new HttpAgent();
 
 const req = http
   .get('http://localhost:3000', { agent }, (res) => {
