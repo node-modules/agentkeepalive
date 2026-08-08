@@ -23,6 +23,8 @@ interface Constants {
   SOCKET_NAME: Symbol;
   SOCKET_REQUEST_COUNT: Symbol;
   SOCKET_REQUEST_FINISHED_COUNT: Symbol;
+  SOCKET_ENTER_FREE_POOL_TIME: Symbol;
+  SOCKET_ENTER_FREE_POOL_TIMEOUT: Symbol;
 }
 
 /**
@@ -49,6 +51,7 @@ declare namespace AgentKeepAlive {
     freeSocketKeepAliveTimeout?: number | undefined;
     timeout?: number | undefined;
     socketActiveTTL?: number | undefined;
+    testOnBorrow?: boolean | undefined;
   }
 
   export interface HttpOptions extends http.AgentOptions, CommonHttpOption { }

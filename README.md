@@ -56,6 +56,12 @@ $ npm install agentkeepalive --save
   * `socketActiveTTL` {Number} Sets the socket active time to live, even if it's in use.
     If not set, the behaviour keeps the same (the socket will be released only when free)
     Default = `null`.
+  * `testOnBorrow` {Boolean} When set to `true`, validates free sockets using wall-clock
+    time before reuse. Sockets idle longer than their effective `freeSocketTimeout` are
+    destroyed and replaced with fresh connections. This is essential for environments where
+    the process is suspended between invocations (e.g., AWS Lambda, Azure Functions) and
+    `socket.setTimeout()` callbacks do not fire during the freeze.
+    Default = `false`.
 
 ## Usage
 
@@ -177,6 +183,35 @@ const req = http
 ```
 
 This behavior is consistent with Node.js core. But through `agentkeepalive`, you can use this feature in older Node.js version.
+
+### Usage with Serverless (AWS Lambda, Azure Functions)
+
+In serverless environments, the process is frozen between invocations and `socket.setTimeout()` callbacks do not fire. Enable `testOnBorrow` to validate sockets using wall-clock time before reuse:
+
+```js
+const https = require('https');
+const HttpsAgent = require('agentkeepalive').HttpsAgent;
+
+const agent = new HttpsAgent({
+  keepAlive: true,
+  freeSocketTimeout: 30000,
+  testOnBorrow: true, // validate sockets against real elapsed time before reuse
+});
+
+// Use in your Lambda handler
+exports.handler = async (event) => {
+  const res = await new Promise((resolve, reject) => {
+    https.get('https://api.example.com/data', { agent }, (res) => {
+      res.resume(); // drain the response to free the socket back to the pool
+      res.on('end', () => resolve(res));
+      res.on('error', reject);
+    }).on('error', reject);
+  });
+  // ...
+};
+```
+
+Without `testOnBorrow`, sockets that were idle during a process freeze may appear valid (their timeout timer was frozen too) but the server has already closed the connection — resulting in `EPIPE` or `ECONNRESET` errors.
 
 ## [Benchmark](https://github.com/node-modules/agentkeepalive/tree/master/benchmark)
 
