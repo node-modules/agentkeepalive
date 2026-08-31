@@ -762,6 +762,42 @@ describe('test/agent.test.js', () => {
     assert(agent.requests[name].length === 1);
   });
 
+  it('should use active timeout when socket is assigned to a queued request', done => {
+    const name = 'localhost:' + port + ':';
+    const agent = new HttpAgent({
+      maxSockets: 1,
+      freeSocketTimeout: 50,
+      timeout: 1000,
+    });
+    let finished = false;
+    const finish = err => {
+      if (finished) return;
+      finished = true;
+      agent.destroy();
+      done(err);
+    };
+
+    http.get({
+      agent,
+      port,
+      path: '/?timeout=10',
+    }, res => {
+      res.resume();
+    }).on('error', finish);
+
+    http.get({
+      agent,
+      port,
+      path: '/?timeout=200',
+    }, res => {
+      assert(res.statusCode === 200);
+      res.resume();
+      res.on('end', finish);
+    }).on('error', finish);
+
+    assert(agent.requests[name].length === 1);
+  });
+
   it('should keep 1 free socket', done => {
     const name = 'localhost:' + port + ':';
     const agent = new HttpAgent({
